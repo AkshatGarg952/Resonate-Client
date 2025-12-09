@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-950 text-slate-50;
+  }
+}
+
+@layer components {
+  .gradient-bg {
+    background: radial-gradient(circle at top, #22c55e33, transparent 60%),
+                radial-gradient(circle at bottom, #0ea5e933, transparent 60%);
+  }
+}
