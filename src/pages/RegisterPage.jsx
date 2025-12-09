@@ -32,10 +32,10 @@ export default function RegisterPage() {
         form.password
       );
 
-      // Step 2: Get Firebase ID token
+      
       const token = await cred.user.getIdToken();
 
-      // Step 3: Send token + optional profile data to backend /auth/register
+      
       const payload = {};
       if (form.age) payload.age = Number(form.age);
       if (form.weight) payload.weight = Number(form.weight);
@@ -43,7 +43,7 @@ export default function RegisterPage() {
 
       await postWithToken("/auth/register", token, payload);
 
-      // Step 4: Go to dashboard
+      
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
@@ -55,11 +55,11 @@ export default function RegisterPage() {
 
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
-      {/* <div className="w-full max-w-md bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-lg"> */}
+      
       <div className="w-full max-w-md bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-lg relative">
 
   <button
-    onClick={() => navigate("/")}  // change route if you want
+    onClick={() => navigate("/")}  
     className="absolute top-3 right-3 text-slate-400 hover:text-white text-xl"
   >
     ✕
