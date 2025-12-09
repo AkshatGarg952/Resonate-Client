@@ -16,16 +16,16 @@ export default function LoginPage() {
     setError("");
     setLoading(true);
     try {
-      // Step 1: Firebase login
+      
       const cred = await signInWithEmailAndPassword(auth, email, password);
 
-      // Step 2: Get Firebase ID token
+     
       const token = await cred.user.getIdToken();
 
-      // Step 3: Send token to backend login
+      
       await postWithToken("/auth/login", token, {});
 
-      // Step 4: On success, go to dashboard
+      
       navigate("/dashboard");
     } catch (err) {
       console.error(err);
@@ -37,7 +37,6 @@ export default function LoginPage() {
 
   return (
     <div className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
-      {/* <div className="w-full max-w-md bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-lg"> */}
       <div className="w-full max-w-md bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-lg relative">
 
             
