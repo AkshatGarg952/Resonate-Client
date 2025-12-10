@@ -52,7 +52,7 @@ export default function BiomarkerUploadPage() {
           Blood report analysis
         </h2>
         <p className="text-sm text-slate-400 mb-4">
-          Upload your blood report PDF. We&apos;ll extract 8 key biomarkers and
+          Upload your blood report PDF. We&apos;ll extract 9 key biomarkers and
           show if they are in a good or bad range.
         </p>
 
