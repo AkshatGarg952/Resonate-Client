@@ -11,7 +11,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
-  const BASE_URL = "http://localhost:3000";
+  const BASE_URL = "https://resonate-server-t7m8.onrender.com";
 
   const handleLogin = async (e) => {
     e.preventDefault();
