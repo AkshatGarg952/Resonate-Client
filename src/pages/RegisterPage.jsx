@@ -37,11 +37,18 @@ export default function RegisterPage() {
     
     const res = await postWithToken("/auth/register", token, payload);
 
-    if (res.message === "User Registered" || res.message === "User already registered!") {
-      sessionStorage.setItem("verifiedUser", "true");
-      navigate("/dashboard");
-      return;
-    }
+    if (res.message === "User Registered") {
+  sessionStorage.setItem("verifiedUser", "true");
+  navigate("/dashboard");
+  return;
+}
+
+if (res.message === "User already registered!") {
+  setError("User already registered, please try with a different email");
+  await auth.signOut();
+  return;
+}
+
 
     await auth.signOut();
     setError("Something went wrong!");
