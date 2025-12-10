@@ -28,52 +28,41 @@ function AppWrapper() {
 
   const handleLogout = async () => {
     await signOut(auth);
+    sessionStorage.removeItem("verifiedUser");
     navigate("/");
   };
 
-  if (loadingAuth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-950 text-slate-100">
-        <div className="animate-pulse text-xl">Resonate Fitness...</div>
-      </div>
-    );
-  }
+  if (loadingAuth) return null;
 
   return (
     <AuthContext.Provider value={{ user }}>
-      <div className="min-h-screen gradient-bg">
-        <Navbar user={user} onLogout={handleLogout} />
-        <main className="max-w-5xl mx-auto px-4 py-6">
-          <Routes>
-            <Route path="/" element={<LandingPage />} />
-            <Route
-              path="/login"
-              element={user ? <Navigate to="/dashboard" /> : <LoginPage />}
-            />
-            <Route
-              path="/register"
-              element={user ? <Navigate to="/dashboard" /> : <RegisterPage />}
-            />
-            <Route
-              path="/dashboard"
-              element={
-                <ProtectedRoute>
-                  <DashboardPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/biomarkers"
-              element={
-                <ProtectedRoute>
-                  <BiomarkerUploadPage />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </main>
-      </div>
+      <Navbar user={user} onLogout={handleLogout} />
+
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+
+        <Route path="/login" element={<LoginPage />} />
+
+        <Route path="/register" element={<RegisterPage />} />
+
+        <Route path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/biomarkers"
+          element={
+            <ProtectedRoute>
+              <BiomarkerUploadPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
     </AuthContext.Provider>
   );
 }
