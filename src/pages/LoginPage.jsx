@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
-import { postWithToken } from "../api";
+import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function LoginPage() {
@@ -9,27 +9,39 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
+  const BASE_URL = "http://localhost:3000";
 
   const handleLogin = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
+
     try {
-      
+     
       const cred = await signInWithEmailAndPassword(auth, email, password);
 
-     
       const token = await cred.user.getIdToken();
 
-      
-      await postWithToken("/auth/login", token, {});
+      const res = await axios.post(
+        `${BASE_URL}/auth/login`,
+        {},
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-      
-      navigate("/dashboard");
+      if (res.data.message === "Login Success") {
+        sessionStorage.setItem("verifiedUser", "true");
+        navigate("/dashboard");
+      } else {
+        await auth.signOut();
+        setError(res.data.message);
+      }
     } catch (err) {
-      console.error(err);
-      setError(err.message || "Failed to login");
+      await auth.signOut();
+      setError(err.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);
     }
@@ -39,17 +51,15 @@ export default function LoginPage() {
     <div className="flex justify-center items-center min-h-[calc(100vh-4rem)]">
       <div className="w-full max-w-md bg-slate-900/80 border border-slate-800 rounded-3xl p-6 shadow-lg relative">
 
-            
-          
-          <button
-    onClick={() => navigate("/")}
-    className="absolute top-3 right-3 text-slate-400 hover:text-white text-xl"
-  >
-    ✕
-  </button>
-      
+        <button
+          onClick={() => navigate("/")}
+          className="absolute top-3 right-3 text-slate-400 hover:text-white text-xl"
+        >
+          ✕
+        </button>
+
         <h2 className="text-2xl font-semibold text-slate-50 mb-1">
-          Welcome back 👋
+          Welcome back
         </h2>
         <p className="text-sm text-slate-400 mb-5">
           Login to continue tracking your health.
@@ -62,20 +72,21 @@ export default function LoginPage() {
             </label>
             <input
               type="email"
-              className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
               placeholder="you@example.com"
             />
           </div>
+
           <div>
             <label className="block text-sm text-slate-300 mb-1">
               Password
             </label>
             <input
               type="password"
-              className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+              className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
