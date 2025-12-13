@@ -1,6 +1,8 @@
-const BASE_URL = "https://resonate-server-t7m8.onrender.com";
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+console.log(BASE_URL)
 
 export async function postWithToken(path, token, body) {
+  console.log("Bhej raha request!")
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "POST",
     headers: {

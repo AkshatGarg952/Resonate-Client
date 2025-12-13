@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
-import axios from "axios";
 import { useNavigate, Link } from "react-router-dom";
-
+import { postWithToken } from "../api.js";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -11,8 +10,6 @@ export default function LoginPage() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
-
-  const BASE_URL = "http://localhost:3000";
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -25,20 +22,15 @@ export default function LoginPage() {
 
       const token = await cred.user.getIdToken();
 
-      const res = await axios.post(
-        `${BASE_URL}/auth/login`,
-        {},
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const res = await postWithToken("/auth/login", token, {});
+      
 
-      if (res.data.message === "Login Success") {
+      if (res.message === "Login Success") {
         sessionStorage.setItem("verifiedUser", "true");
         navigate("/dashboard");
       } else {
         await auth.signOut();
-        setError(res.data.message);
+        setError(res.message);
       }
     } catch (err) {
       await auth.signOut();
