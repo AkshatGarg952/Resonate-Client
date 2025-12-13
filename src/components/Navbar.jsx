@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 export default function Navbar({ user, onLogout }) {
   const location = useLocation();
+  const [open, setOpen] = useState(false);
 
   const isActive = (path) =>
     location.pathname === path ? "text-primary" : "text-slate-200";
@@ -10,6 +11,7 @@ export default function Navbar({ user, onLogout }) {
   return (
     <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
       <nav className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
+        {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center">
             <span className="text-primary font-bold text-lg">R</span>
@@ -20,15 +22,47 @@ export default function Navbar({ user, onLogout }) {
           </div>
         </Link>
 
-        <div className="flex items-center gap-4 text-sm">
+        {/* Nav Links */}
+        <div className="flex items-center gap-4 text-sm relative">
           {user && (
             <>
               <Link to="/dashboard" className={isActive("/dashboard")}>
                 Dashboard
               </Link>
-              <Link to="/biomarkers" className={isActive("/biomarkers")}>
-                Blood Report
-              </Link>
+
+              {/* Blood Diagnostics Dropdown */}
+              <div className="relative">
+                <button
+                  onClick={() => setOpen(!open)}
+                  className={`flex items-center gap-1 ${
+                    location.pathname.includes("/biomarkers")
+                      ? "text-primary"
+                      : "text-slate-200"
+                  }`}
+                >
+                  Blood Diagnostics
+                  <span className="text-xs">▾</span>
+                </button>
+
+                {open && (
+                  <div className="absolute right-0 mt-2 w-48 rounded-lg bg-slate-900 border border-slate-800 shadow-lg z-50">
+                    <Link
+                      to="/biomarkers/upload"
+                      onClick={() => setOpen(false)}
+                      className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    >
+                      Upload Report PDF
+                    </Link>
+                    <Link
+                      to="/biomarkers/api"
+                      onClick={() => setOpen(false)}
+                      className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    >
+                      Fetch from API
+                    </Link>
+                  </div>
+                )}
+              </div>
             </>
           )}
 

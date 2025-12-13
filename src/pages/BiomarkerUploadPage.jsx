@@ -34,8 +34,6 @@ export default function BiomarkerUploadPage() {
       const token = await auth.currentUser.getIdToken();
       const data = await uploadPdfWithToken("/diagnostics/upload", token, file);
       console.log("API response:", data.diagnostics);
-      // setBiomarkers(data.diagnostics.biomarkers || []);
-      // setBiomarkers(Object.values(data.diagnostics.biomarkers || {}));
       const biomarkersArr = Object.entries(data.diagnostics.biomarkers || {}).map(
   ([name, info]) => ({
     name,
