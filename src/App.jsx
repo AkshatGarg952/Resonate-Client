@@ -19,12 +19,24 @@ function AppWrapper() {
   const navigate = useNavigate();
 
   useEffect(() => {
+  const BACKEND_URL = import.meta.env.VITE_API_BASE_URL;
+
+  if (!BACKEND_URL) return;
+
+  fetch(`${BACKEND_URL}/health`)
+    .then(() => console.log("Backend warmed up"))
+    .catch(() => {});
+}, []);
+
+  useEffect(() => {
     const unsub = onAuthStateChanged(auth, (firebaseUser) => {
       setUser(firebaseUser);
       setLoadingAuth(false);
     });
     return () => unsub();
   }, []);
+
+
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -39,7 +51,7 @@ function AppWrapper() {
       <Navbar user={user} onLogout={handleLogout} />
 
       <Routes>
-        <Route path="/" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage />} />  
 
         <Route path="/login" element={<LoginPage />} />
 
