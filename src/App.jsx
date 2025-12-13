@@ -7,9 +7,11 @@ import LandingPage from "./pages/LandingPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DashboardPage from "./pages/DashboardPage";
+import BiomarkerFetchFromApiPage from "./pages/BiomarkerFetchFromApiPage";
 import BiomarkerUploadPage from "./pages/BiomarkerUploadPage";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
+
 
 export const AuthContext = createContext(null);
 
@@ -65,10 +67,18 @@ function AppWrapper() {
           }
         />
 
-        <Route path="/biomarkers"
+        <Route path="/biomarkers/upload"
           element={
             <ProtectedRoute>
               <BiomarkerUploadPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/biomarkers/api"
+          element={
+            <ProtectedRoute>
+              <BiomarkerFetchFromApiPage />
             </ProtectedRoute>
           }
         />
