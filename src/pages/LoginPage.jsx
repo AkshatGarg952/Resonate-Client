@@ -11,6 +11,7 @@ export default function LoginPage() {
   const [error, setError] = useState("");
 
   const navigate = useNavigate();
+
   const BASE_URL = "http://localhost:3000";
 
   const handleLogin = async (e) => {

@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:3000";
+const BASE_URL = "https://resonate-server-t7m8.onrender.com";
 
 export async function postWithToken(path, token, body) {
   const res = await fetch(`${BASE_URL}${path}`, {
