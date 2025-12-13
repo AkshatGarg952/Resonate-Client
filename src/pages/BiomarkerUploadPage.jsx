@@ -35,7 +35,17 @@ export default function BiomarkerUploadPage() {
       const data = await uploadPdfWithToken("/diagnostics/upload", token, file);
       console.log("API response:", data.diagnostics);
       // setBiomarkers(data.diagnostics.biomarkers || []);
-      setBiomarkers(Object.values(data.diagnostics.biomarkers || {}));
+      // setBiomarkers(Object.values(data.diagnostics.biomarkers || {}));
+      const biomarkersArr = Object.entries(data.diagnostics.biomarkers || {}).map(
+  ([name, info]) => ({
+    name,
+    value: info.value,
+    status: info.status,
+  })
+);
+
+setBiomarkers(biomarkersArr);
+
 
     } catch (err) {
       console.error(err);
@@ -52,7 +62,7 @@ export default function BiomarkerUploadPage() {
           Blood report analysis
         </h2>
         <p className="text-sm text-slate-400 mb-4">
-          Upload your blood report PDF. We&apos;ll extract 8 key biomarkers and
+          Upload your blood report PDF. We&apos;ll extract 9 key biomarkers and
           show if they are in a good or bad range.
         </p>
 
