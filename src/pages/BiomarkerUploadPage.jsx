@@ -46,7 +46,7 @@ setBiomarkers(biomarkersArr);
 
 
     } catch (err) {
-      console.error(err);
+      console.error("xxx", err);
       setError(err.message);
       // setError("Failed to analyze the report. Please try again.");
     } finally {
