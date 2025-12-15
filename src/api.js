@@ -12,10 +12,12 @@ export async function postWithToken(path, token, body) {
     body: JSON.stringify(body),
   });
 
+   const data = await res.json();
+
   if (!res.ok) {
-    throw new Error(`API error: ${res.status}`);
+    throw new Error(data.message || "Request failed");
   }
-  return res.json();
+  return data;
 }
 
 export async function getWithToken(path, token) {
@@ -25,9 +27,9 @@ export async function getWithToken(path, token) {
     },
   });
   if (!res.ok) {
-    throw new Error(`API error: ${res.status}`);
+    throw new Error(data.message || "Request failed");
   }
-  return res.json();
+  return data;
 }
 
 export async function putWithToken(path, token, body) {
@@ -39,10 +41,12 @@ export async function putWithToken(path, token, body) {
     },
     body: JSON.stringify(body),
   });
+
+  const data = await res.json();
   if (!res.ok) {
-    throw new Error(`API error: ${res.status}`);
+    throw new Error(data.message || "Request failed");
   }
-  return res.json();
+  return data;
 }
 
 export async function uploadPdfWithToken(path, token, file) {
@@ -57,8 +61,11 @@ export async function uploadPdfWithToken(path, token, file) {
     body: formData,
   });
 
+  console.log(res);
+  const data = await res.json();
+
   if (!res.ok) {
-    throw new Error(`API error: ${res.status}`);
+    throw new Error(data.message || "Request failed");
   }
-  return res.json();
+  return data;
 }
