@@ -20,15 +20,23 @@ function AppWrapper() {
   const [loadingAuth, setLoadingAuth] = useState(true);
   const navigate = useNavigate();
 
-  useEffect(() => {
+useEffect(() => {
   const BACKEND_URL = import.meta.env.VITE_API_BASE_URL;
+  const MICROSERVICE_URL = import.meta.env.VITE_MICROSERVICE_API_URL;
 
-  if (!BACKEND_URL) return;
+  if (BACKEND_URL) {
+    fetch(`${BACKEND_URL}/health`)
+      .then(() => console.log("Backend warmed up"))
+      .catch(() => {});
+  }
 
-  fetch(`${BACKEND_URL}/health`)
-    .then(() => console.log("Backend warmed up"))
-    .catch(() => {});
+  if (MICROSERVICE_URL) {
+    fetch(`${MICROSERVICE_URL}/`)
+      .then(() => console.log("Microservice warmed up"))
+      .catch(() => {});
+  }
 }, []);
+
 
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, (firebaseUser) => {
