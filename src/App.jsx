@@ -11,7 +11,9 @@ import BiomarkerFetchFromApiPage from "./pages/BiomarkerFetchFromApiPage";
 import BiomarkerUploadPage from "./pages/BiomarkerUploadPage";
 import Navbar from "./components/Navbar";
 import ProtectedRoute from "./components/ProtectedRoute";
-
+import LatestAnalysisPage from "./pages/LatestAnalysisPage";
+import BiomarkerHistoryPage from "./pages/BiomarkerHistoryPage";
+import BiomarkerHistoryDetailPage from "./pages/BiomarkerHistoryDetailPage";
 
 export const AuthContext = createContext(null);
 
@@ -87,6 +89,30 @@ useEffect(() => {
           element={
             <ProtectedRoute>
               <BiomarkerFetchFromApiPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/biomarkers/latest"
+          element={
+            <ProtectedRoute>
+              <LatestAnalysisPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/biomarkers/history"
+          element={
+            <ProtectedRoute>
+              <BiomarkerHistoryPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/biomarkers/history/:id"
+          element={
+            <ProtectedRoute>
+              <BiomarkerHistoryDetailPage />
             </ProtectedRoute>
           }
         />

@@ -11,7 +11,7 @@ export default function Navbar({ user, onLogout }) {
   return (
     <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
       <nav className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
-        {/* Logo */}
+        
         <Link to="/" className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center">
             <span className="text-primary font-bold text-lg">R</span>
@@ -22,7 +22,6 @@ export default function Navbar({ user, onLogout }) {
           </div>
         </Link>
 
-        {/* Nav Links */}
         <div className="flex items-center gap-4 text-sm relative">
           {user && (
             <>
@@ -30,7 +29,6 @@ export default function Navbar({ user, onLogout }) {
                 Dashboard
               </Link>
 
-              {/* Blood Diagnostics Dropdown */}
               <div className="relative">
                 <button
                   onClick={() => setOpen(!open)}
@@ -60,6 +58,24 @@ export default function Navbar({ user, onLogout }) {
                     >
                       Fetch from API
                     </Link>
+
+                     <div className="my-1 border-t border-slate-800" />
+
+                    <Link
+                      to="/biomarkers/latest"
+                      className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    >
+                      Latest Analysis
+                    </Link>
+
+                    <Link
+                      to="/biomarkers/history"
+                      className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    >
+                      Analysis History
+                    </Link>
+
+                    
                   </div>
                 )}
               </div>
