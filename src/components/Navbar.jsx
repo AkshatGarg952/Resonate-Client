@@ -3,15 +3,40 @@ import { Link, useLocation } from "react-router-dom";
 
 export default function Navbar({ user, onLogout }) {
   const location = useLocation();
-  const [open, setOpen] = useState(false);
+
+  const [open, setOpen] = useState(false);        // Blood diagnostics dropdown
+  const [fitnessOpen, setFitnessOpen] = useState(false); // Fitness sync dropdown
 
   const isActive = (path) =>
     location.pathname === path ? "text-primary" : "text-slate-200";
+
+  // -------------------------
+  // Google Fit Connect
+  // -------------------------
+  const connectGoogleFit = async () => {
+    try {
+      const res = await fetch("/api/fitness/google/connect", {
+        method: "POST",
+        credentials: "include",
+      });
+
+      const data = await res.json();
+
+      if (data.redirectUrl) {
+        window.location.href = data.redirectUrl;
+      }
+    } catch (err) {
+      console.error("Google Fit connection failed", err);
+    } finally {
+      setFitnessOpen(false);
+    }
+  };
 
   return (
     <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
       <nav className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
         
+        {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center">
             <span className="text-primary font-bold text-lg">R</span>
@@ -22,6 +47,7 @@ export default function Navbar({ user, onLogout }) {
           </div>
         </Link>
 
+        {/* Right Menu */}
         <div className="flex items-center gap-4 text-sm relative">
           {user && (
             <>
@@ -29,9 +55,13 @@ export default function Navbar({ user, onLogout }) {
                 Dashboard
               </Link>
 
+              {/* Blood Diagnostics */}
               <div className="relative">
                 <button
-                  onClick={() => setOpen(!open)}
+                  onClick={() => {
+                    setOpen(!open);
+                    setFitnessOpen(false);
+                  }}
                   className={`flex items-center gap-1 ${
                     location.pathname.includes("/biomarkers")
                       ? "text-primary"
@@ -43,7 +73,7 @@ export default function Navbar({ user, onLogout }) {
                 </button>
 
                 {open && (
-                  <div className="absolute right-0 mt-2 w-48 rounded-lg bg-slate-900 border border-slate-800 shadow-lg z-50">
+                  <div className="absolute right-0 mt-2 w-52 rounded-lg bg-slate-900 border border-slate-800 shadow-lg z-50">
                     <Link
                       to="/biomarkers/upload"
                       onClick={() => setOpen(false)}
@@ -51,6 +81,7 @@ export default function Navbar({ user, onLogout }) {
                     >
                       Upload Report PDF
                     </Link>
+
                     <Link
                       to="/biomarkers/api"
                       onClick={() => setOpen(false)}
@@ -59,10 +90,11 @@ export default function Navbar({ user, onLogout }) {
                       Fetch from API
                     </Link>
 
-                     <div className="my-1 border-t border-slate-800" />
+                    <div className="my-1 border-t border-slate-800" />
 
                     <Link
                       to="/biomarkers/latest"
+                      onClick={() => setOpen(false)}
                       className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
                     >
                       Latest Analysis
@@ -70,12 +102,43 @@ export default function Navbar({ user, onLogout }) {
 
                     <Link
                       to="/biomarkers/history"
+                      onClick={() => setOpen(false)}
                       className="block px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
                     >
                       Analysis History
                     </Link>
+                  </div>
+                )}
+              </div>
 
-                    
+              {/* Fitness Sync */}
+              <div className="relative">
+                <button
+                  onClick={() => {
+                    setFitnessOpen(!fitnessOpen);
+                    setOpen(false);
+                  }}
+                  className="flex items-center gap-1 text-slate-200"
+                >
+                  Fitness Sync
+                  <span className="text-xs">▾</span>
+                </button>
+
+                {fitnessOpen && (
+                  <div className="absolute right-0 mt-2 w-56 rounded-lg bg-slate-900 border border-slate-800 shadow-lg z-50">
+                    <button
+                      onClick={connectGoogleFit}
+                      className="w-full text-left px-4 py-2 text-sm text-slate-200 hover:bg-slate-800"
+                    >
+                      Connect Google Fit
+                    </button>
+
+                    <button
+                      disabled
+                      className="w-full text-left px-4 py-2 text-sm text-slate-500 cursor-not-allowed"
+                    >
+                      Connect Apple Health (iOS only)
+                    </button>
                   </div>
                 )}
               </div>
