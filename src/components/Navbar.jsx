@@ -4,7 +4,7 @@ import { Link, useLocation } from "react-router-dom";
 export default function Navbar({ user, onLogout }) {
   const location = useLocation();
 
-  const [open, setOpen] = useState(false);        // Blood diagnostics dropdown
+  const [open, setOpen] = useState(false); // Blood diagnostics dropdown
   const [fitnessOpen, setFitnessOpen] = useState(false); // Fitness sync dropdown
 
   const isActive = (path) =>
@@ -13,24 +13,36 @@ export default function Navbar({ user, onLogout }) {
   // -------------------------
   // Google Fit Connect
   // -------------------------
-  const connectGoogleFit = async () => {
-    try {
-      const res = await fetch("/api/fitness/google/connect", {
-        method: "POST",
-        credentials: "include",
-      });
+  // const connectGoogleFit = async () => {
+  //   try {
+  //     const res = await fetch("/fit/google", {
+  //       method: "GET",
+  //       credentials: "include",
+  //     });
 
-      const data = await res.json();
+  //     const data = await res.json();
 
-      if (data.redirectUrl) {
-        window.location.href = data.redirectUrl;
-      }
-    } catch (err) {
-      console.error("Google Fit connection failed", err);
-    } finally {
-      setFitnessOpen(false);
-    }
-  };
+  //     if (data.redirectUrl) {
+  //       window.location.href = data.redirectUrl;
+  //     }
+  //   } catch (err) {
+  //     console.error("Google Fit connection failed", err);
+  //   } finally {
+  //     setFitnessOpen(false);
+  //   }
+  // };
+
+  const connectGoogleFit = () => {
+  try {
+    setFitnessOpen(false);
+
+    // OAuth must use full browser redirect
+    window.location.href = "http://localhost:5000/fit/google";
+  } catch (err) {
+    console.error("Google Fit connection failed", err);
+  }
+};
+
 
   return (
     <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
@@ -51,8 +63,14 @@ export default function Navbar({ user, onLogout }) {
         <div className="flex items-center gap-4 text-sm relative">
           {user && (
             <>
+              {/* Dashboard */}
               <Link to="/dashboard" className={isActive("/dashboard")}>
                 Dashboard
+              </Link>
+
+              {/* Profile */}
+              <Link to="/profile" className={isActive("/profile")}>
+                My Profile
               </Link>
 
               {/* Blood Diagnostics */}

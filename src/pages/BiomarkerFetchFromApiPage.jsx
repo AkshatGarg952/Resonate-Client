@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { postWithToken } from "../api";
-import { auth } from "../firebase";
+import { postWithCookie } from "../api";
 import BiomarkerRing from "../components/BiomarkerRing";
 
 export default function BiomarkerFetchFromApiPage() {
@@ -13,11 +12,8 @@ export default function BiomarkerFetchFromApiPage() {
     setError("");
 
     try {
-      const token = await auth.currentUser.getIdToken();
-
-      const data = await postWithToken(
+      const data = await postWithCookie(
         "/diagnostics/fetch-from-api",
-        token,
         {}
       );
 

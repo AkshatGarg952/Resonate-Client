@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate, Link } from "react-router-dom";
-import { postWithToken } from "../api.js";
+import { postAuth } from "../api.js";
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -22,12 +22,12 @@ export default function LoginPage() {
 
       const token = await cred.user.getIdToken();
 
-      const res = await postWithToken("/auth/login", token, {});
+      const res = await postAuth("/auth/login", token, {});
       
 
       if (res.message === "Login Success") {
         sessionStorage.setItem("verifiedUser", "true");
-        navigate("/dashboard");
+        navigate("/profile");
       } else {
         await auth.signOut();
         setError(res.message);
