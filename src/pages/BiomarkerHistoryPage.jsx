@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { auth } from "../firebase";
-import { getWithToken } from "../api";
+import { getWithCookie } from "../api";
 import { useNavigate } from "react-router-dom";
 
 export default function BiomarkerHistoryPage() {
@@ -13,8 +13,7 @@ export default function BiomarkerHistoryPage() {
   useEffect(() => {
     const fetchHistory = async () => {
       try {
-        const token = await auth.currentUser.getIdToken();
-        const data = await getWithToken("/diagnostics/history", token);
+        const data = await getWithCookie("/diagnostics/history");
         setHistory(data || []);
       } catch (err) {
         console.error(err);

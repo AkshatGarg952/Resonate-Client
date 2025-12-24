@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { auth } from "../firebase";
-import { getWithToken } from "../api";
+import { getWithCookie } from "../api";
 import BiomarkerRing from "../components/BiomarkerRing";
 
 export default function LatestAnalysisPage() {
@@ -12,8 +12,7 @@ export default function LatestAnalysisPage() {
   useEffect(() => {
     const fetchLatest = async () => {
       try {
-        const token = await auth.currentUser.getIdToken();
-        const latest = await getWithToken("/diagnostics/latest", token);
+        const latest = await getWithCookie("/diagnostics/latest");
 
         if (!latest || latest.status !== "completed") {
           setError("No completed analysis found yet.");

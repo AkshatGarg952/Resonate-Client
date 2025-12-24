@@ -14,6 +14,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import LatestAnalysisPage from "./pages/LatestAnalysisPage";
 import BiomarkerHistoryPage from "./pages/BiomarkerHistoryPage";
 import BiomarkerHistoryDetailPage from "./pages/BiomarkerHistoryDetailPage";
+import FitnessDashboardPage from "./pages/FitnessDashboardPage";
 
 export const AuthContext = createContext(null);
 
@@ -69,10 +70,18 @@ useEffect(() => {
 
         <Route path="/register" element={<RegisterPage />} />
 
-        <Route path="/dashboard"
+        <Route path="/profile"
           element={
             <ProtectedRoute>
               <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <FitnessDashboardPage />
             </ProtectedRoute>
           }
         />
