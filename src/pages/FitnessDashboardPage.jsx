@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import MetricCard from "../components/MetricCard";
 import BarChart from "../components/BarChart";
+import { normalizeFitnessData } from "../utils/fitnessNormalizer";
+import { getWithCookie } from "../api";
 
 export default function FitnessDashboardPage() {
   const [fitness, setFitness] = useState(null);
@@ -8,19 +10,15 @@ export default function FitnessDashboardPage() {
 
   const loadFitness = async () => {
     try {
-      const data = {
-        todaySteps: 7420,
-        sleepHours: 6.8,
-        workoutCount: 1,
-        lastSyncTime: new Date().toISOString(),
-        weeklySteps: [4200, 5600, 7000, 8000, 7600, 9000, 7420],
-        weeklySleep: [6, 7, 6.5, 7.2, 8, 7.5, 6.8],
-        labels: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-      };
+      // 1️⃣ Fetch from backend using cookie-based auth
+      const apiData = await getWithCookie("/fit/getGoogleFitData");
 
-      setFitness(data);
-    } catch (e) {
-      console.error("Failed to load fitness", e);
+      // 2️⃣ Normalize backend data → UI-friendly format
+      const normalizedData = normalizeFitnessData(apiData);
+
+      setFitness(normalizedData);
+    } catch (error) {
+      console.error("Failed to load fitness data:", error);
       setFitness(null);
     } finally {
       setLoading(false);
@@ -47,7 +45,9 @@ export default function FitnessDashboardPage() {
       {/* CONTENT */}
       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
         {loading ? (
-          <p className="text-sm text-slate-400">Loading fitness data…</p>
+          <p className="text-sm text-slate-400">
+            Loading fitness data…
+          </p>
         ) : !fitness ? (
           <p className="text-sm text-slate-400">
             No fitness data available. Sync your device.
@@ -57,9 +57,18 @@ export default function FitnessDashboardPage() {
 
             {/* METRICS */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <MetricCard title="Steps Today" value={fitness.todaySteps} />
-              <MetricCard title="Last Night Sleep (hrs)" value={fitness.sleepHours} />
-              <MetricCard title="Workouts Today" value={fitness.workoutCount} />
+              <MetricCard
+                title="Steps Today"
+                value={fitness.todaySteps}
+              />
+              <MetricCard
+                title="Last Night Sleep (hrs)"
+                value={fitness.sleepHours}
+              />
+              <MetricCard
+                title="Workouts Today"
+                value={fitness.workoutCount}
+              />
             </div>
 
             {/* CHARTS */}
@@ -68,7 +77,7 @@ export default function FitnessDashboardPage() {
                 title="Steps (Last 7 Days)"
                 data={fitness.weeklySteps}
                 labels={fitness.labels}
-                unit="steps"
+                unit=""
               />
               <BarChart
                 title="Sleep (Last 7 Nights)"
@@ -80,7 +89,10 @@ export default function FitnessDashboardPage() {
 
             {/* SYNC INFO */}
             <div className="text-xs text-slate-400">
-              Last synced: {new Date(fitness.lastSyncTime).toLocaleString()}
+              Last synced:{" "}
+              {fitness.lastSyncTime
+                ? new Date(fitness.lastSyncTime).toLocaleString()
+                : "--"}
             </div>
 
           </div>
