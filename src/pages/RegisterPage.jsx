@@ -125,7 +125,7 @@ export default function RegisterPage() {
         </p>
 
         <form onSubmit={handleRegister} className="space-y-4">
-          {/* Email */}
+        
           <div>
             <label className="block text-sm text-slate-300 mb-1">
               Email *
@@ -139,7 +139,7 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Password */}
+          
           <div>
             <label className="block text-sm text-slate-300 mb-1">
               Password *
@@ -153,7 +153,7 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Name */}
+         
           <div>
             <label className="block text-sm text-slate-300 mb-1">
               Full Name
@@ -166,7 +166,7 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Phone */}
+          
           <div>
             <label className="block text-sm text-slate-300 mb-1">
               Phone Number
@@ -197,7 +197,7 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          {/* Gender + Age */}
+          
           <div className="grid grid-cols-2 gap-3">
             <select
               className="rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
@@ -219,7 +219,7 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Height + Weight */}
+         
           <div className="grid grid-cols-2 gap-3">
             <input
               type="number"
@@ -237,7 +237,7 @@ export default function RegisterPage() {
             />
           </div>
 
-          {/* Diet */}
+       
           <select
             className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
             value={form.dietType}
@@ -249,7 +249,6 @@ export default function RegisterPage() {
             <option value="non_vegetarian">Non-Vegetarian</option>
           </select>
 
-          {/* Goal */}
           <input
             type="text"
             placeholder="Fitness goal"
@@ -258,7 +257,6 @@ export default function RegisterPage() {
             onChange={(e) => updateField("goal", e.target.value)}
           />
 
-          {/* Medical */}
           <label className="flex items-center gap-2 text-sm text-slate-300">
             <input
               type="checkbox"

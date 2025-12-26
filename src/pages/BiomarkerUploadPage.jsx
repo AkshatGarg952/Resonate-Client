@@ -32,7 +32,6 @@ export default function BiomarkerUploadPage() {
     setError("");
     try {
       const data = await uploadPdfWithCookie("/diagnostics/upload", file);
-      console.log("API response:", data.diagnostics);
       const biomarkersArr = Object.entries(data.diagnostics.biomarkers || {}).map(
   ([name, info]) => ({
     name,
@@ -47,7 +46,6 @@ setBiomarkers(biomarkersArr);
     } catch (err) {
       console.error("xxx", err);
       setError(err.message);
-      // setError("Failed to analyze the report. Please try again.");
     } finally {
       setLoading(false);
     }

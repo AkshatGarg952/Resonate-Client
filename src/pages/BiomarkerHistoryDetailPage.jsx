@@ -6,7 +6,6 @@ export default function BiomarkerHistoryDetailPage() {
   const location = useLocation();
   const analysis = location.state?.analysis;
 
-  // If user refreshes page or opens URL directly
   if (!analysis) {
     return <Navigate to="/biomarkers/history" replace />;
   }
@@ -21,7 +20,7 @@ export default function BiomarkerHistoryDetailPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      
       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
         <h2 className="text-xl font-semibold text-slate-50">
           Blood report analysis
@@ -32,7 +31,7 @@ export default function BiomarkerHistoryDetailPage() {
         </p>
       </section>
 
-      {/* Biomarkers */}
+      
       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
         <h3 className="text-lg font-semibold text-slate-50 mb-3">
           Your biomarkers

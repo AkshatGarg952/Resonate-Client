@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { auth } from "../firebase";
 import { getWithCookie } from "../api";
 import { useNavigate } from "react-router-dom";
 
@@ -34,7 +33,7 @@ export default function BiomarkerHistoryPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+    
       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
         <h2 className="text-xl font-semibold text-slate-50">
           Blood report history
@@ -44,7 +43,7 @@ export default function BiomarkerHistoryPage() {
         </p>
       </section>
 
-      {/* States */}
+      
       {loading && (
         <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
           <p className="text-sm text-slate-400">Loading history...</p>
@@ -57,7 +56,7 @@ export default function BiomarkerHistoryPage() {
         </section>
       )}
 
-      {/* History cards */}
+      
       {!loading && history.length > 0 && (
         <div className="grid gap-4">
           {history.map((item) => (

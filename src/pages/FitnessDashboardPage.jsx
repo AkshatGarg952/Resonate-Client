@@ -10,10 +10,8 @@ export default function FitnessDashboardPage() {
 
   const loadFitness = async () => {
     try {
-      // 1️⃣ Fetch from backend using cookie-based auth
+      
       const apiData = await getWithCookie("/fit/getGoogleFitData");
-
-      // 2️⃣ Normalize backend data → UI-friendly format
       const normalizedData = normalizeFitnessData(apiData);
 
       setFitness(normalizedData);
@@ -32,7 +30,7 @@ export default function FitnessDashboardPage() {
   return (
     <div className="space-y-6">
 
-      {/* HEADER */}
+      
       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
         <h1 className="text-2xl font-semibold text-slate-50">
           Fitness Dashboard
@@ -42,7 +40,7 @@ export default function FitnessDashboardPage() {
         </p>
       </section>
 
-      {/* CONTENT */}
+      
       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
         {loading ? (
           <p className="text-sm text-slate-400">
@@ -55,7 +53,7 @@ export default function FitnessDashboardPage() {
         ) : (
           <div className="space-y-8">
 
-            {/* METRICS */}
+            
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
               <MetricCard
                 title="Steps Today"
@@ -71,7 +69,7 @@ export default function FitnessDashboardPage() {
               />
             </div>
 
-            {/* CHARTS */}
+           
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-8">
               <BarChart
                 title="Steps (Last 7 Days)"
@@ -87,7 +85,6 @@ export default function FitnessDashboardPage() {
               />
             </div>
 
-            {/* SYNC INFO */}
             <div className="text-xs text-slate-400">
               Last synced:{" "}
               {fitness.lastSyncTime

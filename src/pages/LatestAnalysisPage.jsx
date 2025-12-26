@@ -19,7 +19,7 @@ export default function LatestAnalysisPage() {
           return;
         }
 
-        // Convert biomarkers object → array for BiomarkerRing
+        
         const biomarkersArr = Object.entries(latest.biomarkers || {}).map(
           ([name, info]) => ({
             name,
@@ -46,7 +46,7 @@ export default function LatestAnalysisPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+    
       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
         <h2 className="text-xl font-semibold text-slate-50 mb-1">
           Latest blood report analysis
@@ -63,7 +63,7 @@ export default function LatestAnalysisPage() {
         )}
       </section>
 
-      {/* Loading */}
+     
       {loading && (
         <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
           <p className="text-sm text-slate-400">
@@ -72,14 +72,12 @@ export default function LatestAnalysisPage() {
         </section>
       )}
 
-      {/* Error / Empty */}
       {!loading && error && (
         <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
           <p className="text-sm text-red-400">{error}</p>
         </section>
       )}
 
-      {/* Biomarkers */}
       {!loading && biomarkers.length > 0 && (
         <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
           <h3 className="text-lg font-semibold text-slate-50 mb-3">
@@ -100,7 +98,7 @@ export default function LatestAnalysisPage() {
             ))}
           </div>
 
-          {/* Optional PDF access (owner-only) */}
+        
           {meta?.pdfUrl && (
             <a
               href={meta.pdfUrl}
