@@ -25,7 +25,7 @@ function AppWrapper() {
 
 useEffect(() => {
   const BACKEND_URL = import.meta.env.VITE_API_BASE_URL;
-  const MICROSERVICE_URL = import.meta.env.VITE_MICROSERVICE_API_URL;
+
 
   if (BACKEND_URL) {
     fetch(`${BACKEND_URL}/health`)
@@ -33,11 +33,6 @@ useEffect(() => {
       .catch(() => {});
   }
 
-  if (MICROSERVICE_URL) {
-    fetch(`${MICROSERVICE_URL}/`)
-      .then(() => console.log("Microservice warmed up"))
-      .catch(() => {});
-  }
 }, []);
 
 
