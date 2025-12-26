@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 
+const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 export default function Navbar({ user, onLogout }) {
   const location = useLocation();
 
@@ -10,34 +12,13 @@ export default function Navbar({ user, onLogout }) {
   const isActive = (path) =>
     location.pathname === path ? "text-primary" : "text-slate-200";
 
-  // -------------------------
-  // Google Fit Connect
-  // -------------------------
-  // const connectGoogleFit = async () => {
-  //   try {
-  //     const res = await fetch("/fit/google", {
-  //       method: "GET",
-  //       credentials: "include",
-  //     });
-
-  //     const data = await res.json();
-
-  //     if (data.redirectUrl) {
-  //       window.location.href = data.redirectUrl;
-  //     }
-  //   } catch (err) {
-  //     console.error("Google Fit connection failed", err);
-  //   } finally {
-  //     setFitnessOpen(false);
-  //   }
-  // };
 
   const connectGoogleFit = () => {
   try {
     setFitnessOpen(false);
 
     // OAuth must use full browser redirect
-    window.location.href = "http://localhost:5000/fit/google";
+    window.location.href = `${BASE_URL}/fit/google`;
   } catch (err) {
     console.error("Google Fit connection failed", err);
   }
