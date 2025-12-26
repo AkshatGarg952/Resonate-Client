@@ -61,7 +61,6 @@ export default function DashboardPage() {
     setMessage("");
 
     try {
-      // const token = await auth.currentUser.getIdToken();
 
       const payload = {
         name: profile.name || null,
@@ -100,7 +99,6 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-6">
-      {/* HEADER */}
       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 flex flex-col sm:flex-row justify-between gap-4">
         <div>
           <p className="text-sm text-slate-400">Welcome</p>
@@ -128,14 +126,12 @@ export default function DashboardPage() {
         </div>
       </section>
 
-      {/* EDIT FORM */}
       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
         <h3 className="text-lg font-semibold text-slate-50 mb-4">
           Update your profile
         </h3>
 
         <form onSubmit={handleSave} className="space-y-4">
-          {/* Name */}
           <div>
             <label className="block text-sm text-slate-300 mb-1">
               Full Name
@@ -147,8 +143,6 @@ export default function DashboardPage() {
               onChange={(e) => handleChange("name", e.target.value)}
             />
           </div>
-
-          {/* Gender + Age */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <select
               className="rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
@@ -171,7 +165,6 @@ export default function DashboardPage() {
             />
           </div>
 
-          {/* Height + Weight */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <input
               type="number"
@@ -189,7 +182,6 @@ export default function DashboardPage() {
             />
           </div>
 
-          {/* Diet */}
           <select
             className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
             value={profile.dietType}
@@ -201,7 +193,6 @@ export default function DashboardPage() {
             <option value="non_vegetarian">Non-Vegetarian</option>
           </select>
 
-          {/* Goal */}
           <input
             type="text"
             placeholder="Fitness goal"
@@ -210,7 +201,6 @@ export default function DashboardPage() {
             onChange={(e) => handleChange("goal", e.target.value)}
           />
 
-          {/* Medical */}
           <label className="flex items-center gap-2 text-sm text-slate-300">
             <input
               type="checkbox"

@@ -6,8 +6,8 @@ const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 export default function Navbar({ user, onLogout }) {
   const location = useLocation();
 
-  const [open, setOpen] = useState(false); // Blood diagnostics dropdown
-  const [fitnessOpen, setFitnessOpen] = useState(false); // Fitness sync dropdown
+  const [open, setOpen] = useState(false); 
+  const [fitnessOpen, setFitnessOpen] = useState(false);
 
   const isActive = (path) =>
     location.pathname === path ? "text-primary" : "text-slate-200";
@@ -16,8 +16,6 @@ export default function Navbar({ user, onLogout }) {
   const connectGoogleFit = () => {
   try {
     setFitnessOpen(false);
-
-    // OAuth must use full browser redirect
     window.location.href = `${BASE_URL}/fit/google`;
   } catch (err) {
     console.error("Google Fit connection failed", err);
@@ -29,7 +27,6 @@ export default function Navbar({ user, onLogout }) {
     <header className="border-b border-slate-800 bg-slate-950/80 backdrop-blur">
       <nav className="max-w-5xl mx-auto px-4 py-3 flex items-center justify-between">
         
-        {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
           <div className="w-9 h-9 rounded-full bg-primary/20 flex items-center justify-center">
             <span className="text-primary font-bold text-lg">R</span>
@@ -40,21 +37,19 @@ export default function Navbar({ user, onLogout }) {
           </div>
         </Link>
 
-        {/* Right Menu */}
         <div className="flex items-center gap-4 text-sm relative">
           {user && (
             <>
-              {/* Dashboard */}
               <Link to="/dashboard" className={isActive("/dashboard")}>
                 Dashboard
               </Link>
 
-              {/* Profile */}
+             
               <Link to="/profile" className={isActive("/profile")}>
                 My Profile
               </Link>
 
-              {/* Blood Diagnostics */}
+              
               <div className="relative">
                 <button
                   onClick={() => {
@@ -110,7 +105,7 @@ export default function Navbar({ user, onLogout }) {
                 )}
               </div>
 
-              {/* Fitness Sync */}
+            
               <div className="relative">
                 <button
                   onClick={() => {

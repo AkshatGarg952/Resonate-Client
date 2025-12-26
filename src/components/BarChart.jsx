@@ -12,7 +12,7 @@ export default function BarChart({
         {title}
       </p>
 
-      {/* CHART CONTAINER — FIXED HEIGHT */}
+     
       <div className="h-56 flex items-end gap-5">
         {data.map((value, i) => {
           const barHeight = (value / maxValue) * 100;
@@ -22,20 +22,15 @@ export default function BarChart({
               key={i}
               className="flex-1 flex flex-col items-center justify-end"
             >
-              {/* Value */}
               <span className="text-xs text-slate-400 mb-2">
                 {value}{unit}
               </span>
-
-              {/* BAR WRAPPER — FIXED HEIGHT */}
               <div className="h-40 w-4 sm:w-5 flex items-end">
                 <div
                   className="w-full bg-emerald-500/80 rounded-full transition-all"
                   style={{ height: `${barHeight}%` }}
                 />
               </div>
-
-              {/* Label */}
               <span className="text-xs text-slate-500 mt-3">
                 {labels[i]}
               </span>
