@@ -25,7 +25,7 @@ export default function DashboardPage() {
   const loadProfile = async () => {
     try {
       const data = await getWithCookie("/user/profile");
-
+      
       const u = data.user;
 
       setProfile({
