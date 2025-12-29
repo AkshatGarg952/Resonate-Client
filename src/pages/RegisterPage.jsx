@@ -22,6 +22,11 @@ export default function RegisterPage() {
     medicalConditions: "",
     countryCode: "+91",
     phone: "",
+
+    // Menstrual (female only)
+    cycleLengthDays: "",
+    lastPeriodDate: "",
+    menstrualPhase: "",
   });
 
   const [loading, setLoading] = useState(false);
@@ -37,11 +42,39 @@ export default function RegisterPage() {
 
     if (form.name) payload.name = form.name;
     if (form.gender) payload.gender = form.gender;
-    if (form.age) payload.age = Number(form.age);
-    if (form.height) payload.height = Number(form.height);
-    if (form.weight) payload.weight = Number(form.weight);
+
+    // Age → Date of Birth (required by schema)
+    if (form.age) {
+      const dob = new Date();
+      dob.setFullYear(dob.getFullYear() - Number(form.age));
+      payload.dateOfBirth = dob;
+    }
+
+    if (form.height) payload.heightCm = Number(form.height);
+    if (form.weight) payload.weightKg = Number(form.weight);
     if (form.dietType) payload.dietType = form.dietType;
     if (form.goal) payload.goals = form.goal;
+
+    // Menstrual profile (female only, optional)
+    if (
+      form.gender === "female" &&
+      (form.cycleLengthDays || form.lastPeriodDate || form.menstrualPhase)
+    ) {
+      payload.menstrualProfile = {};
+
+      if (form.cycleLengthDays)
+        payload.menstrualProfile.cycleLengthDays = Number(
+          form.cycleLengthDays
+        );
+
+      if (form.lastPeriodDate)
+        payload.menstrualProfile.lastPeriodDate = new Date(
+          form.lastPeriodDate
+        );
+
+      if (form.menstrualPhase)
+        payload.menstrualProfile.phase = form.menstrualPhase;
+    }
 
     if (form.hasMedicalCondition && form.medicalConditions) {
       payload.hasMedicalCondition = true;
@@ -51,9 +84,10 @@ export default function RegisterPage() {
         .filter(Boolean);
     }
 
-    const finalPhone = `${form.countryCode}${form.phone}`.replace(/\s+/g, "");
-    if (form.phone) payload.phone = finalPhone;
-
+    if (form.phone) {
+      payload.phone = `${form.countryCode}${form.phone}`.replace(/\s+/g, "");
+    }
+    
     const res = await postAuth("/auth/register", token, payload);
 
     if (res.message === "User Registered") {
@@ -98,10 +132,10 @@ export default function RegisterPage() {
           return;
         } catch (err2) {
           setError(err2.message);
-          return;
         }
+      } else {
+        setError(err.message || "Failed to register");
       }
-      setError(err.message || "Failed to register");
     } finally {
       setLoading(false);
     }
@@ -121,83 +155,36 @@ export default function RegisterPage() {
           Create your account
         </h2>
         <p className="text-sm text-slate-400 mb-5">
-          Basic info is mandatory, fitness details are optional.
+          Basic info is mandatory, health details are optional.
         </p>
 
         <form onSubmit={handleRegister} className="space-y-4">
-        
-          <div>
-            <label className="block text-sm text-slate-300 mb-1">
-              Email *
-            </label>
-            <input
-              type="email"
-              required
-              className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
-              value={form.email}
-              onChange={(e) => updateField("email", e.target.value)}
-            />
-          </div>
+          <input
+            type="email"
+            required
+            placeholder="Email *"
+            className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
+            value={form.email}
+            onChange={(e) => updateField("email", e.target.value)}
+          />
 
-          
-          <div>
-            <label className="block text-sm text-slate-300 mb-1">
-              Password *
-            </label>
-            <input
-              type="password"
-              required
-              className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
-              value={form.password}
-              onChange={(e) => updateField("password", e.target.value)}
-            />
-          </div>
+          <input
+            type="password"
+            required
+            placeholder="Password *"
+            className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
+            value={form.password}
+            onChange={(e) => updateField("password", e.target.value)}
+          />
 
-         
-          <div>
-            <label className="block text-sm text-slate-300 mb-1">
-              Full Name
-            </label>
-            <input
-              type="text"
-              className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
-              value={form.name}
-              onChange={(e) => updateField("name", e.target.value)}
-            />
-          </div>
+          <input
+            type="text"
+            placeholder="Full Name"
+            className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
+            value={form.name}
+            onChange={(e) => updateField("name", e.target.value)}
+          />
 
-          
-          <div>
-            <label className="block text-sm text-slate-300 mb-1">
-              Phone Number
-            </label>
-            <div className="flex gap-2">
-              <select
-                className="w-24 rounded-xl bg-slate-950 border border-slate-700 px-2 py-2 text-sm"
-                value={form.countryCode}
-                onChange={(e) =>
-                  updateField("countryCode", e.target.value)
-                }
-              >
-                <option value="+91">🇮🇳 +91</option>
-                <option value="+1">🇺🇸 +1</option>
-                <option value="+44">🇬🇧 +44</option>
-              </select>
-              <input
-                type="tel"
-                className="flex-1 rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
-                value={form.phone}
-                onChange={(e) =>
-                  updateField(
-                    "phone",
-                    e.target.value.replace(/\D/g, "")
-                  )
-                }
-              />
-            </div>
-          </div>
-
-          
           <div className="grid grid-cols-2 gap-3">
             <select
               className="rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
@@ -219,7 +206,47 @@ export default function RegisterPage() {
             />
           </div>
 
-         
+          {/* Female-only menstrual section */}
+          {form.gender === "female" && (
+            <div className="space-y-3 border border-slate-800 rounded-xl p-3">
+              <p className="text-xs text-slate-400 font-medium">
+                Menstrual cycle (optional)
+              </p>
+
+              <input
+                type="number"
+                placeholder="Cycle length (days)"
+                className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
+                value={form.cycleLengthDays}
+                onChange={(e) =>
+                  updateField("cycleLengthDays", e.target.value)
+                }
+              />
+
+              <input
+                type="date"
+                className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
+                value={form.lastPeriodDate}
+                onChange={(e) =>
+                  updateField("lastPeriodDate", e.target.value)
+                }
+              />
+
+              <select
+                className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
+                value={form.menstrualPhase}
+                onChange={(e) =>
+                  updateField("menstrualPhase", e.target.value)
+                }
+              >
+                <option value="">Cycle phase</option>
+                <option value="follicular">Follicular</option>
+                <option value="ovulatory">Ovulatory</option>
+                <option value="luteal">Luteal</option>
+              </select>
+            </div>
+          )}
+
           <div className="grid grid-cols-2 gap-3">
             <input
               type="number"
@@ -237,7 +264,6 @@ export default function RegisterPage() {
             />
           </div>
 
-       
           <select
             className="w-full rounded-xl bg-slate-950 border border-slate-700 px-3 py-2 text-sm"
             value={form.dietType}
