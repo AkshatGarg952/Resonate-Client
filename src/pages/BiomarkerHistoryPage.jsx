@@ -1,93 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import { getWithCookie } from "../api";
-// import { useNavigate } from "react-router-dom";
-
-// export default function BiomarkerHistoryPage() {
-//   const [loading, setLoading] = useState(true);
-//   const [history, setHistory] = useState([]);
-//   const [error, setError] = useState("");
-
-//   const navigate = useNavigate();
-
-//   useEffect(() => {
-//     const fetchHistory = async () => {
-//       try {
-//         const data = await getWithCookie("/diagnostics/history");
-//         setHistory(data || []);
-//       } catch (err) {
-//         console.error(err);
-//         setError("Failed to load history.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchHistory();
-//   }, []);
-
-//   const openAnalysis = (analysis) => {
-//     navigate(`/biomarkers/history/${analysis._id}`, {
-//       state: { analysis }
-//     });
-//   };
-
-//   return (
-//     <div className="space-y-6">
-    
-//       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
-//         <h2 className="text-xl font-semibold text-slate-50">
-//           Blood report history
-//         </h2>
-//         <p className="text-sm text-slate-400">
-//           All your previous blood report analyses.
-//         </p>
-//       </section>
-
-      
-//       {loading && (
-//         <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
-//           <p className="text-sm text-slate-400">Loading history...</p>
-//         </section>
-//       )}
-
-//       {error && !loading && (
-//         <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
-//           <p className="text-sm text-red-400">{error}</p>
-//         </section>
-//       )}
-
-      
-//       {!loading && history.length > 0 && (
-//         <div className="grid gap-4">
-//           {history.map((item) => (
-//             <div
-//               key={item._id}
-//               className="bg-slate-900/80 border border-slate-800 rounded-2xl p-5 flex items-center justify-between"
-//             >
-//               <div>
-//                 <p className="text-slate-50 font-medium">
-//                   {new Date(item.updatedAt).toLocaleDateString()}
-//                 </p>
-//                 <span className="inline-block mt-1 px-3 py-1 rounded-full text-xs bg-emerald-500/15 text-emerald-400">
-//                   {item.status}
-//                 </span>
-//               </div>
-
-//               <button
-//                 onClick={() => openAnalysis(item)}
-//                 className="text-sm text-primary hover:underline"
-//               >
-//                 View full analysis →
-//               </button>
-//             </div>
-//           ))}
-//         </div>
-//       )}
-//     </div>
-//   );
-// }
-
-
 import React, { useEffect, useState, useRef } from "react";
 import { getWithCookie } from "../api";
 import { useNavigate } from "react-router-dom";
@@ -454,24 +364,34 @@ export default function BiomarkerHistoryPage() {
                       </div>
 
                       {/* Metadata */}
-                      {item.biomarkers && item.biomarkers.length > 0 && (
+                      {item.biomarkers && Object.keys(item.biomarkers).length > 0 && (
                         <div className="flex items-center gap-3 mb-3 text-xs text-slate-500">
                           <div className="flex items-center gap-1">
                             <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
                                     d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
                             </svg>
-                            <span>{item.biomarkers.length} biomarkers</span>
+                            <span>{Object.keys(item.biomarkers).length} biomarkers</span>
                           </div>
-                          {item.overallScore && (
-                            <div className="flex items-center gap-1">
-                              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                                      d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
-                              </svg>
-                              <span>Score: {item.overallScore}/100</span>
-                            </div>
-                          )}
+                          {(() => {
+                            // Calculate overall score if not present
+                            const biomarkers = Object.values(item.biomarkers || {});
+                            const availableBiomarkers = biomarkers.filter(b => b?.isAvailable !== false);
+                            if (availableBiomarkers.length > 0) {
+                              const goodCount = availableBiomarkers.filter(b => b?.status?.toLowerCase() === 'good').length;
+                              const calculatedScore = Math.round((goodCount / availableBiomarkers.length) * 100);
+                              return (
+                                <div className="flex items-center gap-1">
+                                  <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                          d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                  </svg>
+                                  <span>Score: {calculatedScore}/100</span>
+                                </div>
+                              );
+                            }
+                            return null;
+                          })()}
                         </div>
                       )}
 

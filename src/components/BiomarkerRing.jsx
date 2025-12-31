@@ -1,49 +1,7 @@
-// import React from "react";
-
-// export default function BiomarkerRing({ name, value, status }) {
-//   const isUndetermined = value == null || status == null;
-//   const isGood = status?.toLowerCase() === "good";
-
-//   const ringColor = isUndetermined
-//     ? "border-slate-500"
-//     : isGood
-//     ? "border-emerald-500"
-//     : "border-red-500";
-
-//   const badgeStyle = isUndetermined
-//     ? "bg-slate-500/15 text-slate-400"
-//     : isGood
-//     ? "bg-emerald-500/15 text-emerald-400"
-//     : "bg-red-500/15 text-red-400";
-
-//   const label = isUndetermined
-//     ? "Cannot be determined"
-//     : isGood
-//     ? "Good"
-//     : "Bad";
-
-//   return (
-//     <div className="flex flex-col items-center bg-slate-900/60 border border-slate-800 rounded-2xl p-4 gap-2">
-//       <div
-//         className={`w-20 h-20 rounded-full flex items-center justify-center border-4 ${ringColor}`}
-//       >
-//         <span className="text-lg font-semibold text-slate-100">
-//           {isUndetermined ? "--" : value}
-//         </span>
-//       </div>
-
-//       <p className="text-sm font-medium text-slate-100">{name}</p>
-
-//       <p className={`text-xs px-2 py-1 rounded-full ${badgeStyle}`}>
-//         {label}
-//       </p>
-//     </div>
-//   );
-// }
 
 import React, { useState, useEffect } from "react";
 
-export default function BiomarkerRing({ name, value, status, unit = "", normalRange = "" }) {
+export default function BiomarkerRing({ name, value, status, unit = "", normalRange = "", reason = "", isAvailable = true }) {
   const [showDetails, setShowDetails] = useState(false);
   const [animated, setAnimated] = useState(false);
 
@@ -52,13 +10,16 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
     setTimeout(() => setAnimated(true), 100);
   }, []);
 
-  const isUndetermined = value == null || status == null;
-  const isGood = status?.toLowerCase() === "good" || status?.toLowerCase() === "normal";
-  const isBorderline = status?.toLowerCase() === "borderline" || status?.toLowerCase() === "warning";
+  const statusLower = status?.toLowerCase();
+  const isUndetermined = value == null || status == null || !isAvailable || statusLower === "unavailable" || statusLower === "unknown";
+  const isGood = statusLower === "good";
+  const isBad = statusLower === "bad";
+  const isUnavailable = statusLower === "unavailable" || !isAvailable;
+  const isUnknown = statusLower === "unknown";
 
   // Color configurations
   const getColors = () => {
-    if (isUndetermined) {
+    if (isUnavailable || isUnknown) {
       return {
         ring: "stroke-slate-500",
         bg: "stroke-slate-800",
@@ -76,38 +37,41 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
         icon: "text-emerald-400",
       };
     }
-    if (isBorderline) {
+    if (isBad) {
       return {
-        ring: "stroke-amber-400",
+        ring: "stroke-red-400",
         bg: "stroke-slate-800",
-        badge: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-        gradient: "from-amber-500/10 to-amber-600/5",
-        icon: "text-amber-400",
+        badge: "bg-red-500/10 text-red-400 border-red-500/20",
+        gradient: "from-red-500/10 to-red-600/5",
+        icon: "text-red-400",
       };
     }
+    // Fallback for any other status
     return {
-      ring: "stroke-red-400",
+      ring: "stroke-slate-500",
       bg: "stroke-slate-800",
-      badge: "bg-red-500/10 text-red-400 border-red-500/20",
-      gradient: "from-red-500/10 to-red-600/5",
-      icon: "text-red-400",
+      badge: "bg-slate-500/10 text-slate-400 border-slate-500/20",
+      gradient: "from-slate-500/10 to-slate-600/5",
+      icon: "text-slate-500",
     };
   };
 
   const colors = getColors();
 
   const getLabel = () => {
-    if (isUndetermined) return "Unknown";
-    if (isGood) return "Normal";
-    if (isBorderline) return "Borderline";
-    return "Needs Attention";
+    if (isUnavailable) return "Unavailable";
+    if (isUnknown) return "Unknown";
+    if (isGood) return "Good";
+    if (isBad) return "Needs Attention";
+    return "Unknown";
   };
 
   const getIcon = () => {
-    if (isUndetermined) return "❓";
+    if (isUnavailable) return "—";
+    if (isUnknown) return "❓";
     if (isGood) return "✓";
-    if (isBorderline) return "⚠️";
-    return "⚠️";
+    if (isBad) return "⚠️";
+    return "❓";
   };
 
   // Calculate stroke dashoffset for animation (simulate 75% progress ring)
@@ -276,22 +240,26 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
               {/* What This Means */}
               <div className="space-y-3">
                 <h4 className="text-sm font-bold text-slate-300">What This Means</h4>
-                <div className={`bg-${isGood ? 'emerald' : 'red'}-500/5 border border-${isGood ? 'emerald' : 'red'}-500/20 
+                <div className={`bg-${isGood ? 'emerald' : isBad ? 'red' : 'slate'}-500/5 border border-${isGood ? 'emerald' : isBad ? 'red' : 'slate'}-500/20 
                               rounded-2xl p-4`}>
                   <p className="text-sm text-slate-300 leading-relaxed">
-                    {isUndetermined ? (
-                      "This biomarker value could not be determined from your report. Please ensure the PDF is clear and contains all relevant data."
+                    {isUnavailable ? (
+                      reason || "This biomarker was not available in your report. It may not have been tested or could not be extracted."
+                    ) : isUnknown ? (
+                      reason || "This biomarker value could not be determined from your report. Please ensure the PDF is clear and contains all relevant data."
                     ) : isGood ? (
                       `Your ${name} level is within the normal range. Keep maintaining your healthy lifestyle!`
+                    ) : isBad ? (
+                      reason || `Your ${name} level is outside the normal range. Consider consulting with your healthcare provider for personalized advice.`
                     ) : (
-                      `Your ${name} level is outside the normal range. Consider consulting with your healthcare provider for personalized advice.`
+                      "Unable to determine the status of this biomarker."
                     )}
                   </p>
                 </div>
               </div>
 
               {/* Recommendations */}
-              {!isGood && !isUndetermined && (
+              {isBad && (
                 <div className="space-y-3">
                   <h4 className="text-sm font-bold text-slate-300">Recommendations</h4>
                   <ul className="space-y-2">
