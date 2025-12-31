@@ -15,6 +15,7 @@ import LatestAnalysisPage from "./pages/LatestAnalysisPage";
 import BiomarkerHistoryPage from "./pages/BiomarkerHistoryPage";
 import BiomarkerHistoryDetailPage from "./pages/BiomarkerHistoryDetailPage";
 import FitnessDashboardPage from "./pages/FitnessDashboardPage";
+import DemoReportPage from "./pages/DemoReportPage";
 
 export const AuthContext = createContext(null);
 
@@ -64,6 +65,8 @@ useEffect(() => {
         <Route path="/login" element={<LoginPage />} />
 
         <Route path="/register" element={<RegisterPage />} />
+
+        <Route path="/demo-report" element={<DemoReportPage />} />
 
         <Route path="/profile"
           element={
