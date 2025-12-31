@@ -1,123 +1,4 @@
-// import React, { useState } from "react";
-// import { uploadPdfWithCookie } from "../api";
-// import { auth } from "../firebase";
-// import BiomarkerRing from "../components/BiomarkerRing";
-
-// export default function BiomarkerUploadPage() {
-//   const [file, setFile] = useState(null);
-//   const [loading, setLoading] = useState(false);
-//   const [biomarkers, setBiomarkers] = useState([]);
-//   const [error, setError] = useState("");
-
-//   const handleFileChange = (e) => {
-//     const selected = e.target.files?.[0];
-//     if (!selected) return;
-//     if (selected.type !== "application/pdf") {
-//       setError("Please upload a PDF file only.");
-//       setFile(null);
-//       return;
-//     }
-//     setError("");
-//     setFile(selected);
-//   };
-
-//   const handleUpload = async (e) => {
-//     e.preventDefault();
-//     if (!file) {
-//       setError("Please choose a PDF file.");
-//       return;
-//     }
-
-//     setLoading(true);
-//     setError("");
-//     try {
-//       const data = await uploadPdfWithCookie("/diagnostics/upload", file);
-//       const biomarkersArr = Object.entries(data.diagnostics.biomarkers || {}).map(
-//   ([name, info]) => ({
-//     name,
-//     value: info.value,
-//     status: info.status,
-//   })
-// );
-
-// setBiomarkers(biomarkersArr);
-
-
-//     } catch (err) {
-//       console.error("xxx", err);
-//       setError(err.message);
-//     } finally {
-//       setLoading(false);
-//     }
-//   };
-
-//   return (
-//     <div className="space-y-6">
-//       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
-//         <h2 className="text-xl font-semibold text-slate-50 mb-2">
-//           Blood report analysis
-//         </h2>
-//         <p className="text-sm text-slate-400 mb-4">
-//           Upload your blood report PDF. We&apos;ll extract 9 key biomarkers and
-//           show if they are in a good or bad range.
-//         </p>
-
-//         <form onSubmit={handleUpload} className="space-y-4">
-//           <div className="flex flex-col sm:flex-row items-center gap-3">
-//             <input
-//               type="file"
-//               accept="application/pdf"
-//               onChange={handleFileChange}
-//               className="w-full sm:w-auto text-sm text-slate-300 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:bg-primary file:text-slate-950 hover:file:bg-emerald-500"
-//             />
-//             {file && (
-//               <p className="text-xs text-slate-400">
-//                 Selected: <span className="text-slate-200">{file.name}</span>
-//               </p>
-//             )}
-//           </div>
-
-//           {error && (
-//             <p className="text-xs text-red-400 bg-red-500/10 rounded-xl px-3 py-2">
-//               {error}
-//             </p>
-//           )}
-
-//           <button
-//             type="submit"
-//             disabled={loading}
-//             className="rounded-xl bg-primary text-slate-950 font-semibold py-2.5 px-6 text-sm hover:bg-emerald-500 disabled:opacity-60"
-//           >
-//             {loading ? "Analyzing..." : "Upload & Analyze"}
-//           </button>
-//         </form>
-//       </section>
-
-//       {biomarkers.length > 0 && (
-//         <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
-//           <h3 className="text-lg font-semibold text-slate-50 mb-3">
-//             Your biomarkers
-//           </h3>
-//           <p className="text-xs text-slate-400 mb-4">
-//             Green ring = good | Red ring = needs attention
-//           </p>
-//           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-//             {biomarkers.map((b, idx) => (
-//               <BiomarkerRing
-//                 key={idx}
-//                 name={b.name}
-//                 value={b.value}
-//                 status={b.status}
-//               />
-//             ))}
-//           </div>
-//         </section>
-//       )}
-//     </div>
-//   );
-// }
-
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { uploadPdfWithCookie } from "../api";
 import { auth } from "../firebase";
 import BiomarkerRing from "../components/BiomarkerRing";
@@ -128,6 +9,8 @@ export default function BiomarkerUploadPage() {
   const [loading, setLoading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
   const [biomarkers, setBiomarkers] = useState([]);
+  const [biomarkersByCategory, setBiomarkersByCategory] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [analysisComplete, setAnalysisComplete] = useState(false);
@@ -216,19 +99,27 @@ export default function BiomarkerUploadPage() {
       clearInterval(progressInterval);
       setUploadProgress(100);
 
+      // Use biomarkersByCategory if available, otherwise fall back to flat biomarkers
+      const biomarkersData = data.diagnostics.biomarkersByCategory || {};
+      
+      // Flatten biomarkers for overall calculations
       const biomarkersArr = Object.entries(data.diagnostics.biomarkers || {}).map(
         ([name, info]) => ({
           name,
-          value: info.value,
-          status: info.status,
-          unit: info.unit || "",
-          normalRange: info.normalRange || "",
+          value: info?.value,
+          status: info?.status,
+          unit: info?.unit || "",
+          category: info?.category || null,
+          categoryLabel: info?.categoryLabel || null,
+          reason: info?.reason || null,
+          isAvailable: info?.isAvailable !== false,
         })
       );
-
+      
       setBiomarkers(biomarkersArr);
+      setBiomarkersByCategory(biomarkersData);
       setAnalysisComplete(true);
-
+      
       // Scroll to results
       setTimeout(() => {
         document.getElementById('results-section')?.scrollIntoView({ 
@@ -236,7 +127,7 @@ export default function BiomarkerUploadPage() {
           block: 'start' 
         });
       }, 300);
-
+      
     } catch (err) {
       console.error("Upload error:", err);
       clearInterval(progressInterval);
@@ -251,16 +142,28 @@ export default function BiomarkerUploadPage() {
     setFile(null);
     setError("");
     setBiomarkers([]);
+    setBiomarkersByCategory({});
+    setSelectedCategory(null);
     setAnalysisComplete(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
     }
   };
 
+  // Set first category as default when categories are loaded
+  useEffect(() => {
+    if (Object.keys(biomarkersByCategory).length > 0 && !selectedCategory) {
+      setSelectedCategory(Object.keys(biomarkersByCategory)[0]);
+    }
+  }, [biomarkersByCategory, selectedCategory]);
+
   const getOverallScore = () => {
     if (biomarkers.length === 0) return null;
-    const goodCount = biomarkers.filter(b => b.status === 'good' || b.status === 'normal').length;
-    return Math.round((goodCount / biomarkers.length) * 100);
+    // Only count available biomarkers
+    const availableBiomarkers = biomarkers.filter(b => b.isAvailable !== false);
+    if (availableBiomarkers.length === 0) return null;
+    const goodCount = availableBiomarkers.filter(b => b.status?.toLowerCase() === 'good').length;
+    return Math.round((goodCount / availableBiomarkers.length) * 100);
   };
 
   const overallScore = getOverallScore();
@@ -513,7 +416,7 @@ export default function BiomarkerUploadPage() {
             )}
           </div>
 
-          {/* Biomarkers Grid */}
+          {/* Biomarkers by Category */}
           <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
@@ -521,29 +424,120 @@ export default function BiomarkerUploadPage() {
                 <p className="text-xs text-slate-500 mt-1">
                   <span className="inline-flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                    Normal
+                    Good
                   </span>
                   <span className="mx-2">•</span>
                   <span className="inline-flex items-center gap-1">
                     <span className="w-2 h-2 rounded-full bg-red-400"></span>
                     Needs attention
                   </span>
+                  <span className="mx-2">•</span>
+                  <span className="inline-flex items-center gap-1">
+                    <span className="w-2 h-2 rounded-full bg-slate-500"></span>
+                    Unavailable
+                  </span>
                 </p>
               </div>
             </div>
             
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              {biomarkers.map((b, idx) => (
-                <BiomarkerRing
-                  key={idx}
-                  name={b.name}
-                  value={b.value}
-                  status={b.status}
-                  unit={b.unit}
-                  normalRange={b.normalRange}
-                />
-              ))}
-            </div>
+            {/* Category List and Biomarkers Display */}
+            {Object.keys(biomarkersByCategory).length > 0 ? (
+              <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                {/* Category List */}
+                <div className="lg:col-span-1">
+                  <div className="bg-slate-950/50 rounded-2xl p-4 border border-slate-800/50">
+                    <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">
+                      Categories
+                    </h4>
+                    <div className="space-y-2">
+                      {Object.keys(biomarkersByCategory).map((categoryLabel) => {
+                        const categoryBiomarkers = biomarkersByCategory[categoryLabel] || {};
+                        const categoryCount = Object.keys(categoryBiomarkers).length;
+                        const isSelected = selectedCategory === categoryLabel;
+                        
+                        return (
+                          <button
+                            key={categoryLabel}
+                            onClick={() => setSelectedCategory(categoryLabel)}
+                            className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                              isSelected
+                                ? "bg-gradient-to-r from-primary to-emerald-500 text-slate-950 shadow-lg shadow-primary/25"
+                                : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-slate-300 hover:bg-slate-800"
+                            }`}
+                          >
+                            <div className="flex items-center justify-between">
+                              <span className="truncate">{categoryLabel || 'Other'}</span>
+                              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0 ${
+                                isSelected 
+                                  ? "bg-slate-950/30 text-slate-950" 
+                                  : "bg-slate-700/50 text-slate-500"
+                              }`}>
+                                {categoryCount}
+                              </span>
+                            </div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Selected Category Biomarkers */}
+                <div className="lg:col-span-3">
+                  {selectedCategory && biomarkersByCategory[selectedCategory] ? (
+                    <>
+                      <div className="mb-4">
+                        <h4 className="text-xl font-bold text-slate-50 mb-1">
+                          {selectedCategory || 'Other'}
+                        </h4>
+                        <p className="text-sm text-slate-400">
+                          {Object.keys(biomarkersByCategory[selectedCategory] || {}).length} biomarkers
+                        </p>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                        {Object.entries(biomarkersByCategory[selectedCategory] || {}).map(([name, info]) => (
+                          <BiomarkerRing
+                            key={name}
+                            name={name}
+                            value={info?.value}
+                            status={info?.status}
+                            unit={info?.unit || ""}
+                            normalRange={info?.normalRange || ""}
+                            reason={info?.reason || ""}
+                            isAvailable={info?.isAvailable !== false}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <div className="flex flex-col items-center justify-center py-12 text-center">
+                      <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-4">
+                        <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                      </div>
+                      <p className="text-sm text-slate-400">Select a category to view biomarkers</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                {biomarkers.map((b, idx) => (
+                  <BiomarkerRing
+                    key={idx}
+                    name={b.name}
+                    value={b.value}
+                    status={b.status}
+                    unit={b.unit}
+                    normalRange={b.normalRange}
+                    reason={b.reason}
+                    isAvailable={b.isAvailable}
+                  />
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Action Buttons */}
@@ -598,6 +592,14 @@ export default function BiomarkerUploadPage() {
 
         .animate-fadeIn {
           animation: fadeIn 0.5s ease-out;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}</style>
     </div>

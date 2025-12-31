@@ -1,72 +1,4 @@
-// import React from "react";
-// import { useLocation, Navigate } from "react-router-dom";
-// import BiomarkerRing from "../components/BiomarkerRing";
-
-// export default function BiomarkerHistoryDetailPage() {
-//   const location = useLocation();
-//   const analysis = location.state?.analysis;
-
-//   if (!analysis) {
-//     return <Navigate to="/biomarkers/history" replace />;
-//   }
-
-//   const biomarkersArr = Object.entries(analysis.biomarkers || {}).map(
-//     ([name, info]) => ({
-//       name,
-//       value: info?.value,
-//       status: info?.status,
-//     })
-//   );
-
-//   return (
-//     <div className="space-y-6">
-      
-//       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
-//         <h2 className="text-xl font-semibold text-slate-50">
-//           Blood report analysis
-//         </h2>
-//         <p className="text-sm text-slate-400 mt-1">
-//           Analyzed on{" "}
-//           {new Date(analysis.updatedAt).toLocaleString()}
-//         </p>
-//       </section>
-
-      
-//       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
-//         <h3 className="text-lg font-semibold text-slate-50 mb-3">
-//           Your biomarkers
-//         </h3>
-//         <p className="text-xs text-slate-400 mb-4">
-//           Green ring = good | Red ring = needs attention
-//         </p>
-
-//         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-//           {biomarkersArr.map((b, idx) => (
-//             <BiomarkerRing
-//               key={idx}
-//               name={b.name}
-//               value={b.value}
-//               status={b.status}
-//             />
-//           ))}
-//         </div>
-
-//         {analysis.pdfUrl && (
-//           <a
-//             href={analysis.pdfUrl}
-//             target="_blank"
-//             rel="noreferrer"
-//             className="inline-block mt-6 text-sm text-primary hover:underline"
-//           >
-//             View uploaded PDF →
-//           </a>
-//         )}
-//       </section>
-//     </div>
-//   );
-// }
-
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useLocation, Navigate, useNavigate } from "react-router-dom";
 import BiomarkerRing from "../components/BiomarkerRing";
 
@@ -75,18 +7,33 @@ export default function BiomarkerHistoryDetailPage() {
   const navigate = useNavigate();
   const analysis = location.state?.analysis;
   const [showShareModal, setShowShareModal] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   if (!analysis) {
     return <Navigate to="/biomarkers/history" replace />;
   }
 
+  // Use biomarkersByCategory if available
+  const biomarkersByCategory = analysis.biomarkersByCategory || {};
+  
+  // Set first category as default on mount if available
+  useEffect(() => {
+    if (Object.keys(biomarkersByCategory).length > 0 && !selectedCategory) {
+      setSelectedCategory(Object.keys(biomarkersByCategory)[0]);
+    }
+  }, [biomarkersByCategory, selectedCategory]);
+  
+  // Flatten biomarkers for overall calculations
   const biomarkersArr = Object.entries(analysis.biomarkers || {}).map(
     ([name, info]) => ({
       name,
       value: info?.value,
       status: info?.status,
       unit: info?.unit || "",
-      normalRange: info?.normalRange || "",
+      category: info?.category || null,
+      categoryLabel: info?.categoryLabel || null,
+      reason: info?.reason || null,
+      isAvailable: info?.isAvailable !== false,
     })
   );
 
@@ -94,21 +41,28 @@ export default function BiomarkerHistoryDetailPage() {
     if (analysis.overallScore) return analysis.overallScore;
     if (biomarkersArr.length === 0) return null;
     
-    const goodCount = biomarkersArr.filter(
-      b => b.status?.toLowerCase() === 'good' || b.status?.toLowerCase() === 'normal'
+    // Only count available biomarkers
+    const availableBiomarkers = biomarkersArr.filter(b => b.isAvailable !== false);
+    if (availableBiomarkers.length === 0) return null;
+    
+    const goodCount = availableBiomarkers.filter(
+      b => b.status?.toLowerCase() === 'good'
     ).length;
-    return Math.round((goodCount / biomarkersArr.length) * 100);
+    return Math.round((goodCount / availableBiomarkers.length) * 100);
   };
 
   const getHealthInsights = () => {
+    // Count ALL biomarkers from backend (no filtering)
+    const total = biomarkersArr.length;
+    
     const goodCount = biomarkersArr.filter(
-      b => b.status?.toLowerCase() === 'good' || b.status?.toLowerCase() === 'normal'
+      b => b.status?.toLowerCase() === 'good'
     ).length;
     const badCount = biomarkersArr.filter(
-      b => b.status?.toLowerCase() === 'bad' || b.status?.toLowerCase() === 'high' || b.status?.toLowerCase() === 'low'
+      b => b.status?.toLowerCase() === 'bad'
     ).length;
 
-    return { goodCount, badCount, total: biomarkersArr.length };
+    return { goodCount, badCount, total };
   };
 
   const formatDate = (dateString) => {
@@ -276,7 +230,7 @@ export default function BiomarkerHistoryDetailPage() {
         </section>
       )}
 
-      {/* Biomarkers Grid */}
+      {/* Biomarkers by Category */}
       <section className="px-5 mb-6">
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6">
           <div className="flex items-center justify-between mb-5">
@@ -285,29 +239,120 @@ export default function BiomarkerHistoryDetailPage() {
               <p className="text-xs text-slate-500 mt-1">
                 <span className="inline-flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                  Normal
+                  Good
                 </span>
                 <span className="mx-2">•</span>
                 <span className="inline-flex items-center gap-1">
                   <span className="w-2 h-2 rounded-full bg-red-400"></span>
                   Needs attention
                 </span>
+                <span className="mx-2">•</span>
+                <span className="inline-flex items-center gap-1">
+                  <span className="w-2 h-2 rounded-full bg-slate-500"></span>
+                  Unavailable
+                </span>
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {biomarkersArr.map((b, idx) => (
-              <BiomarkerRing
-                key={idx}
-                name={b.name}
-                value={b.value}
-                status={b.status}
-                unit={b.unit}
-                normalRange={b.normalRange}
-              />
-            ))}
-          </div>
+          {/* Category List and Biomarkers Display */}
+          {Object.keys(biomarkersByCategory).length > 0 ? (
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+              {/* Category List */}
+              <div className="lg:col-span-1">
+                <div className="bg-slate-950/50 rounded-2xl p-4 border border-slate-800/50">
+                  <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">
+                    Categories
+                  </h4>
+                  <div className="space-y-2">
+                    {Object.keys(biomarkersByCategory).map((categoryLabel) => {
+                      const categoryBiomarkers = biomarkersByCategory[categoryLabel] || {};
+                      const categoryCount = Object.keys(categoryBiomarkers).length;
+                      const isSelected = selectedCategory === categoryLabel;
+                      
+                      return (
+                        <button
+                          key={categoryLabel}
+                          onClick={() => setSelectedCategory(categoryLabel)}
+                          className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                            isSelected
+                              ? "bg-gradient-to-r from-primary to-emerald-500 text-slate-950 shadow-lg shadow-primary/25"
+                              : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-slate-300 hover:bg-slate-800"
+                          }`}
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="truncate">{categoryLabel || 'Other'}</span>
+                            <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0 ${
+                              isSelected 
+                                ? "bg-slate-950/30 text-slate-950" 
+                                : "bg-slate-700/50 text-slate-500"
+                            }`}>
+                              {categoryCount}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+
+              {/* Selected Category Biomarkers */}
+              <div className="lg:col-span-3">
+                {selectedCategory && biomarkersByCategory[selectedCategory] ? (
+                  <>
+                    <div className="mb-4">
+                      <h4 className="text-xl font-bold text-slate-50 mb-1">
+                        {selectedCategory || 'Other'}
+                      </h4>
+                      <p className="text-sm text-slate-400">
+                        {Object.keys(biomarkersByCategory[selectedCategory] || {}).length} biomarkers
+                      </p>
+                    </div>
+                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                      {Object.entries(biomarkersByCategory[selectedCategory] || {}).map(([name, info]) => (
+                        <BiomarkerRing
+                          key={name}
+                          name={name}
+                          value={info?.value}
+                          status={info?.status}
+                          unit={info?.unit || ""}
+                          normalRange={info?.normalRange || ""}
+                          reason={info?.reason || ""}
+                          isAvailable={info?.isAvailable !== false}
+                        />
+                      ))}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-12 text-center">
+                    <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-4">
+                      <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                      </svg>
+                    </div>
+                    <p className="text-sm text-slate-400">Select a category to view biomarkers</p>
+                  </div>
+                )}
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+              {biomarkersArr.map((b, idx) => (
+                <BiomarkerRing
+                  key={idx}
+                  name={b.name}
+                  value={b.value}
+                  status={b.status}
+                  unit={b.unit}
+                  normalRange={b.normalRange}
+                  reason={b.reason}
+                  isAvailable={b.isAvailable}
+                />
+              ))}
+            </div>
+          )}
         </div>
       </section>
 
@@ -318,7 +363,7 @@ export default function BiomarkerHistoryDetailPage() {
             <h3 className="text-lg font-bold text-slate-50 mb-4">Priority Markers</h3>
             <div className="space-y-3">
               {biomarkersArr
-                .filter(b => b.status?.toLowerCase() !== 'good' && b.status?.toLowerCase() !== 'normal')
+                .filter(b => b.isAvailable !== false && b.status?.toLowerCase() === 'bad')
                 .map((b, idx) => (
                   <div 
                     key={idx}
@@ -335,6 +380,7 @@ export default function BiomarkerHistoryDetailPage() {
                         <p className="text-xs text-slate-400">
                           Current: {b.value} {b.unit}
                           {b.normalRange && ` • Normal: ${b.normalRange}`}
+                          {b.reason && ` • ${b.reason}`}
                         </p>
                       </div>
                     </div>
@@ -485,6 +531,14 @@ export default function BiomarkerHistoryDetailPage() {
 
         .animate-slideUp {
           animation: slideUp 0.3s ease-out;
+        }
+
+        .scrollbar-hide::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hide {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}</style>
     </div>

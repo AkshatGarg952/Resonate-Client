@@ -1,119 +1,3 @@
-// import React, { useEffect, useState } from "react";
-// import { auth } from "../firebase";
-// import { getWithCookie } from "../api";
-// import BiomarkerRing from "../components/BiomarkerRing";
-
-// export default function LatestAnalysisPage() {
-//   const [loading, setLoading] = useState(true);
-//   const [biomarkers, setBiomarkers] = useState([]);
-//   const [meta, setMeta] = useState(null);
-//   const [error, setError] = useState("");
-
-//   useEffect(() => {
-//     const fetchLatest = async () => {
-//       try {
-//         const latest = await getWithCookie("/diagnostics/latest");
-
-//         if (!latest || latest.status !== "completed") {
-//           setError("No completed analysis found yet.");
-//           return;
-//         }
-
-        
-//         const biomarkersArr = Object.entries(latest.biomarkers || {}).map(
-//           ([name, info]) => ({
-//             name,
-//             value: info?.value,
-//             status: info?.status,
-//           })
-//         );
-
-//         setBiomarkers(biomarkersArr);
-//         setMeta({
-//           updatedAt: latest.updatedAt,
-//           pdfUrl: latest.pdfUrl,
-//         });
-//       } catch (err) {
-//         console.error(err);
-//         setError("Failed to fetch latest analysis.");
-//       } finally {
-//         setLoading(false);
-//       }
-//     };
-
-//     fetchLatest();
-//   }, []);
-
-//   return (
-//     <div className="space-y-6">
-    
-//       <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
-//         <h2 className="text-xl font-semibold text-slate-50 mb-1">
-//           Latest blood report analysis
-//         </h2>
-//         <p className="text-sm text-slate-400">
-//           Your most recently analyzed blood report.
-//         </p>
-
-//         {meta && (
-//           <p className="text-xs text-slate-500 mt-2">
-//             Last updated:{" "}
-//             {new Date(meta.updatedAt).toLocaleString()}
-//           </p>
-//         )}
-//       </section>
-
-     
-//       {loading && (
-//         <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
-//           <p className="text-sm text-slate-400">
-//             Loading latest analysis...
-//           </p>
-//         </section>
-//       )}
-
-//       {!loading && error && (
-//         <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
-//           <p className="text-sm text-red-400">{error}</p>
-//         </section>
-//       )}
-
-//       {!loading && biomarkers.length > 0 && (
-//         <section className="bg-slate-900/80 border border-slate-800 rounded-3xl p-6">
-//           <h3 className="text-lg font-semibold text-slate-50 mb-3">
-//             Your biomarkers
-//           </h3>
-//           <p className="text-xs text-slate-400 mb-4">
-//             Green ring = good | Red ring = needs attention
-//           </p>
-
-//           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-//             {biomarkers.map((b, idx) => (
-//               <BiomarkerRing
-//                 key={idx}
-//                 name={b.name}
-//                 value={b.value}
-//                 status={b.status}
-//               />
-//             ))}
-//           </div>
-
-        
-//           {meta?.pdfUrl && (
-//             <a
-//               href={meta.pdfUrl}
-//               target="_blank"
-//               rel="noreferrer"
-//               className="inline-block mt-6 text-sm text-primary hover:underline"
-//             >
-//               View uploaded PDF →
-//             </a>
-//           )}
-//         </section>
-//       )}
-//     </div>
-//   );
-// }
 
 import React, { useEffect, useState } from "react";
 import { auth } from "../firebase";
@@ -125,6 +9,8 @@ export default function LatestAnalysisPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [biomarkers, setBiomarkers] = useState([]);
+  const [biomarkersByCategory, setBiomarkersByCategory] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const [meta, setMeta] = useState(null);
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -142,17 +28,25 @@ export default function LatestAnalysisPage() {
         return;
       }
 
+      // Use biomarkersByCategory if available, otherwise fall back to flat biomarkers
+      const biomarkersData = latest.biomarkersByCategory || {};
+      
+      // Flatten biomarkers for overall calculations
       const biomarkersArr = Object.entries(latest.biomarkers || {}).map(
         ([name, info]) => ({
           name,
           value: info?.value,
           status: info?.status,
           unit: info?.unit || "",
-          normalRange: info?.normalRange || "",
+          category: info?.category || null,
+          categoryLabel: info?.categoryLabel || null,
+          reason: info?.reason || null,
+          isAvailable: info?.isAvailable !== false,
         })
       );
 
       setBiomarkers(biomarkersArr);
+      setBiomarkersByCategory(biomarkersData);
       setMeta({
         updatedAt: latest.updatedAt,
         pdfUrl: latest.pdfUrl,
@@ -174,25 +68,39 @@ export default function LatestAnalysisPage() {
     fetchLatest();
   }, []);
 
+  // Set first category as default when categories are loaded
+  useEffect(() => {
+    if (Object.keys(biomarkersByCategory).length > 0 && !selectedCategory) {
+      setSelectedCategory(Object.keys(biomarkersByCategory)[0]);
+    }
+  }, [biomarkersByCategory, selectedCategory]);
+
   const getOverallScore = () => {
     if (meta?.overallScore) return meta.overallScore;
     if (biomarkers.length === 0) return null;
     
-    const goodCount = biomarkers.filter(
-      b => b.status?.toLowerCase() === 'good' || b.status?.toLowerCase() === 'normal'
+    // Only count available biomarkers
+    const availableBiomarkers = biomarkers.filter(b => b.isAvailable !== false);
+    if (availableBiomarkers.length === 0) return null;
+    
+    const goodCount = availableBiomarkers.filter(
+      b => b.status?.toLowerCase() === 'good'
     ).length;
-    return Math.round((goodCount / biomarkers.length) * 100);
+    return Math.round((goodCount / availableBiomarkers.length) * 100);
   };
 
   const getHealthInsights = () => {
+    // Count ALL biomarkers from backend (no filtering)
+    const total = biomarkers.length;
+    
     const goodCount = biomarkers.filter(
-      b => b.status?.toLowerCase() === 'good' || b.status?.toLowerCase() === 'normal'
+      b => b.status?.toLowerCase() === 'good'
     ).length;
     const badCount = biomarkers.filter(
-      b => b.status?.toLowerCase() === 'bad' || b.status?.toLowerCase() === 'high' || b.status?.toLowerCase() === 'low'
+      b => b.status?.toLowerCase() === 'bad'
     ).length;
 
-    return { goodCount, badCount, total: biomarkers.length };
+    return { goodCount, badCount, total };
   };
 
   const formatDate = (dateString) => {
@@ -411,7 +319,7 @@ export default function LatestAnalysisPage() {
             </section>
           )}
 
-          {/* Biomarkers Grid */}
+          {/* Biomarkers by Category */}
           <section className="px-5 mb-6">
             <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6">
               <div className="flex items-center justify-between mb-5">
@@ -420,29 +328,120 @@ export default function LatestAnalysisPage() {
                   <p className="text-xs text-slate-500 mt-1">
                     <span className="inline-flex items-center gap-1">
                       <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                      Normal
+                      Good
                     </span>
                     <span className="mx-2">•</span>
                     <span className="inline-flex items-center gap-1">
                       <span className="w-2 h-2 rounded-full bg-red-400"></span>
                       Needs attention
                     </span>
+                    <span className="mx-2">•</span>
+                    <span className="inline-flex items-center gap-1">
+                      <span className="w-2 h-2 rounded-full bg-slate-500"></span>
+                      Unavailable
+                    </span>
                   </p>
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                {biomarkers.map((b, idx) => (
-                  <BiomarkerRing
-                    key={idx}
-                    name={b.name}
-                    value={b.value}
-                    status={b.status}
-                    unit={b.unit}
-                    normalRange={b.normalRange}
-                  />
-                ))}
-              </div>
+              {/* Category List and Biomarkers Display */}
+              {Object.keys(biomarkersByCategory).length > 0 ? (
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+                  {/* Category List */}
+                  <div className="lg:col-span-1">
+                    <div className="bg-slate-950/50 rounded-2xl p-4 border border-slate-800/50">
+                      <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">
+                        Categories
+                      </h4>
+                      <div className="space-y-2">
+                        {Object.keys(biomarkersByCategory).map((categoryLabel) => {
+                          const categoryBiomarkers = biomarkersByCategory[categoryLabel] || {};
+                          const categoryCount = Object.keys(categoryBiomarkers).length;
+                          const isSelected = selectedCategory === categoryLabel;
+                          
+                          return (
+                            <button
+                              key={categoryLabel}
+                              onClick={() => setSelectedCategory(categoryLabel)}
+                              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                                isSelected
+                                  ? "bg-gradient-to-r from-primary to-emerald-500 text-slate-950 shadow-lg shadow-primary/25"
+                                  : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-slate-300 hover:bg-slate-800"
+                              }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="truncate">{categoryLabel || 'Other'}</span>
+                                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0 ${
+                                  isSelected 
+                                    ? "bg-slate-950/30 text-slate-950" 
+                                    : "bg-slate-700/50 text-slate-500"
+                                }`}>
+                                  {categoryCount}
+                                </span>
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Selected Category Biomarkers */}
+                  <div className="lg:col-span-3">
+                    {selectedCategory && biomarkersByCategory[selectedCategory] ? (
+                      <>
+                        <div className="mb-4">
+                          <h4 className="text-xl font-bold text-slate-50 mb-1">
+                            {selectedCategory || 'Other'}
+                          </h4>
+                          <p className="text-sm text-slate-400">
+                            {Object.keys(biomarkersByCategory[selectedCategory] || {}).length} biomarkers
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                          {Object.entries(biomarkersByCategory[selectedCategory] || {}).map(([name, info]) => (
+                            <BiomarkerRing
+                              key={name}
+                              name={name}
+                              value={info?.value}
+                              status={info?.status}
+                              unit={info?.unit || ""}
+                              normalRange={info?.normalRange || ""}
+                              reason={info?.reason || ""}
+                              isAvailable={info?.isAvailable !== false}
+                            />
+                          ))}
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center py-12 text-center">
+                        <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-4">
+                          <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
+                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          </svg>
+                        </div>
+                        <p className="text-sm text-slate-400">Select a category to view biomarkers</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                  {biomarkers.map((b, idx) => (
+                    <BiomarkerRing
+                      key={idx}
+                      name={b.name}
+                      value={b.value}
+                      status={b.status}
+                      unit={b.unit}
+                      normalRange={b.normalRange}
+                      reason={b.reason}
+                      isAvailable={b.isAvailable}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           </section>
 
