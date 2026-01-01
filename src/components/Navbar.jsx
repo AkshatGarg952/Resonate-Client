@@ -231,6 +231,17 @@ export default function Navbar({ user, onLogout }) {
                   )}
                 </div>
 
+                <Link 
+                  to="/get-coach" 
+                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-primary/10 to-emerald-500/10 
+                           border border-primary/30 text-primary font-semibold
+                           hover:from-primary/20 hover:to-emerald-500/20 hover:border-primary/50 
+                           active:scale-95 transition-all flex items-center gap-2"
+                >
+                  <span className="text-lg">🏋️</span>
+                  Book a Coach
+                </Link>
+
                 <button
                   onClick={handleLogout}
                   className="px-4 py-2 rounded-xl border border-red-500/30 text-red-400 font-semibold
@@ -389,8 +400,23 @@ export default function Navbar({ user, onLogout }) {
                     </div>
                   </div>
 
-                  {/* Fitness Sync Section */}
+                  {/* Coaching Section */}
                   <div className="pt-4 pb-2">
+                    <Link
+                      to="/get-coach"
+                      className="flex items-center justify-center gap-2 mx-4 px-4 py-3 rounded-2xl 
+                               bg-gradient-to-r from-primary/10 to-emerald-500/10 
+                               border-2 border-primary/30 text-primary font-bold 
+                               hover:from-primary/20 hover:to-emerald-500/20 hover:border-primary/50
+                               active:scale-95 transition-all"
+                    >
+                      <span className="text-lg">🏋️</span>
+                      Book a Coach
+                    </Link>
+                  </div>
+
+                  {/* Fitness Sync Section */}
+                  <div className="pt-2 pb-2">
                     <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 mb-2">
                       Fitness Sync
                     </p>
