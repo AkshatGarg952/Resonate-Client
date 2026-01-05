@@ -8,13 +8,15 @@ export default function Navbar({ user, onLogout }) {
   const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [biomarkersOpen, setBiomarkersOpen] = useState(false);
-  const [fitnessOpen, setFitnessOpen] = useState(false);
+  const [workoutsOpen, setWorkoutsOpen] = useState(false);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
 
-  // Close mobile menu on route change
+  // Close menus on route change
   useEffect(() => {
     setMobileMenuOpen(false);
     setBiomarkersOpen(false);
-    setFitnessOpen(false);
+    setWorkoutsOpen(false);
+    setUserMenuOpen(false);
   }, [location.pathname]);
 
   // Prevent body scroll when mobile menu is open
@@ -34,8 +36,7 @@ export default function Navbar({ user, onLogout }) {
 
   const connectGoogleFit = () => {
     try {
-      setFitnessOpen(false);
-      setMobileMenuOpen(false);
+      setUserMenuOpen(false);
       window.location.href = `${BASE_URL}/fit/google`;
     } catch (err) {
       console.error("Google Fit connection failed", err);
@@ -47,25 +48,29 @@ export default function Navbar({ user, onLogout }) {
     onLogout();
   };
 
-  // Bottom nav items for mobile
+  // Get user initials for avatar
+  const getInitials = () => {
+    if (!user?.displayName) return "U";
+    return user.displayName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2);
+  };
+
   const bottomNavItems = user ? [
     {
       path: "/dashboard",
       label: "Home",
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
         </svg>
       )
     },
     {
-      path: "/fitness",
-      label: "Fitness",
+      path: "/workouts",
+      label: "Workouts",
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                d="M13 10V3L4 14h7v7l9-11h-7z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
         </svg>
       )
     },
@@ -74,8 +79,8 @@ export default function Navbar({ user, onLogout }) {
       label: "Reports",
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
         </svg>
       )
     },
@@ -84,8 +89,8 @@ export default function Navbar({ user, onLogout }) {
       label: "Profile",
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
         </svg>
       )
     }
@@ -93,10 +98,10 @@ export default function Navbar({ user, onLogout }) {
 
   return (
     <>
-      {/* Top Header - Desktop & Mobile */}
+      {/* Top Header */}
       <header className="fixed top-0 left-0 right-0 z-40 border-b border-slate-800 bg-slate-950/95 backdrop-blur-lg">
         <nav className="max-w-7xl mx-auto px-5 py-3 flex items-center justify-between">
-          
+
           {/* Logo */}
           <Link to="/" className="flex items-center gap-2.5 group">
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary/20 to-emerald-500/20 
@@ -111,163 +116,155 @@ export default function Navbar({ user, onLogout }) {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden lg:flex items-center gap-6 text-sm">
+          <div className="hidden lg:flex items-center gap-8 text-sm">
             {user ? (
               <>
-                <Link 
-                  to="/dashboard" 
-                  className={`font-medium transition-colors ${
-                    isActive("/dashboard") ? "text-primary" : "text-slate-300 hover:text-slate-50"
-                  }`}
+                {/* 1. Main Navigation */}
+                <Link
+                  to="/dashboard"
+                  className={`font-medium transition-colors flex items-center gap-2 ${isActive("/dashboard") ? "text-primary" : "text-slate-300 hover:text-slate-50"
+                    }`}
                 >
                   Dashboard
                 </Link>
 
-                <Link 
-                  to="/profile" 
-                  className={`font-medium transition-colors ${
-                    isActive("/profile") ? "text-primary" : "text-slate-300 hover:text-slate-50"
-                  }`}
-                >
-                  Profile
-                </Link>
-
-                {/* Biomarkers Dropdown */}
-                <div className="relative">
-                  <button
-                    onClick={() => {
-                      setBiomarkersOpen(!biomarkersOpen);
-                      setFitnessOpen(false);
-                    }}
-                    className={`flex items-center gap-1.5 font-medium transition-colors ${
-                      isActiveGroup(["/biomarkers"]) ? "text-primary" : "text-slate-300 hover:text-slate-50"
+                {/* Workouts Dropdown */}
+                <div className="relative group">
+                  <button className={`flex items-center gap-1.5 font-medium transition-colors ${isActiveGroup(["/workout", "/workouts"]) ? "text-primary" : "text-slate-300 hover:text-slate-50"
                     }`}
                   >
-                    Blood Reports
-                    <svg className={`w-4 h-4 transition-transform ${biomarkersOpen ? 'rotate-180' : ''}`} 
-                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    Workouts
+                    <svg className="w-4 h-4 transition-transform group-hover:rotate-180"
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
 
-                  {biomarkersOpen && (
-                    <>
-                      <div className="fixed inset-0 z-10" onClick={() => setBiomarkersOpen(false)}></div>
-                      <div className="absolute right-0 mt-2 w-56 rounded-2xl bg-slate-900 border border-slate-800 
-                                    shadow-xl overflow-hidden z-20">
-                        <div className="p-2 space-y-1">
-                          <Link
-                            to="/biomarkers/upload"
-                            className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors"
-                          >
-                            📤 Upload Report PDF
-                          </Link>
-                          <Link
-                            to="/biomarkers/api"
-                            className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors"
-                          >
-                            🔗 Fetch from Lab API
-                          </Link>
-                          <div className="my-1 border-t border-slate-800"></div>
-                          <Link
-                            to="/biomarkers/latest"
-                            className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors"
-                          >
-                            📊 Latest Analysis
-                          </Link>
-                          <Link
-                            to="/biomarkers/history"
-                            className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors"
-                          >
-                            📂 Analysis History
-                          </Link>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                  <div className="absolute left-0 mt-4 w-48 rounded-2xl bg-slate-900 border border-slate-800 
+                                shadow-xl overflow-hidden opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-20 transform translate-y-2 group-hover:translate-y-0">
+                    <div className="p-2 space-y-1">
+                      <Link to="/workout-generator" className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
+                        ⚡ Generator
+                      </Link>
+                      <Link to="/workouts" className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
+                        📜 History
+                      </Link>
+                    </div>
+                  </div>
                 </div>
 
-                {/* Fitness Dropdown */}
-                <div className="relative">
-                  <button
-                    onClick={() => {
-                      setFitnessOpen(!fitnessOpen);
-                      setBiomarkersOpen(false);
-                    }}
-                    className="flex items-center gap-1.5 font-medium text-slate-300 hover:text-slate-50 transition-colors"
+                {/* Blood Reports Dropdown */}
+                <div className="relative group">
+                  <button className={`flex items-center gap-1.5 font-medium transition-colors ${isActiveGroup(["/biomarkers", "/demo-report"]) ? "text-primary" : "text-slate-300 hover:text-slate-50"
+                    }`}
                   >
-                    Fitness Sync
-                    <svg className={`w-4 h-4 transition-transform ${fitnessOpen ? 'rotate-180' : ''}`} 
-                         fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    Reports
+                    <svg className="w-4 h-4 transition-transform group-hover:rotate-180"
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
                   </button>
 
-                  {fitnessOpen && (
-                    <>
-                      <div className="fixed inset-0 z-10" onClick={() => setFitnessOpen(false)}></div>
-                      <div className="absolute right-0 mt-2 w-64 rounded-2xl bg-slate-900 border border-slate-800 
-                                    shadow-xl overflow-hidden z-20">
-                        <div className="p-2 space-y-1">
-                          <button
-                            onClick={connectGoogleFit}
-                            className="w-full text-left px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 
-                                     rounded-xl transition-colors flex items-center gap-2"
-                          >
-                            <span className="text-lg">🏃</span>
-                            Connect Google Fit
-                          </button>
-                          <button
-                            disabled
-                            className="w-full text-left px-3 py-2 text-sm text-slate-600 cursor-not-allowed 
-                                     rounded-xl flex items-center gap-2"
-                          >
-                            <span className="text-lg">🍎</span>
-                            Apple Health (iOS only)
-                          </button>
-                        </div>
-                      </div>
-                    </>
-                  )}
+                  <div className="absolute left-0 mt-4 w-56 rounded-2xl bg-slate-900 border border-slate-800 
+                                shadow-xl overflow-hidden opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-20 transform translate-y-2 group-hover:translate-y-0">
+                    <div className="p-2 space-y-1">
+                      <Link to="/biomarkers/latest" className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
+                        📊 Latest Analysis
+                      </Link>
+                      <Link to="/biomarkers/history" className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
+                        📂 Analysis History
+                      </Link>
+                      <div className="border-t border-slate-800 my-1"></div>
+                      <Link to="/biomarkers/upload" className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
+                        📤 Upload PDF
+                      </Link>
+                      <Link to="/biomarkers/api" className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
+                        🔗 Fetch via API
+                      </Link>
+                      <div className="border-t border-slate-800 my-1"></div>
+                      <Link to="/demo-report" className="block px-3 py-2 text-sm text-emerald-400 hover:bg-slate-800 rounded-xl transition-colors">
+                        🧪 View Demo Report
+                      </Link>
+                    </div>
+                  </div>
                 </div>
 
-                <Link 
-                  to="/get-coach" 
+                {/* CTA */}
+                <Link
+                  to="/get-coach"
                   className="px-4 py-2 rounded-xl bg-gradient-to-r from-primary/10 to-emerald-500/10 
-                           border border-primary/30 text-primary font-semibold
+                           border border-primary/30 text-primary font-semibold text-xs uppercase tracking-wide
                            hover:from-primary/20 hover:to-emerald-500/20 hover:border-primary/50 
                            active:scale-95 transition-all flex items-center gap-2"
                 >
-                  <span className="text-lg">🏋️</span>
-                  Book a Coach
+                  <span className="text-base">🏋️</span>
+                  Coach
                 </Link>
 
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 rounded-xl border border-red-500/30 text-red-400 font-semibold
-                           hover:bg-red-500/10 active:scale-95 transition-all"
-                >
-                  Logout
-                </button>
+                {/* Separator */}
+                <div className="h-6 w-px bg-slate-800 mx-2"></div>
+
+                {/* 2. User Menu Dropdown (Avatar) */}
+                <div className="relative">
+                  <button
+                    onClick={() => setUserMenuOpen(!userMenuOpen)}
+                    className="flex items-center gap-3 focus:outline-none"
+                  >
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold text-sm shadow-lg shadow-purple-500/20">
+                      {getInitials()}
+                    </div>
+                    <div className="text-left hidden xl:block">
+                      <p className="text-sm font-medium text-slate-200 leading-none">{user.displayName || "User"}</p>
+                      <p className="text-[10px] text-slate-500 mt-1">Free Plan</p>
+                    </div>
+                    <svg className={`w-4 h-4 text-slate-500 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  {userMenuOpen && (
+                    <>
+                      <div className="fixed inset-0 z-10" onClick={() => setUserMenuOpen(false)}></div>
+                      <div className="absolute right-0 mt-4 w-60 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl overflow-hidden z-20 animate-in fade-in slide-in-from-top-2">
+                        <div className="p-4 border-b border-slate-800 bg-slate-800/30">
+                          <p className="text-sm font-medium text-white">{user.displayName || "User"}</p>
+                          <p className="text-xs text-slate-500 truncate">{user.email}</p>
+                        </div>
+                        <div className="p-2 space-y-1">
+                          <Link to="/profile" className="flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
+                            <span>👤</span> My Profile
+                          </Link>
+                          <button onClick={connectGoogleFit} className="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors text-left">
+                            <span>🏃</span> Sync Fitness
+                          </button>
+                          <div className="border-t border-slate-800 my-1"></div>
+                          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 rounded-xl transition-colors text-left">
+                            <span>🚪</span> Logout
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+
               </>
             ) : (
-              <>
+              // Logged Out State
+              <div className="flex items-center gap-4">
                 <Link
                   to="/login"
-                  className="px-4 py-2 rounded-xl border border-slate-700 text-slate-300 font-semibold
-                           hover:border-slate-600 hover:bg-slate-800 transition-all"
+                  className="px-5 py-2 rounded-xl text-slate-300 font-medium hover:text-white transition-colors"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-primary to-emerald-500 
-                           text-slate-950 font-bold hover:shadow-lg hover:shadow-primary/25 
-                           active:scale-95 transition-all"
+                  className="px-5 py-2 rounded-xl bg-white text-slate-950 font-bold hover:bg-slate-200 
+                           transition-all active:scale-95"
                 >
-                  Register
+                  Get Started
                 </Link>
-              </>
+              </div>
             )}
           </div>
 
@@ -275,14 +272,14 @@ export default function Navbar({ user, onLogout }) {
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="lg:hidden w-10 h-10 rounded-xl bg-slate-800/50 border border-slate-700/50 
-                     flex items-center justify-center hover:bg-slate-800 active:scale-95 transition-all"
+                     flex items-center justify-center hover:bg-slate-800 active:scale-95 transition-all text-slate-300"
           >
             {mobileMenuOpen ? (
-              <svg className="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             ) : (
-              <svg className="w-6 h-6 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             )}
@@ -290,190 +287,101 @@ export default function Navbar({ user, onLogout }) {
         </nav>
       </header>
 
-      {/* Spacer for fixed header */}
+      {/* Spacer */}
       <div className="h-16"></div>
 
       {/* Mobile Menu Overlay */}
       {mobileMenuOpen && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          {/* Backdrop */}
-          <div 
+          <div
             className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm animate-fadeIn"
             onClick={() => setMobileMenuOpen(false)}
           ></div>
 
-          {/* Menu Panel */}
           <div className="absolute top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-slate-900 
-                        border-l border-slate-800 shadow-2xl animate-slideLeft">
-            
+                        border-l border-slate-800 shadow-2xl animate-slideLeft flex flex-col">
+
             {/* Menu Header */}
-            <div className="flex items-center justify-between p-5 border-b border-slate-800">
-              <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-primary/20 to-emerald-500/20 
-                              flex items-center justify-center border border-primary/20">
-                  <span className="text-primary font-black text-xl">R</span>
+            <div className="flex items-center justify-between p-5 border-b border-slate-800 shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold shadow-lg">
+                  {getInitials()}
                 </div>
-                <div>
-                  <p className="font-bold text-slate-50">Menu</p>
-                  <p className="text-xs text-slate-500">Navigate</p>
+                <div className="overflow-hidden">
+                  <p className="font-bold text-slate-50 truncate w-32">{user?.displayName || "Menu"}</p>
+                  <p className="text-xs text-slate-500">{user?.email || "Guest"}</p>
                 </div>
               </div>
-              <button
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-9 h-9 rounded-xl bg-slate-800/50 flex items-center justify-center
-                         hover:bg-slate-800 active:scale-95 transition-all"
-              >
-                <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
             </div>
 
-            {/* Menu Items */}
-            <div className="overflow-y-auto h-[calc(100vh-5rem)] p-4 space-y-2">
+            {/* Scrollable Menu Items */}
+            <div className="overflow-y-auto flex-1 p-4 space-y-6">
               {user ? (
                 <>
-                  <Link
-                    to="/dashboard"
-                    className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition-all ${
-                      isActive("/dashboard")
-                        ? "bg-primary/10 text-primary border border-primary/20"
-                        : "text-slate-300 hover:bg-slate-800"
-                    }`}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
-                    </svg>
-                    Dashboard
-                  </Link>
-
-                  <Link
-                    to="/profile"
-                    className={`flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold transition-all ${
-                      isActive("/profile")
-                        ? "bg-primary/10 text-primary border border-primary/20"
-                        : "text-slate-300 hover:bg-slate-800"
-                    }`}
-                  >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                            d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                    </svg>
-                    My Profile
-                  </Link>
-
-                  {/* Blood Reports Section */}
-                  <div className="pt-4 pb-2">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 mb-2">
-                      Blood Reports
-                    </p>
-                    <div className="space-y-1">
-                      <Link
-                        to="/biomarkers/upload"
-                        className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-slate-800"
-                      >
-                        <span className="text-base">📤</span>
-                        Upload Report PDF
-                      </Link>
-                      <Link
-                        to="/biomarkers/api"
-                        className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-slate-800"
-                      >
-                        <span className="text-base">🔗</span>
-                        Fetch from Lab API
-                      </Link>
-                      <Link
-                        to="/biomarkers/latest"
-                        className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-slate-800"
-                      >
-                        <span className="text-base">📊</span>
-                        Latest Analysis
-                      </Link>
-                      <Link
-                        to="/biomarkers/history"
-                        className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-slate-800"
-                      >
-                        <span className="text-base">📂</span>
-                        Analysis History
-                      </Link>
-                    </div>
-                  </div>
-
-                  {/* Coaching Section */}
-                  <div className="pt-4 pb-2">
-                    <Link
-                      to="/get-coach"
-                      className="flex items-center justify-center gap-2 mx-4 px-4 py-3 rounded-2xl 
-                               bg-gradient-to-r from-primary/10 to-emerald-500/10 
-                               border-2 border-primary/30 text-primary font-bold 
-                               hover:from-primary/20 hover:to-emerald-500/20 hover:border-primary/50
-                               active:scale-95 transition-all"
-                    >
-                      <span className="text-lg">🏋️</span>
-                      Book a Coach
+                  {/* Main Nav */}
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2">Navigation</p>
+                    <Link to="/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-800/50 text-slate-200">
+                      <span>🏠</span> Dashboard
                     </Link>
                   </div>
 
-                  {/* Fitness Sync Section */}
-                  <div className="pt-2 pb-2">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-4 mb-2">
-                      Fitness Sync
-                    </p>
-                    <div className="space-y-1">
-                      <button
-                        onClick={connectGoogleFit}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-300 hover:bg-slate-800"
-                      >
-                        <span className="text-base">🏃</span>
-                        Connect Google Fit
-                      </button>
-                      <button
-                        disabled
-                        className="w-full flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm text-slate-600 cursor-not-allowed"
-                      >
-                        <span className="text-base">🍎</span>
-                        Apple Health (iOS only)
-                      </button>
+                  {/* Workouts */}
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2">Fitness</p>
+                    <div className="bg-slate-800/30 rounded-2xl overflow-hidden">
+                      <Link to="/workout-generator" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
+                        <span>⚡</span> Generator
+                      </Link>
+                      <Link to="/workouts" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
+                        <span>📜</span> History
+                      </Link>
+                      <Link to="/get-coach" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-emerald-400 font-medium">
+                        <span>🏋️</span> Book Coach
+                      </Link>
                     </div>
                   </div>
 
-                  {/* Logout */}
-                  <div className="pt-4">
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-3 px-4 py-3 rounded-2xl bg-red-500/10 
-                               border border-red-500/20 text-red-400 font-semibold 
-                               hover:bg-red-500/20 active:scale-95 transition-all"
-                    >
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                              d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
-                      </svg>
-                      Logout
-                    </button>
+                  {/* Reports */}
+                  <div className="space-y-2">
+                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2">Health Data</p>
+                    <div className="bg-slate-800/30 rounded-2xl overflow-hidden">
+                      <Link to="/biomarkers/latest" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
+                        <span>📊</span> Latest Report
+                      </Link>
+                      <Link to="/biomarkers/upload" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
+                        <span>📤</span> Upload New
+                      </Link>
+                      <Link to="/demo-report" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-purple-400">
+                        <span>🧪</span> View Demo
+                      </Link>
+                    </div>
                   </div>
+
                 </>
               ) : (
-                <>
-                  <Link
-                    to="/login"
-                    className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl border-2 border-slate-700 
-                             text-slate-300 font-bold hover:bg-slate-800 transition-all"
-                  >
-                    Login
-                  </Link>
-                  <Link
-                    to="/register"
-                    className="flex items-center justify-center gap-2 px-6 py-3 rounded-2xl 
-                             bg-gradient-to-r from-primary to-emerald-500 text-slate-950 font-bold 
-                             hover:shadow-lg hover:shadow-primary/25 transition-all"
-                  >
-                    Register
-                  </Link>
-                </>
+                <div className="space-y-3">
+                  <Link to="/login" className="block w-full text-center py-3 rounded-xl border border-slate-700 text-slate-300 font-bold">Login</Link>
+                  <Link to="/register" className="block w-full text-center py-3 rounded-xl bg-primary text-slate-950 font-bold">Register</Link>
+                </div>
               )}
             </div>
+
+            {/* Bottom Account Section (Fixed) */}
+            {user && (
+              <div className="p-4 border-t border-slate-800 bg-slate-900 shrink-0 space-y-2">
+                <Link to="/profile" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+                  <span>👤</span> Profile Settings
+                </Link>
+                <button onClick={connectGoogleFit} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors text-left">
+                  <span>🏃</span> Google Fit Sync
+                </button>
+                <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/10 text-red-500 transition-colors text-left">
+                  <span>🚪</span> Sign Out
+                </button>
+              </div>
+            )}
+
           </div>
         </div>
       )}
@@ -484,18 +392,17 @@ export default function Navbar({ user, onLogout }) {
                       bg-slate-950/95 backdrop-blur-lg">
           <div className="flex items-center justify-around px-2 py-2 safe-area-inset-bottom">
             {bottomNavItems.map((item) => {
-              const active = isActive(item.path) || 
-                            (item.path === "/biomarkers/latest" && isActiveGroup(["/biomarkers"]));
-              
+              const active = isActive(item.path) ||
+                (item.path === "/biomarkers/latest" && isActiveGroup(["/biomarkers"]));
+
               return (
                 <Link
                   key={item.path}
                   to={item.path}
-                  className={`flex flex-col items-center gap-1 px-3 py-2 rounded-2xl min-w-[4rem] transition-all ${
-                    active
-                      ? "text-primary bg-primary/10"
-                      : "text-slate-400 hover:text-slate-300"
-                  }`}
+                  className={`flex flex-col items-center gap-1 px-3 py-2 rounded-2xl min-w-[4rem] transition-all ${active
+                    ? "text-primary bg-primary/10"
+                    : "text-slate-400 hover:text-slate-300"
+                    }`}
                 >
                   <span className={`transition-transform ${active ? 'scale-110' : ''}`}>
                     {item.icon}

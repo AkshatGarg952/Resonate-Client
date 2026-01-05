@@ -17,6 +17,8 @@ import BiomarkerHistoryDetailPage from "./pages/BiomarkerHistoryDetailPage";
 import FitnessDashboardPage from "./pages/FitnessDashboardPage";
 import DemoReportPage from "./pages/DemoReportPage";
 import GetACoachPage from "./pages/GetACoachPage";
+import WorkoutGenerator from "./pages/WorkoutGenerator";
+import WorkoutHistoryPage from "./pages/WorkoutHistoryPage";
 
 export const AuthContext = createContext(null);
 
@@ -25,17 +27,17 @@ function AppWrapper() {
   const [loadingAuth, setLoadingAuth] = useState(true);
   const navigate = useNavigate();
 
-useEffect(() => {
-  const BACKEND_URL = import.meta.env.VITE_API_BASE_URL;
+  useEffect(() => {
+    const BACKEND_URL = import.meta.env.VITE_API_BASE_URL;
 
 
-  if (BACKEND_URL) {
-    fetch(`${BACKEND_URL}/health`)
-      .then(() => console.log("Backend warmed up"))
-      .catch(() => {});
-  }
+    if (BACKEND_URL) {
+      fetch(`${BACKEND_URL}/health`)
+        .then(() => console.log("Backend warmed up"))
+        .catch(() => { });
+    }
 
-}, []);
+  }, []);
 
 
   useEffect(() => {
@@ -61,7 +63,7 @@ useEffect(() => {
       <Navbar user={user} onLogout={handleLogout} />
 
       <Routes>
-        <Route path="/" element={<LandingPage />} />  
+        <Route path="/" element={<LandingPage />} />
 
         <Route path="/login" element={<LoginPage />} />
 
@@ -70,6 +72,22 @@ useEffect(() => {
         <Route path="/demo-report" element={<DemoReportPage />} />
 
         <Route path="/get-coach" element={<GetACoachPage />} />
+
+        <Route path="/workout-generator"
+          element={
+            <ProtectedRoute>
+              <WorkoutGenerator />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/workouts"
+          element={
+            <ProtectedRoute>
+              <WorkoutHistoryPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/profile"
           element={
