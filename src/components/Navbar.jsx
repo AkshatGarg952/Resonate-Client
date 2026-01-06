@@ -75,6 +75,15 @@ export default function Navbar({ user, onLogout }) {
       )
     },
     {
+      path: "/nutrition",
+      label: "Food",
+      icon: (
+        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+        </svg>
+      )
+    },
+    {
       path: "/biomarkers/latest",
       label: "Reports",
       icon: (
@@ -152,6 +161,17 @@ export default function Navbar({ user, onLogout }) {
                     </div>
                   </div>
                 </div>
+
+
+
+                {/* Nutrition Link */}
+                <Link
+                  to="/nutrition"
+                  className={`font-medium transition-colors flex items-center gap-2 ${isActive("/nutrition") ? "text-primary" : "text-slate-300 hover:text-slate-50"
+                    }`}
+                >
+                  Nutrition
+                </Link>
 
                 {/* Blood Reports Dropdown */}
                 <div className="relative group">
@@ -285,135 +305,151 @@ export default function Navbar({ user, onLogout }) {
             )}
           </button>
         </nav>
-      </header>
+      </header >
 
       {/* Spacer */}
-      <div className="h-16"></div>
+      < div className="h-16" ></div >
 
       {/* Mobile Menu Overlay */}
-      {mobileMenuOpen && (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <div
-            className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm animate-fadeIn"
-            onClick={() => setMobileMenuOpen(false)}
-          ></div>
+      {
+        mobileMenuOpen && (
+          <div className="fixed inset-0 z-50 lg:hidden">
+            <div
+              className="absolute inset-0 bg-slate-950/80 backdrop-blur-sm animate-fadeIn"
+              onClick={() => setMobileMenuOpen(false)}
+            ></div>
 
-          <div className="absolute top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-slate-900 
+            <div className="absolute top-0 right-0 bottom-0 w-80 max-w-[85vw] bg-slate-900 
                         border-l border-slate-800 shadow-2xl animate-slideLeft flex flex-col">
 
-            {/* Menu Header */}
-            <div className="flex items-center justify-between p-5 border-b border-slate-800 shrink-0">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold shadow-lg">
-                  {getInitials()}
-                </div>
-                <div className="overflow-hidden">
-                  <p className="font-bold text-slate-50 truncate w-32">{user?.displayName || "Menu"}</p>
-                  <p className="text-xs text-slate-500">{user?.email || "Guest"}</p>
+              {/* Menu Header */}
+              <div className="flex items-center justify-between p-5 border-b border-slate-800 shrink-0">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-purple-500 to-blue-500 flex items-center justify-center text-white font-bold shadow-lg">
+                    {getInitials()}
+                  </div>
+                  <div className="overflow-hidden">
+                    <p className="font-bold text-slate-50 truncate w-32">{user?.displayName || "Menu"}</p>
+                    <p className="text-xs text-slate-500">{user?.email || "Guest"}</p>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            {/* Scrollable Menu Items */}
-            <div className="overflow-y-auto flex-1 p-4 space-y-6">
-              {user ? (
-                <>
-                  {/* Main Nav */}
-                  <div className="space-y-2">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2">Navigation</p>
-                    <Link to="/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-800/50 text-slate-200">
-                      <span>🏠</span> Dashboard
-                    </Link>
-                  </div>
-
-                  {/* Workouts */}
-                  <div className="space-y-2">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2">Fitness</p>
-                    <div className="bg-slate-800/30 rounded-2xl overflow-hidden">
-                      <Link to="/workout-generator" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
-                        <span>⚡</span> Generator
-                      </Link>
-                      <Link to="/workouts" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
-                        <span>📜</span> History
-                      </Link>
-                      <Link to="/get-coach" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-emerald-400 font-medium">
-                        <span>🏋️</span> Book Coach
+              {/* Scrollable Menu Items */}
+              <div className="overflow-y-auto flex-1 p-4 space-y-6">
+                {user ? (
+                  <>
+                    {/* Main Nav */}
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2">Navigation</p>
+                      <Link to="/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-800/50 text-slate-200">
+                        <span>🏠</span> Dashboard
                       </Link>
                     </div>
-                  </div>
 
-                  {/* Reports */}
-                  <div className="space-y-2">
-                    <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2">Health Data</p>
-                    <div className="bg-slate-800/30 rounded-2xl overflow-hidden">
-                      <Link to="/biomarkers/latest" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
-                        <span>📊</span> Latest Report
-                      </Link>
-                      <Link to="/biomarkers/upload" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
-                        <span>📤</span> Upload New
-                      </Link>
-                      <Link to="/demo-report" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-purple-400">
-                        <span>🧪</span> View Demo
-                      </Link>
+                    {/* Workouts */}
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2">Fitness</p>
+                      <div className="bg-slate-800/30 rounded-2xl overflow-hidden">
+                        <Link to="/workout-generator" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
+                          <span>⚡</span> Generator
+                        </Link>
+                        <Link to="/workouts" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
+                          <span>📜</span> History
+                        </Link>
+                        <Link to="/get-coach" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-emerald-400 font-medium">
+                          <span>🏋️</span> Book Coach
+                        </Link>
+                      </div>
                     </div>
-                  </div>
 
-                </>
-              ) : (
-                <div className="space-y-3">
-                  <Link to="/login" className="block w-full text-center py-3 rounded-xl border border-slate-700 text-slate-300 font-bold">Login</Link>
-                  <Link to="/register" className="block w-full text-center py-3 rounded-xl bg-primary text-slate-950 font-bold">Register</Link>
+
+
+                    {/* Nutrition */}
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2">Diet</p>
+                      <div className="bg-slate-800/30 rounded-2xl overflow-hidden">
+                        <Link to="/nutrition" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 font-medium">
+                          <span>🥗</span> Daily Plan
+                        </Link>
+                      </div>
+                    </div>
+
+                    {/* Reports */}
+                    <div className="space-y-2">
+                      <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2">Health Data</p>
+                      <div className="bg-slate-800/30 rounded-2xl overflow-hidden">
+                        <Link to="/biomarkers/latest" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
+                          <span>📊</span> Latest Report
+                        </Link>
+                        <Link to="/biomarkers/upload" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
+                          <span>📤</span> Upload New
+                        </Link>
+                        <Link to="/demo-report" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-purple-400">
+                          <span>🧪</span> View Demo
+                        </Link>
+                      </div>
+                    </div>
+
+                  </>
+                ) : (
+                  <div className="space-y-3">
+                    <Link to="/login" className="block w-full text-center py-3 rounded-xl border border-slate-700 text-slate-300 font-bold">Login</Link>
+                    <Link to="/register" className="block w-full text-center py-3 rounded-xl bg-primary text-slate-950 font-bold">Register</Link>
+                  </div>
+                )}
+              </div>
+
+              {/* Bottom Account Section (Fixed) */}
+              {user && (
+                <div className="p-4 border-t border-slate-800 bg-slate-900 shrink-0 space-y-2">
+                  <Link to="/profile" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
+                    <span>👤</span> Profile Settings
+                  </Link>
+                  <button onClick={connectGoogleFit} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors text-left">
+                    <span>🏃</span> Google Fit Sync
+                  </button>
+                  <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/10 text-red-500 transition-colors text-left">
+                    <span>🚪</span> Sign Out
+                  </button>
                 </div>
               )}
+
             </div>
-
-            {/* Bottom Account Section (Fixed) */}
-            {user && (
-              <div className="p-4 border-t border-slate-800 bg-slate-900 shrink-0 space-y-2">
-                <Link to="/profile" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
-                  <span>👤</span> Profile Settings
-                </Link>
-                <button onClick={connectGoogleFit} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors text-left">
-                  <span>🏃</span> Google Fit Sync
-                </button>
-                <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/10 text-red-500 transition-colors text-left">
-                  <span>🚪</span> Sign Out
-                </button>
-              </div>
-            )}
-
-          </div>
-        </div>
-      )}
+          </div >
+        )
+      }
 
       {/* Bottom Navigation Bar - Mobile Only (when logged in) */}
-      {user && (
-        <nav className="fixed bottom-0 left-0 right-0 z-30 lg:hidden border-t border-slate-800 
+      {
+        user && (
+          <nav className="fixed bottom-0 left-0 right-0 z-30 lg:hidden border-t border-slate-800 
                       bg-slate-950/95 backdrop-blur-lg">
-          <div className="flex items-center justify-around px-2 py-2 safe-area-inset-bottom">
-            {bottomNavItems.map((item) => {
-              const active = isActive(item.path) ||
-                (item.path === "/biomarkers/latest" && isActiveGroup(["/biomarkers"]));
+            <div className="flex items-center justify-around px-2 py-2 safe-area-inset-bottom">
+              {bottomNavItems.map((item) => {
+                const active = isActive(item.path) ||
+                  (item.path === "/biomarkers/latest" && isActiveGroup(["/biomarkers"]));
 
-              return (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex flex-col items-center gap-1 px-3 py-2 rounded-2xl min-w-[4rem] transition-all ${active
-                    ? "text-primary bg-primary/10"
-                    : "text-slate-400 hover:text-slate-300"
-                    }`}
-                >
-                  <span className={`transition-transform ${active ? 'scale-110' : ''}`}>
-                    {item.icon}
-                  </span>
-                  <span className="text-xs font-semibold">{item.label}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
-      )}
+                return (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex flex-col items-center gap-1 px-3 py-2 rounded-2xl min-w-[4rem] transition-all ${active
+                      ? "text-primary bg-primary/10"
+                      : "text-slate-400 hover:text-slate-300"
+                      }`}
+                  >
+                    <span className={`transition-transform ${active ? 'scale-110' : ''}`}>
+                      {item.icon}
+                    </span>
+                    <span className="text-xs font-semibold">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </nav>
+        )
+      }
 
       {/* Spacer for bottom nav on mobile */}
       {user && <div className="h-20 lg:hidden"></div>}

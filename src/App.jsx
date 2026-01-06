@@ -19,6 +19,7 @@ import DemoReportPage from "./pages/DemoReportPage";
 import GetACoachPage from "./pages/GetACoachPage";
 import WorkoutGenerator from "./pages/WorkoutGenerator";
 import WorkoutHistoryPage from "./pages/WorkoutHistoryPage";
+import NutritionPage from "./pages/NutritionPage";
 
 export const AuthContext = createContext(null);
 
@@ -85,6 +86,14 @@ function AppWrapper() {
           element={
             <ProtectedRoute>
               <WorkoutHistoryPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route path="/nutrition"
+          element={
+            <ProtectedRoute>
+              <NutritionPage />
             </ProtectedRoute>
           }
         />
