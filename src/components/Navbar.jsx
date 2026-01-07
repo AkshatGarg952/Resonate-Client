@@ -34,12 +34,27 @@ export default function Navbar({ user, onLogout }) {
   const isActive = (path) => location.pathname === path;
   const isActiveGroup = (paths) => paths.some(path => location.pathname.includes(path));
 
-  const connectGoogleFit = () => {
+  const connectGoogleFit = async () => {
     try {
       setUserMenuOpen(false);
-      window.location.href = `${BASE_URL}/fit/google`;
+
+      // Fetch the OAuth URL from the server (sends cookies)
+      const response = await fetch(`${BASE_URL}/fit/google`, {
+        method: 'GET',
+        credentials: 'include', // Important: sends cookies
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to get Google Fit URL');
+      }
+
+      const { url } = await response.json();
+
+      // Now navigate to the OAuth URL
+      window.location.href = url;
     } catch (err) {
       console.error("Google Fit connection failed", err);
+      alert("Failed to connect to Google Fit. Please try again.");
     }
   };
 
