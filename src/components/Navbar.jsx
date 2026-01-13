@@ -193,7 +193,7 @@ export default function Navbar({ user, onLogout }) {
                   <button className={`flex items-center gap-1.5 font-medium transition-colors ${isActiveGroup(["/biomarkers", "/demo-report"]) ? "text-primary" : "text-slate-300 hover:text-slate-50"
                     }`}
                   >
-                    Reports
+                    Diagnosis
                     <svg className="w-4 h-4 transition-transform group-hover:rotate-180"
                       fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
