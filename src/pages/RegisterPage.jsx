@@ -103,6 +103,7 @@ export default function RegisterPage() {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+    if (!validateStep()) return;
     setError("");
     setLoading(true);
 
@@ -148,8 +149,14 @@ export default function RegisterPage() {
       }
     }
     if (step === 2) {
-      if (!form.name || !form.gender || !form.age) {
-        setError("Name, gender, and age are required");
+      if (!form.name || !form.gender || !form.age || !form.height || !form.weight) {
+        setError("All fields are required");
+        return false;
+      }
+    }
+    if ((step === 3 && form.gender !== "female") || step === 4) {
+      if (!form.dietType || !form.goal) {
+        setError("Diet type and fitness goal are required");
         return false;
       }
     }
