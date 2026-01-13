@@ -41,7 +41,7 @@ export default function Navbar({ user, onLogout }) {
       // Fetch the OAuth URL from the server (sends cookies)
       const response = await fetch(`${BASE_URL}/fit/google`, {
         method: 'GET',
-        credentials: 'include', // Important: sends cookies
+        credentials: 'include',
       });
 
       if (!response.ok) {
@@ -100,7 +100,7 @@ export default function Navbar({ user, onLogout }) {
     },
     {
       path: "/biomarkers/latest",
-      label: "Reports",
+      label: "Diagnosis",
       icon: (
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -204,10 +204,10 @@ export default function Navbar({ user, onLogout }) {
                                 shadow-xl overflow-hidden opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-20 transform translate-y-2 group-hover:translate-y-0">
                     <div className="p-2 space-y-1">
                       <Link to="/biomarkers/latest" className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
-                        📊 Latest Analysis
+                        📊 Latest Diagnosis
                       </Link>
                       <Link to="/biomarkers/history" className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
-                        📂 Analysis History
+                        📂 Diagnosis History
                       </Link>
                       <div className="border-t border-slate-800 my-1"></div>
                       <Link to="/biomarkers/upload" className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
