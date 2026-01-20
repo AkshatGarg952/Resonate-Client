@@ -19,7 +19,7 @@ export default function Navbar({ user, onLogout }) {
     setUserMenuOpen(false);
   }, [location.pathname]);
 
-  // Prevent body scroll when mobile menu is open
+
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -179,14 +179,30 @@ export default function Navbar({ user, onLogout }) {
 
 
 
-                {/* Nutrition Link */}
-                <Link
-                  to="/nutrition"
-                  className={`font-medium transition-colors flex items-center gap-2 ${isActive("/nutrition") ? "text-primary" : "text-slate-300 hover:text-slate-50"
+                {/* Nutrition Dropdown */}
+                <div className="relative group">
+                  <button className={`flex items-center gap-1.5 font-medium transition-colors ${isActiveGroup(["/nutrition", "/food-analysis"]) ? "text-primary" : "text-slate-300 hover:text-slate-50"
                     }`}
-                >
-                  Nutrition
-                </Link>
+                  >
+                    Nutrition
+                    <svg className="w-4 h-4 transition-transform group-hover:rotate-180"
+                      fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                  </button>
+
+                  <div className="absolute left-0 mt-4 w-48 rounded-2xl bg-slate-900 border border-slate-800 
+                                shadow-xl overflow-hidden opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-20 transform translate-y-2 group-hover:translate-y-0">
+                    <div className="p-2 space-y-1">
+                      <Link to="/nutrition" className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
+                        🥗 Daily Plan
+                      </Link>
+                      <Link to="/food-analysis" className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
+                        📸 Meal Analysis
+                      </Link>
+                    </div>
+                  </div>
+                </div>
 
                 {/* Blood Reports Dropdown */}
                 <div className="relative group">
@@ -384,8 +400,11 @@ export default function Navbar({ user, onLogout }) {
                     <div className="space-y-2">
                       <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider px-2">Diet</p>
                       <div className="bg-slate-800/30 rounded-2xl overflow-hidden">
-                        <Link to="/nutrition" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 font-medium">
+                        <Link to="/nutrition" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
                           <span>🥗</span> Daily Plan
+                        </Link>
+                        <Link to="/food-analysis" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 font-medium">
+                          <span>📸</span> Meal Analysis
                         </Link>
                       </div>
                     </div>
