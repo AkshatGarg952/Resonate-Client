@@ -53,7 +53,7 @@ const FoodAnalyzer = () => {
                 </header>
 
                 <div className="grid md:grid-cols-2 gap-8">
-                    {/* Upload Section */}
+
                     <div className="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 space-y-6">
                         <div className="space-y-4">
                             <label className="block text-sm font-medium text-gray-300">Cuisine Context (Optional)</label>
@@ -106,7 +106,6 @@ const FoodAnalyzer = () => {
                         )}
                     </div>
 
-                    {/* Results Section */}
                     <div className="space-y-6">
                         {loading && (
                             <div className="h-full flex flex-col items-center justify-center text-gray-400 space-y-4 min-h-[300px]">

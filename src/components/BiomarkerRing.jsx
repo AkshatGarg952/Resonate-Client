@@ -6,7 +6,6 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
   const [animated, setAnimated] = useState(false);
 
   useEffect(() => {
-    // Trigger animation on mount
     setTimeout(() => setAnimated(true), 100);
   }, []);
 
@@ -17,7 +16,7 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
   const isUnavailable = statusLower === "unavailable" || !isAvailable;
   const isUnknown = statusLower === "unknown";
 
-  // Color configurations
+
   const getColors = () => {
     if (isUnavailable || isUnknown) {
       return {
@@ -46,7 +45,7 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
         icon: "text-red-400",
       };
     }
-    // Fallback for any other status
+
     return {
       ring: "stroke-slate-500",
       bg: "stroke-slate-800",
@@ -74,15 +73,15 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
     return "❓";
   };
 
-  // Calculate stroke dashoffset for animation (simulate 75% progress ring)
+
   const radius = 36;
   const circumference = 2 * Math.PI * radius;
-  const progress = isUndetermined ? 0 : 75; // Show 75% filled ring for visual appeal
+  const progress = isUndetermined ? 0 : 75;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
   return (
     <>
-      {/* Biomarker Card */}
+
       <div
         onClick={() => setShowDetails(true)}
         className={`relative flex flex-col items-center bg-gradient-to-br ${colors.gradient} 
@@ -90,7 +89,7 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
                   hover:border-${isGood ? 'emerald' : 'red'}-500/30 
                   active:scale-[0.97] transition-all duration-300 cursor-pointer group`}
       >
-        {/* Info Icon - Top Right */}
+
         <div className="absolute top-3 right-3 w-6 h-6 rounded-full bg-slate-800/50 
                       flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
           <svg className="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,10 +98,10 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
           </svg>
         </div>
 
-        {/* Animated Progress Ring */}
+
         <div className="relative w-24 h-24 group-hover:scale-110 transition-transform duration-300">
           <svg className="w-24 h-24 transform -rotate-90">
-            {/* Background circle */}
+
             <circle
               cx="48"
               cy="48"
@@ -111,7 +110,7 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
               fill="transparent"
               className={colors.bg}
             />
-            {/* Progress circle with animation */}
+
             {!isUndetermined && (
               <circle
                 cx="48"
@@ -127,7 +126,7 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
             )}
           </svg>
           
-          {/* Center Value */}
+
           <div className="absolute inset-0 flex flex-col items-center justify-center">
             <span className="text-xl font-black text-slate-50">
               {isUndetermined ? "--" : value}
@@ -138,11 +137,9 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
           </div>
         </div>
 
-        {/* Biomarker Name */}
         <div className="text-center">
           <p className="text-sm font-bold text-slate-50 mb-1 leading-tight">{name}</p>
-          
-          {/* Status Badge */}
+
           <span className={`inline-flex items-center gap-1 text-xs px-2.5 py-1 rounded-full 
                           border font-semibold ${colors.badge}`}>
             <span>{getIcon()}</span>
@@ -150,13 +147,11 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
           </span>
         </div>
 
-        {/* Tap hint */}
         <div className="text-xs text-slate-500 font-medium opacity-0 group-hover:opacity-100 transition-opacity">
           Tap for details
         </div>
       </div>
 
-      {/* Details Modal */}
       {showDetails && (
         <div 
           className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-end sm:items-center 
@@ -168,7 +163,7 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
                      w-full sm:max-w-md max-h-[80vh] overflow-y-auto animate-slideUp"
             onClick={(e) => e.stopPropagation()}
           >
-            {/* Modal Header */}
+
             <div className="sticky top-0 bg-slate-900/95 backdrop-blur-sm border-b border-slate-800 
                           px-6 py-4 flex items-center justify-between z-10">
               <h3 className="text-lg font-black text-slate-50">{name}</h3>
@@ -183,10 +178,9 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
               </button>
             </div>
 
-            {/* Modal Content */}
+
             <div className="p-6 space-y-5">
-              
-              {/* Large Status Card */}
+
               <div className={`bg-gradient-to-br ${colors.gradient} border border-slate-700/50 
                             rounded-2xl p-6 text-center`}>
                 <div className="relative w-32 h-32 mx-auto mb-4">
@@ -219,7 +213,7 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
                 </span>
               </div>
 
-              {/* Normal Range Info */}
+
               {normalRange && (
                 <div className="bg-slate-950/50 border border-slate-800 rounded-2xl p-4">
                   <div className="flex items-start gap-3">
@@ -237,7 +231,6 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
                 </div>
               )}
 
-              {/* What This Means */}
               <div className="space-y-3">
                 <h4 className="text-sm font-bold text-slate-300">What This Means</h4>
                 <div className={`bg-${isGood ? 'emerald' : isBad ? 'red' : 'slate'}-500/5 border border-${isGood ? 'emerald' : isBad ? 'red' : 'slate'}-500/20 
@@ -258,7 +251,6 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
                 </div>
               </div>
 
-              {/* Recommendations */}
               {isBad && (
                 <div className="space-y-3">
                   <h4 className="text-sm font-bold text-slate-300">Recommendations</h4>
@@ -279,7 +271,6 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
                 </div>
               )}
 
-              {/* Close Button */}
               <button
                 onClick={() => setShowDetails(false)}
                 className="w-full py-3 rounded-2xl bg-slate-800 border border-slate-700 
@@ -293,7 +284,6 @@ export default function BiomarkerRing({ name, value, status, unit = "", normalRa
         </div>
       )}
 
-      {/* Custom CSS */}
       <style jsx>{`
         @keyframes fadeIn {
           from { opacity: 0; }
