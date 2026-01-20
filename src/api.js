@@ -84,3 +84,21 @@ export async function uploadPdfWithCookie(path, file) {
   return data;
 }
 
+
+export async function analyzeFoodImage(file, cuisine) {
+  const formData = new FormData();
+  formData.append("image", file);
+  if (cuisine) formData.append("cuisine", cuisine);
+
+  const res = await fetch(`${BASE_URL}/food/analyze`, {
+    method: "POST",
+    credentials: "include",
+    body: formData,
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || "Request failed");
+  }
+  return data;
+}

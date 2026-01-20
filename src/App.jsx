@@ -20,6 +20,7 @@ import GetACoachPage from "./pages/GetACoachPage";
 import WorkoutGenerator from "./pages/WorkoutGenerator";
 import WorkoutHistoryPage from "./pages/WorkoutHistoryPage";
 import NutritionPage from "./pages/NutritionPage";
+import FoodAnalyzer from "./components/FoodAnalyzer";
 
 export const AuthContext = createContext(null);
 
@@ -97,6 +98,7 @@ function AppWrapper() {
           }
         />
 
+
         <Route path="/nutrition"
           element={
             <ProtectedRoute>
@@ -104,6 +106,15 @@ function AppWrapper() {
             </ProtectedRoute>
           }
         />
+
+        <Route path="/food-analysis"
+          element={
+            <ProtectedRoute>
+              <FoodAnalyzer />
+            </ProtectedRoute>
+          }
+        />
+
 
         <Route path="/profile"
           element={
