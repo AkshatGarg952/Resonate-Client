@@ -152,6 +152,15 @@ export default function Navbar({ user, onLogout }) {
                   Dashboard
                 </Link>
 
+                {/* Interventions */}
+                <Link
+                  to="/interventions"
+                  className={`font-medium transition-colors flex items-center gap-2 ${isActive("/interventions") ? "text-primary" : "text-slate-300 hover:text-slate-50"
+                    }`}
+                >
+                  Interventions
+                </Link>
+
                 {/* Workouts Dropdown */}
                 <div className="relative group">
                   <button className={`flex items-center gap-1.5 font-medium transition-colors ${isActiveGroup(["/workout", "/workouts"]) ? "text-primary" : "text-slate-300 hover:text-slate-50"

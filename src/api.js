@@ -67,6 +67,26 @@ export async function putWithCookie(path, body) {
 }
 
 
+
+
+export async function patchWithCookie(path, body) {
+  const res = await fetch(`${BASE_URL}${path}`, {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify(body),
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || "Request failed");
+  }
+  return data;
+}
+
+
 export async function uploadPdfWithCookie(path, file) {
   const formData = new FormData();
   formData.append("report", file);
@@ -102,3 +122,26 @@ export async function analyzeFoodImage(file, cuisine) {
   }
   return data;
 }
+
+// Interventions
+export async function createIntervention(body) {
+  return postWithCookie("/api/interventions", body);
+}
+
+export async function getActiveInterventions() {
+  return getWithCookie("/api/interventions/active");
+}
+
+export async function getAllInterventions() {
+  return getWithCookie("/api/interventions");
+}
+
+
+export async function stopIntervention(id, status = 'discontinued', reason = null) {
+  return patchWithCookie(`/api/interventions/${id}/stop`, { status, reason });
+}
+
+export async function updateIntervention(id, body) {
+  return putWithCookie(`/api/interventions/${id}`, body);
+}
+
