@@ -13,12 +13,21 @@ const WorkoutGenerator = () => {
         fitnessLevel: '',
         equipment: [],
         timeAvailable: 30,
-        injuries: []
+        injuries: [],
+        motivationLevel: '',
+        workoutTiming: '',
+        goalBarriers: []
     });
+    const [customBarrier, setCustomBarrier] = useState("");
 
     const levels = ['Beginner', 'Intermediate', 'Advanced'];
     const equipmentList = ['Dumbbells', 'Kettlebells', 'Barbell', 'Resistance Bands', 'Pull-up Bar', 'Gym Machine', 'None (Bodyweight)'];
     const injuryList = ['None', 'Knees', 'Shoulders', 'Back', 'Wrists', 'Ankles'];
+    const motivationLevels = ['Low', 'Medium', 'High'];
+    const timingOptions = ['Morning', 'Afternoon', 'Evening'];
+    const barrierOptions = ['Time Constraints', 'Low Energy', 'Lack of Discipline', 'Boredom', 'Slow Progress', 'None'];
+
+    const totalSteps = 7; // 0 to 6 are input steps
 
     const handleNext = () => setStep(prev => prev + 1);
     const handleBack = () => setStep(prev => prev - 1);
@@ -29,8 +38,8 @@ const WorkoutGenerator = () => {
             if (list.includes(item)) {
                 return { ...prev, [category]: list.filter(i => i !== item) };
             } else {
-                if (category === 'injuries' && item === 'None') return { ...prev, injuries: ['None'] };
-                if (category === 'injuries' && list.includes('None')) return { ...prev, injuries: [item] };
+                if ((category === 'injuries' || category === 'goalBarriers') && item === 'None') return { ...prev, [category]: ['None'] };
+                if ((category === 'injuries' || category === 'goalBarriers') && list.includes('None')) return { ...prev, [category]: [item] };
                 return { ...prev, [category]: [...list, item] };
             }
         });
@@ -40,14 +49,19 @@ const WorkoutGenerator = () => {
         setLoading(true);
         setError(null);
         try {
+            const finalBarriers = [...formData.goalBarriers];
+            if (customBarrier.trim()) {
+                finalBarriers.push(customBarrier.trim());
+            }
+
             const res = await postWithCookie('/workout/generate', {
                 ...formData,
-                // Ensure 'None' maps correctly or is handled by backend
                 equipment: formData.equipment.includes('None (Bodyweight)') ? [] : formData.equipment,
-                injuries: formData.injuries.includes('None') ? [] : formData.injuries
+                injuries: formData.injuries.includes('None') ? [] : formData.injuries,
+                goalBarriers: finalBarriers.includes('None') ? [] : finalBarriers
             });
             setGeneratedPlan(res.plan);
-            setStep(5); // Result step
+            setStep(totalSteps + 1); // Result step
         } catch (err) {
             setError(err.message || "Failed to generate plan");
         } finally {
@@ -62,16 +76,16 @@ const WorkoutGenerator = () => {
             <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-500/20 rounded-full blur-[100px]" />
 
             <div className="z-10 w-full max-w-2xl">
-                {step < 5 && (
+                {step <= totalSteps && !generatedPlan && (
                     <div className="mb-8 text-center">
                         <h1 className="text-4xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent mb-2">
                             AI Workout Planner
                         </h1>
-                        <p className="text-slate-400">Step {step + 1} of 4</p>
+                        <p className="text-slate-400">Step {step + 1} of {totalSteps}</p>
                         <div className="w-full bg-slate-800 h-2 rounded-full mt-4 overflow-hidden">
                             <div
                                 className="h-full bg-gradient-to-r from-green-400 to-blue-500 transition-all duration-500"
-                                style={{ width: `${((step + 1) / 4) * 100}%` }}
+                                style={{ width: `${((step + 1) / totalSteps) * 100}%` }}
                             />
                         </div>
                     </div>
@@ -92,8 +106,8 @@ const WorkoutGenerator = () => {
                                         key={level}
                                         onClick={() => { setFormData({ ...formData, fitnessLevel: level }); handleNext(); }}
                                         className={`p-6 rounded-2xl border-2 transition-all hover:scale-[1.02] text-left group ${formData.fitnessLevel === level
-                                                ? 'border-green-500 bg-green-500/10'
-                                                : 'border-white/5 hover:border-white/20 hover:bg-white/5'
+                                            ? 'border-green-500 bg-green-500/10'
+                                            : 'border-white/5 hover:border-white/20 hover:bg-white/5'
                                             }`}
                                     >
                                         <div className="text-xl font-bold mb-1">{level}</div>
@@ -115,8 +129,8 @@ const WorkoutGenerator = () => {
                                         key={item}
                                         onClick={() => toggleSelection('equipment', item)}
                                         className={`p-4 rounded-xl border text-sm transition-all ${formData.equipment.includes(item)
-                                                ? 'border-blue-500 bg-blue-500/20 text-blue-100'
-                                                : 'border-white/10 hover:bg-white/5 text-slate-300'
+                                            ? 'border-blue-500 bg-blue-500/20 text-blue-100'
+                                            : 'border-white/10 hover:bg-white/5 text-slate-300'
                                             }`}
                                     >
                                         {item}
@@ -172,22 +186,109 @@ const WorkoutGenerator = () => {
                                         key={item}
                                         onClick={() => toggleSelection('injuries', item)}
                                         className={`px-4 py-2 rounded-full border transition-all ${formData.injuries.includes(item)
-                                                ? 'border-red-500 bg-red-500/20 text-red-100'
-                                                : 'border-white/10 hover:bg-white/5 text-slate-300'
+                                            ? 'border-red-500 bg-red-500/20 text-red-100'
+                                            : 'border-white/10 hover:bg-white/5 text-slate-300'
                                             }`}
                                     >
                                         {item}
                                     </button>
                                 ))}
                             </div>
+                            <div className="flex justify-between items-center">
+                                <button onClick={handleBack} className="text-slate-400 hover:text-white transition-colors">Back</button>
+                                <button
+                                    onClick={handleNext}
+                                    className="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold transition-colors"
+                                >
+                                    Next
+                                </button>
+                            </div>
+                        </div>
+                    ) : step === 4 ? (
+                        <div className="space-y-6">
+                            <h2 className="text-2xl font-semibold mb-4 text-center">How motivated are you today?</h2>
+                            <div className="grid gap-4">
+                                {motivationLevels.map(level => (
+                                    <button
+                                        key={level}
+                                        onClick={() => { setFormData({ ...formData, motivationLevel: level }); handleNext(); }}
+                                        className={`p-6 rounded-2xl border-2 transition-all hover:scale-[1.02] text-center group ${formData.motivationLevel === level
+                                            ? 'border-amber-500 bg-amber-500/10 text-amber-100'
+                                            : 'border-white/5 hover:border-white/20 hover:bg-white/5'
+                                            }`}
+                                    >
+                                        <div className="text-xl font-bold mb-1">{level}</div>
+                                        <div className="text-slate-400 text-sm">
+                                            {level === 'Low' && "I need something easy to get moving"}
+                                            {level === 'Medium' && "I'm ready for a solid workout"}
+                                            {level === 'High' && "Push me to my limits!"}
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="flex justify-between items-center mt-4">
+                                <button onClick={handleBack} className="text-slate-400 hover:text-white transition-colors">Back</button>
+                            </div>
+                        </div>
+                    ) : step === 5 ? (
+                        <div className="space-y-6">
+                            <h2 className="text-2xl font-semibold mb-4 text-center">When do you plan to workout?</h2>
+                            <div className="grid grid-cols-3 gap-4">
+                                {timingOptions.map(time => (
+                                    <button
+                                        key={time}
+                                        onClick={() => { setFormData({ ...formData, workoutTiming: time }); handleNext(); }}
+                                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-[1.02] text-center group ${formData.workoutTiming === time
+                                            ? 'border-indigo-500 bg-indigo-500/10 text-indigo-100'
+                                            : 'border-white/5 hover:border-white/20 hover:bg-white/5'
+                                            }`}
+                                    >
+                                        <div className="text-lg font-bold">{time}</div>
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="flex justify-between items-center mt-4">
+                                <button onClick={handleBack} className="text-slate-400 hover:text-white transition-colors">Back</button>
+                            </div>
+                        </div>
+                    ) : step === 6 ? (
+                        <div>
+                            <h2 className="text-2xl font-semibold mb-2 text-center">Any barriers to your goal?</h2>
+                            <p className="text-center text-slate-400 mb-6 text-sm">We'll tailor the plan to help you overcome these.</p>
+                            <div className="flex flex-wrap gap-3 justify-center mb-8">
+                                {barrierOptions.map(item => (
+                                    <button
+                                        key={item}
+                                        onClick={() => toggleSelection('goalBarriers', item)}
+                                        className={`px-4 py-2 rounded-full border transition-all ${formData.goalBarriers.includes(item)
+                                            ? 'border-pink-500 bg-pink-500/20 text-pink-100'
+                                            : 'border-white/10 hover:bg-white/5 text-slate-300'
+                                            }`}
+                                    >
+                                        {item}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <div className="mb-8 max-w-sm mx-auto">
+                                <input
+                                    type="text"
+                                    placeholder="Any other constraints? (e.g. Quiet apartment, no jumping)"
+                                    value={customBarrier}
+                                    onChange={(e) => setCustomBarrier(e.target.value)}
+                                    className="w-full bg-slate-800/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-green-500 transition-colors"
+                                />
+                            </div>
+
                             {error && <div className="text-red-400 text-center mb-4">{error}</div>}
                             <div className="flex justify-between items-center">
                                 <button onClick={handleBack} className="text-slate-400 hover:text-white transition-colors">Back</button>
                                 <button
                                     onClick={generatePlan}
-                                    className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-400 hover:to-blue-500 rounded-xl font-bold text-lg shadow-lg hover:shadow-green-500/25 transition-all text-white"
+                                    disabled={loading}
+                                    className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-400 hover:to-blue-500 rounded-xl font-bold text-lg shadow-lg hover:shadow-green-500/25 transition-all text-white disabled:opacity-70 disabled:cursor-wait"
                                 >
-                                    Generate Plan
+                                    {loading ? 'Generating...' : 'Generate Plan'}
                                 </button>
                             </div>
                         </div>
@@ -229,6 +330,7 @@ const WorkoutGenerator = () => {
                                                     {ex.reps && `${ex.reps}`}
                                                     {ex.duration && `${ex.duration}`}
                                                 </div>
+                                                {ex.notes && <div className="text-xs text-slate-500 mt-1 italic">{ex.notes}</div>}
                                             </div>
                                             <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-mono text-slate-400">
                                                 {i + 1}
