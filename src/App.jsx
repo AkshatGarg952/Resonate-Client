@@ -21,6 +21,7 @@ import WorkoutGenerator from "./pages/WorkoutGenerator";
 import WorkoutHistoryPage from "./pages/WorkoutHistoryPage";
 import NutritionPage from "./pages/NutritionPage";
 import FoodAnalyzer from "./components/FoodAnalyzer";
+import InterventionsPage from "./pages/InterventionsPage";
 
 export const AuthContext = createContext(null);
 
@@ -115,6 +116,14 @@ function AppWrapper() {
           }
         />
 
+
+        <Route path="/interventions"
+          element={
+            <ProtectedRoute>
+              <InterventionsPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/profile"
           element={

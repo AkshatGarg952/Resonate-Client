@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import MetricCard from "../components/MetricCard";
 import BarChart from "../components/BarChart";
+import QuickAddWidget from "../components/QuickAddWidget";
 import WaterTracker from "../components/WaterTracker"; // [NEW]
 import { normalizeFitnessData } from "../utils/fitnessNormalizer";
 import { getWithCookie, postWithCookie } from "../api";
@@ -10,7 +11,7 @@ export default function FitnessDashboardPage() {
   const [fitness, setFitness] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [selectedPeriod, setSelectedPeriod] = useState('week'); // week, month
+
   const [syncStatus, setSyncStatus] = useState('synced'); // synced, syncing, error
   const [stepGoal, setStepGoal] = useState(0);
   const [newStepGoal, setNewStepGoal] = useState(0);
@@ -350,35 +351,21 @@ export default function FitnessDashboardPage() {
             <WaterTracker />
           </section>
 
-          {/* Period Selector */}
-          <section className="px-5 mb-4">
-            <div className="flex gap-2 bg-slate-900/60 backdrop-blur-sm border border-slate-800/50 
-                          rounded-2xl p-1.5">
-              <button
-                onClick={() => setSelectedPeriod('week')}
-                className={`flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200
-                         ${selectedPeriod === 'week'
-                    ? 'bg-primary text-slate-950 shadow-lg'
-                    : 'text-slate-400 hover:text-slate-300'
-                  }`}
-              >
-                7 Days
-              </button>
-              <button
-                onClick={() => setSelectedPeriod('month')}
-                className={`flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all duration-200
-                         ${selectedPeriod === 'month'
-                    ? 'bg-primary text-slate-950 shadow-lg'
-                    : 'text-slate-400 hover:text-slate-300'
-                  }`}
-              >
-                30 Days
-              </button>
-            </div>
+
+
+
+          import QuickAddWidget from "../components/QuickAddWidget";
+
+          // ... inside component ...
+
+          {/* Quick Add Widget */}
+          <section className="px-5 mb-6">
+            <QuickAddWidget />
           </section>
 
           {/* Charts Section */}
           <section className="px-5 space-y-4 mb-6">
+
             {/* Steps Chart */}
             <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6">
               <div className="flex items-center justify-between mb-4">
