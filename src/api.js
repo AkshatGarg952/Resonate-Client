@@ -145,3 +145,12 @@ export async function updateIntervention(id, body) {
   return putWithCookie(`/api/interventions/${id}`, body);
 }
 
+
+// Daily Logs
+export async function createDailyLog(body) {
+  return postWithCookie("/api/daily-logs", body);
+}
+
+export async function fetchWeeklyLogs() {
+  return getWithCookie("/api/daily-logs/weekly");
+}
