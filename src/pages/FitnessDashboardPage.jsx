@@ -351,13 +351,6 @@ export default function FitnessDashboardPage() {
             <WaterTracker />
           </section>
 
-
-
-
-          import QuickAddWidget from "../components/QuickAddWidget";
-
-          // ... inside component ...
-
           {/* Quick Add Widget */}
           <section className="px-5 mb-6">
             <QuickAddWidget />
