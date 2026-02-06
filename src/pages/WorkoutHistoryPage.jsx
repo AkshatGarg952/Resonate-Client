@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { getWithCookie } from '../api';
+import { getWithCookie, postWithCookie } from '../api';
 import { useNavigate } from 'react-router-dom';
 
 const WorkoutHistoryPage = () => {
@@ -7,6 +7,9 @@ const WorkoutHistoryPage = () => {
     const [workouts, setWorkouts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [selectedWorkout, setSelectedWorkout] = useState(null);
+    const [showCompleteModal, setShowCompleteModal] = useState(false);
+    const [completionData, setCompletionData] = useState({ rpe: 7, energyLevel: 7, notes: '' });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     useEffect(() => {
         loadHistory();
@@ -27,6 +30,28 @@ const WorkoutHistoryPage = () => {
         return new Date(dateString).toLocaleDateString('en-US', {
             month: 'short', day: 'numeric', year: 'numeric'
         });
+    };
+
+    const handleComplete = async () => {
+        if (!selectedWorkout) return;
+        setIsSubmitting(true);
+        try {
+            await postWithCookie('/workout/complete', {
+                workoutId: selectedWorkout._id,
+                ...completionData
+            });
+
+            setWorkouts(prev => prev.map(w =>
+                w._id === selectedWorkout._id ? { ...w, status: 'completed' } : w
+            ));
+            setShowCompleteModal(false);
+            setSelectedWorkout(null);
+        } catch (err) {
+            console.error("Failed to complete workout", err);
+            alert("Failed to log workout completion");
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -90,7 +115,7 @@ const WorkoutHistoryPage = () => {
                 )}
             </div>
 
-            {/* Detail Modal */}
+
             {selectedWorkout && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
                     <div className="bg-slate-900 w-full max-w-2xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col border border-white/10 shadow-2xl animate-in zoom-in-95 duration-200">
@@ -112,7 +137,7 @@ const WorkoutHistoryPage = () => {
                         </div>
 
                         <div className="p-6 overflow-y-auto custom-scrollbar space-y-6">
-                            {/* Warmup */}
+
                             <div className="bg-white/5 p-4 rounded-xl">
                                 <h3 className="text-green-400 font-semibold mb-3 uppercase tracking-wider text-xs">Warmup</h3>
                                 <ul className="space-y-2">
@@ -125,7 +150,7 @@ const WorkoutHistoryPage = () => {
                                 </ul>
                             </div>
 
-                            {/* Main */}
+
                             <div className="space-y-3">
                                 <h3 className="text-blue-400 font-semibold uppercase tracking-wider text-xs">Main Circuit</h3>
                                 {selectedWorkout.plan.exercises?.map((ex, i) => (
@@ -144,7 +169,7 @@ const WorkoutHistoryPage = () => {
                                 ))}
                             </div>
 
-                            {/* Cooldown */}
+
                             <div className="bg-white/5 p-4 rounded-xl">
                                 <h3 className="text-indigo-400 font-semibold mb-3 uppercase tracking-wider text-xs">Cooldown</h3>
                                 <ul className="space-y-2">
@@ -155,6 +180,91 @@ const WorkoutHistoryPage = () => {
                                         </li>
                                     ))}
                                 </ul>
+                            </div>
+
+
+                            {selectedWorkout.status !== 'completed' && (
+                                <div className="pt-4 border-t border-white/10">
+                                    <button
+                                        onClick={() => setShowCompleteModal(true)}
+                                        className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 rounded-xl font-bold text-white shadow-lg shadow-green-500/20 transition-all"
+                                    >
+                                        Log as Completed
+                                    </button>
+                                </div>
+                            )}
+                            {selectedWorkout.status === 'completed' && (
+                                <div className="pt-4 border-t border-white/10 text-center text-green-400 font-semibold">
+                                    ✓ Workout Completed
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
+            {showCompleteModal && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
+                    <div className="bg-slate-900 w-full max-w-md rounded-3xl border border-green-500/20 shadow-2xl p-6 animate-in zoom-in-95 duration-200">
+                        <h2 className="text-2xl font-bold text-white mb-6">Log Completion</h2>
+
+                        <div className="space-y-6">
+                            <div>
+                                <label className="block text-slate-400 text-sm mb-2">Rate of Perceived Exertion (RPE)</label>
+                                <input
+                                    type="range" min="1" max="10"
+                                    value={completionData.rpe}
+                                    onChange={(e) => setCompletionData({ ...completionData, rpe: parseInt(e.target.value) })}
+                                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-green-500"
+                                />
+                                <div className="flex justify-between text-xs text-slate-500 mt-1">
+                                    <span>Easy</span>
+                                    <span className="text-green-400 font-bold text-lg">{completionData.rpe}</span>
+                                    <span>Max Effort</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-slate-400 text-sm mb-2">Energy Level</label>
+                                <input
+                                    type="range" min="1" max="10"
+                                    value={completionData.energyLevel}
+                                    onChange={(e) => setCompletionData({ ...completionData, energyLevel: parseInt(e.target.value) })}
+                                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                                />
+                                <div className="flex justify-between text-xs text-slate-500 mt-1">
+                                    <span>Exhausted</span>
+                                    <span className="text-blue-400 font-bold text-lg">{completionData.energyLevel}</span>
+                                    <span>Energized</span>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-slate-400 text-sm mb-2">Notes (Optional)</label>
+                                <textarea
+                                    value={completionData.notes}
+                                    onChange={(e) => setCompletionData({ ...completionData, notes: e.target.value })}
+                                    className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-green-500 transition-colors"
+                                    rows="3"
+                                    placeholder="How did it feel?"
+                                />
+                            </div>
+
+                            <div className="flex gap-3 pt-2">
+                                <button
+                                    onClick={() => setShowCompleteModal(false)}
+                                    className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-semibold transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={handleComplete}
+                                    disabled={isSubmitting}
+                                    className="flex-1 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-white shadow-lg transition-colors disabled:opacity-50"
+                                >
+                                    {isSubmitting ? 'Saving...' : 'Confirm Log'}
+                                </button>
                             </div>
                         </div>
                     </div>

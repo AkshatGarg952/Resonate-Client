@@ -31,7 +31,7 @@ const DailyCheckInModal = ({ isOpen, onClose, onCheckInComplete }) => {
                 stressLevel: Number(formData.stressLevel)
             });
 
-            onCheckInComplete(); // Trigger refresh
+            onCheckInComplete();
             onClose();
         } catch (err) {
             setError(err.message || "Failed to submit check-in");
@@ -44,7 +44,7 @@ const DailyCheckInModal = ({ isOpen, onClose, onCheckInComplete }) => {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
             <div className="bg-slate-900 border border-slate-700/50 rounded-3xl w-full max-w-md p-6 shadow-2xl relative">
 
-                {/* Close Button */}
+
                 <button
                     onClick={onClose}
                     className="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors"
@@ -64,7 +64,7 @@ const DailyCheckInModal = ({ isOpen, onClose, onCheckInComplete }) => {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Energy */}
+
                     <div className="space-y-2">
                         <div className="flex justify-between items-center text-sm font-semibold text-slate-300">
                             <label>Energy Level</label>
@@ -85,7 +85,7 @@ const DailyCheckInModal = ({ isOpen, onClose, onCheckInComplete }) => {
                         </div>
                     </div>
 
-                    {/* Sleep */}
+
                     <div className="space-y-2">
                         <div className="flex justify-between items-center text-sm font-semibold text-slate-300">
                             <label>Sleep Quality</label>
@@ -106,7 +106,7 @@ const DailyCheckInModal = ({ isOpen, onClose, onCheckInComplete }) => {
                         </div>
                     </div>
 
-                    {/* Stress */}
+
                     <div className="space-y-2">
                         <div className="flex justify-between items-center text-sm font-semibold text-slate-300">
                             <label>Stress Level</label>
@@ -127,7 +127,7 @@ const DailyCheckInModal = ({ isOpen, onClose, onCheckInComplete }) => {
                         </div>
                     </div>
 
-                    {/* Notes */}
+
                     <div className="space-y-2">
                         <label className="block text-sm font-semibold text-slate-300">Notes (Optional)</label>
                         <textarea

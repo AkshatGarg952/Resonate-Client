@@ -8,7 +8,7 @@ export default function InterventionsPage() {
     const [error, setError] = useState('');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingIntervention, setEditingIntervention] = useState(null);
-    const [activeTab, setActiveTab] = useState('active'); // 'active' | 'history'
+    const [activeTab, setActiveTab] = useState('active');
 
     const fetchInterventions = async () => {
         try {
@@ -37,7 +37,7 @@ export default function InterventionsPage() {
 
     const handleDiscontinue = async (id, name) => {
         const reason = window.prompt(`Why are you stopping ${name}? (Optional)`);
-        if (reason === null) return; // User cancelled
+        if (reason === null) return;
 
         try {
             await stopIntervention(id, 'discontinued', reason);
@@ -59,17 +59,17 @@ export default function InterventionsPage() {
     };
 
     const handleRestart = (intervention) => {
-        // Clone the intervention data but remove ID, status, notes, and dates
+
         const restartedIntervention = {
             ...intervention,
-            _id: undefined, // Ensure it's treated as new
+            _id: undefined,
             status: 'active',
-            startDate: new Date().toISOString().split('T')[0], // Today
+            startDate: new Date().toISOString().split('T')[0],
             endDate: '',
-            notes: '' // Start fresh or keep previous notes? Let's keep blank for a fresh start.
+            notes: ''
         };
 
-        // Open modal with this data "pre-filled"
+
         setEditingIntervention(restartedIntervention);
         setIsModalOpen(true);
     };
@@ -97,7 +97,7 @@ export default function InterventionsPage() {
 
             <main className="max-w-7xl mx-auto px-5 py-8">
 
-                {/* Page Header */}
+
                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
                     <div>
                         <h1 className="text-3xl font-black text-white tracking-tight mb-1">
@@ -115,7 +115,7 @@ export default function InterventionsPage() {
                     </button>
                 </div>
 
-                {/* Tabs */}
+
                 <div className="flex gap-4 border-b border-slate-800 mb-6">
                     <button
                         onClick={() => setActiveTab('active')}
@@ -133,7 +133,7 @@ export default function InterventionsPage() {
                     </button>
                 </div>
 
-                {/* Content */}
+
                 {loading ? (
                     <div className="flex justify-center py-20">
                         <div className="w-8 h-8 border-4 border-slate-800 border-t-primary rounded-full animate-spin"></div>
@@ -219,7 +219,7 @@ export default function InterventionsPage() {
                                     )}
                                 </div>
 
-                                {/* Active: Progress Bar, Inactive: Nothing/Completed message */}
+
                                 <div className="mt-6 flex items-center justify-between gap-4">
                                     {item.status === 'active' ? (
                                         <>

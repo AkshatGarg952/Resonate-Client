@@ -20,6 +20,7 @@ import GetACoachPage from "./pages/GetACoachPage";
 import WorkoutGenerator from "./pages/WorkoutGenerator";
 import WorkoutHistoryPage from "./pages/WorkoutHistoryPage";
 import NutritionPage from "./pages/NutritionPage";
+import MealHistoryPage from "./pages/MealHistoryPage";
 import FoodAnalyzer from "./components/FoodAnalyzer";
 import InterventionsPage from "./pages/InterventionsPage";
 
@@ -37,13 +38,11 @@ function AppWrapper() {
 
     if (BACKEND_URL) {
       fetch(`${BACKEND_URL}/health`)
-        .then(() => console.log("Backend warmed up"))
         .catch(() => { });
     }
 
     if (MICROSERVICE_URL) {
       fetch(`${BACKEND_URL}/`)
-        .then(() => console.log("Backend warmed up"))
         .catch(() => { });
     }
 
@@ -72,117 +71,128 @@ function AppWrapper() {
     <AuthContext.Provider value={{ user }}>
       <Navbar user={user} onLogout={handleLogout} />
 
-      <Routes>
-        <Route path="/" element={<LandingPage />} />
 
-        <Route path="/login" element={<LoginPage />} />
+      <main className="pt-16 lg:pt-[4.5rem] min-h-screen">
+        <Routes>
+          <Route path="/" element={<LandingPage />} />
 
-        <Route path="/register" element={<RegisterPage />} />
+          <Route path="/login" element={<LoginPage />} />
 
-        <Route path="/demo-report" element={<DemoReportPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
-        <Route path="/get-coach" element={<GetACoachPage />} />
+          <Route path="/demo-report" element={<DemoReportPage />} />
 
-        <Route path="/workout-generator"
-          element={
-            <ProtectedRoute>
-              <WorkoutGenerator />
-            </ProtectedRoute>
-          }
-        />
+          <Route path="/get-coach" element={<GetACoachPage />} />
 
-        <Route path="/workouts"
-          element={
-            <ProtectedRoute>
-              <WorkoutHistoryPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route path="/workout-generator"
+            element={
+              <ProtectedRoute>
+                <WorkoutGenerator />
+              </ProtectedRoute>
+            }
+          />
 
-
-        <Route path="/nutrition"
-          element={
-            <ProtectedRoute>
-              <NutritionPage />
-            </ProtectedRoute>
-          }
-        />
-
-        <Route path="/food-analysis"
-          element={
-            <ProtectedRoute>
-              <FoodAnalyzer />
-            </ProtectedRoute>
-          }
-        />
+          <Route path="/workouts"
+            element={
+              <ProtectedRoute>
+                <WorkoutHistoryPage />
+              </ProtectedRoute>
+            }
+          />
 
 
-        <Route path="/interventions"
-          element={
-            <ProtectedRoute>
-              <InterventionsPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route path="/nutrition"
+            element={
+              <ProtectedRoute>
+                <NutritionPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="/profile"
-          element={
-            <ProtectedRoute>
-              <DashboardPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route path="/meal-history"
+            element={
+              <ProtectedRoute>
+                <MealHistoryPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <FitnessDashboardPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route path="/food-analysis"
+            element={
+              <ProtectedRoute>
+                <FoodAnalyzer />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="/biomarkers/upload"
-          element={
-            <ProtectedRoute>
-              <BiomarkerUploadPage />
-            </ProtectedRoute>
-          }
-        />
 
-        <Route path="/biomarkers/api"
-          element={
-            <ProtectedRoute>
-              <BiomarkerFetchFromApiPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route path="/interventions"
+            element={
+              <ProtectedRoute>
+                <InterventionsPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="/biomarkers/latest"
-          element={
-            <ProtectedRoute>
-              <LatestAnalysisPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route path="/profile"
+            element={
+              <ProtectedRoute>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="/biomarkers/history"
-          element={
-            <ProtectedRoute>
-              <BiomarkerHistoryPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route path="/dashboard"
+            element={
+              <ProtectedRoute>
+                <FitnessDashboardPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="/biomarkers/history/:id"
-          element={
-            <ProtectedRoute>
-              <BiomarkerHistoryDetailPage />
-            </ProtectedRoute>
-          }
-        />
+          <Route path="/biomarkers/upload"
+            element={
+              <ProtectedRoute>
+                <BiomarkerUploadPage />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
+          <Route path="/biomarkers/api"
+            element={
+              <ProtectedRoute>
+                <BiomarkerFetchFromApiPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="/biomarkers/latest"
+            element={
+              <ProtectedRoute>
+                <LatestAnalysisPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="/biomarkers/history"
+            element={
+              <ProtectedRoute>
+                <BiomarkerHistoryPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="/biomarkers/history/:id"
+            element={
+              <ProtectedRoute>
+                <BiomarkerHistoryDetailPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </main>
     </AuthContext.Provider>
   );
 }

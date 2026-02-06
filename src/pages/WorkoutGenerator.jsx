@@ -27,7 +27,7 @@ const WorkoutGenerator = () => {
     const timingOptions = ['Morning', 'Afternoon', 'Evening'];
     const barrierOptions = ['Time Constraints', 'Low Energy', 'Lack of Discipline', 'Boredom', 'Slow Progress', 'None'];
 
-    const totalSteps = 7; // 0 to 6 are input steps
+    const totalSteps = 7;
 
     const handleNext = () => setStep(prev => prev + 1);
     const handleBack = () => setStep(prev => prev - 1);
@@ -61,7 +61,7 @@ const WorkoutGenerator = () => {
                 goalBarriers: finalBarriers.includes('None') ? [] : finalBarriers
             });
             setGeneratedPlan(res.plan);
-            setStep(totalSteps + 1); // Result step
+            setStep(totalSteps + 1);
         } catch (err) {
             setError(err.message || "Failed to generate plan");
         } finally {
@@ -71,7 +71,7 @@ const WorkoutGenerator = () => {
 
     return (
         <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col items-center justify-center p-4 gradient-bg relative overflow-hidden">
-            {/* Background Accents */}
+
             <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-green-500/20 rounded-full blur-[100px]" />
             <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-500/20 rounded-full blur-[100px]" />
 

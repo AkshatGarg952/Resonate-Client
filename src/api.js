@@ -123,7 +123,7 @@ export async function analyzeFoodImage(file, cuisine) {
   return data;
 }
 
-// Interventions
+
 export async function createIntervention(body) {
   return postWithCookie("/api/interventions", body);
 }
@@ -146,7 +146,7 @@ export async function updateIntervention(id, body) {
 }
 
 
-// Daily Logs
+
 export async function createDailyLog(body) {
   return postWithCookie("/api/daily-logs", body);
 }

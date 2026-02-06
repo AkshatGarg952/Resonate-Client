@@ -9,7 +9,7 @@ export default function DemoReportPage() {
   const [meta, setMeta] = useState(null);
   const navigate = useNavigate();
 
-  // Demo data - simulating a processed report
+
   useEffect(() => {
     const demoData = {
       updatedAt: new Date().toISOString(),
@@ -148,7 +148,7 @@ export default function DemoReportPage() {
       }
     };
 
-    // Flatten biomarkers for overall calculations
+
     const biomarkersArr = Object.entries(demoData.biomarkersByCategory).flatMap(([category, markers]) =>
       Object.entries(markers).map(([name, info]) => ({
         name,
@@ -170,7 +170,7 @@ export default function DemoReportPage() {
     });
   }, []);
 
-  // Set first category as default when categories are loaded
+
   useEffect(() => {
     if (Object.keys(biomarkersByCategory).length > 0 && !selectedCategory) {
       setSelectedCategory(Object.keys(biomarkersByCategory)[0]);
@@ -180,11 +180,11 @@ export default function DemoReportPage() {
   const getOverallScore = () => {
     if (meta?.overallScore) return meta.overallScore;
     if (biomarkers.length === 0) return null;
-    
-    // Only count available biomarkers
+
+    if (biomarkers.length === 0) return null;
     const availableBiomarkers = biomarkers.filter(b => b.isAvailable !== false);
     if (availableBiomarkers.length === 0) return null;
-    
+
     const goodCount = availableBiomarkers.filter(
       b => b.status?.toLowerCase() === 'good'
     ).length;
@@ -192,9 +192,9 @@ export default function DemoReportPage() {
   };
 
   const getHealthInsights = () => {
-    // Count ALL biomarkers from backend (no filtering)
+
     const total = biomarkers.length;
-    
+
     const goodCount = biomarkers.filter(
       b => b.status?.toLowerCase() === 'good'
     ).length;
@@ -214,11 +214,11 @@ export default function DemoReportPage() {
     if (diffDays === 0) return 'Today';
     if (diffDays === 1) return 'Yesterday';
     if (diffDays < 7) return `${diffDays} days ago`;
-    
-    return date.toLocaleDateString('en-IN', { 
-      day: 'numeric', 
-      month: 'short', 
-      year: 'numeric' 
+
+    return date.toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'short',
+      year: 'numeric'
     });
   };
 
@@ -227,8 +227,8 @@ export default function DemoReportPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-24">
-      
-      {/* Header Section */}
+
+
       <section className="px-5 pt-6 pb-4">
         <div className="flex items-start justify-between mb-6">
           <div className="flex-1">
@@ -246,38 +246,38 @@ export default function DemoReportPage() {
             {meta?.updatedAt && (
               <p className="text-xs text-slate-500 mt-2 flex items-center gap-1.5">
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
                 Analyzed {formatDate(meta.updatedAt)}
               </p>
             )}
           </div>
 
-          {/* Close Button */}
+
           <button
             onClick={() => navigate('/biomarkers/latest')}
             className="w-10 h-10 rounded-full bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 
                      flex items-center justify-center hover:bg-slate-800 active:scale-95 
                      transition-all duration-200"
           >
-            <svg 
-              className="w-5 h-5 text-slate-300" 
-              fill="none" 
-              stroke="currentColor" 
+            <svg
+              className="w-5 h-5 text-slate-300"
+              fill="none"
+              stroke="currentColor"
               viewBox="0 0 24 24"
             >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                    d="M6 18L18 6M6 6l12 12" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
         </div>
       </section>
 
-      {/* Main Content */}
+
       {biomarkers.length > 0 && (
         <>
-          {/* Overall Health Score Card */}
+
           {overallScore !== null && (
             <section className="px-5 mb-6">
               <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm 
@@ -289,29 +289,27 @@ export default function DemoReportPage() {
                       {overallScore}
                       <span className="text-xl font-normal text-slate-500 ml-2">/100</span>
                     </h2>
-                    <p className={`text-sm font-semibold ${
-                      overallScore >= 70 ? 'text-emerald-400' : 
-                      overallScore >= 40 ? 'text-amber-400' : 'text-red-400'
-                    }`}>
-                      {overallScore >= 70 ? 'Excellent Health' : 
-                       overallScore >= 40 ? 'Needs Attention' : 'Consult Doctor'}
+                    <p className={`text-sm font-semibold ${overallScore >= 70 ? 'text-emerald-400' :
+                        overallScore >= 40 ? 'text-amber-400' : 'text-red-400'
+                      }`}>
+                      {overallScore >= 70 ? 'Excellent Health' :
+                        overallScore >= 40 ? 'Needs Attention' : 'Consult Doctor'}
                     </p>
                   </div>
 
-                  {/* Circular Progress */}
+
                   <div className="relative w-28 h-28">
                     <svg className="w-28 h-28 transform -rotate-90">
-                      <circle cx="56" cy="56" r="48" strokeWidth="8" fill="transparent" className="stroke-slate-800"/>
-                      <circle 
-                        cx="56" cy="56" r="48" 
-                        strokeWidth="8" 
+                      <circle cx="56" cy="56" r="48" strokeWidth="8" fill="transparent" className="stroke-slate-800" />
+                      <circle
+                        cx="56" cy="56" r="48"
+                        strokeWidth="8"
                         fill="transparent"
                         strokeDasharray={`${2 * Math.PI * 48}`}
                         strokeDashoffset={`${2 * Math.PI * 48 * (1 - overallScore / 100)}`}
-                        className={`transition-all duration-1000 ${
-                          overallScore >= 70 ? 'stroke-emerald-400' : 
-                          overallScore >= 40 ? 'stroke-amber-400' : 'stroke-red-400'
-                        }`}
+                        className={`transition-all duration-1000 ${overallScore >= 70 ? 'stroke-emerald-400' :
+                            overallScore >= 40 ? 'stroke-amber-400' : 'stroke-red-400'
+                          }`}
                         strokeLinecap="round"
                       />
                     </svg>
@@ -321,7 +319,7 @@ export default function DemoReportPage() {
                   </div>
                 </div>
 
-                {/* Stats Grid */}
+
                 <div className="grid grid-cols-3 gap-3">
                   <div className="bg-slate-950/30 rounded-2xl p-3 text-center">
                     <p className="text-2xl font-black text-slate-50">{insights.total}</p>
@@ -340,15 +338,15 @@ export default function DemoReportPage() {
             </section>
           )}
 
-          {/* Health Insight Banner */}
+
           {insights.badCount > 0 && (
             <section className="px-5 mb-6">
               <div className="bg-gradient-to-r from-amber-500/10 to-red-500/10 border border-amber-500/20 
                             rounded-2xl p-4 flex items-start gap-3">
                 <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
                   <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                   </svg>
                 </div>
                 <div className="flex-1">
@@ -363,7 +361,7 @@ export default function DemoReportPage() {
             </section>
           )}
 
-          {/* Biomarkers by Category */}
+
           <section className="px-5 mb-6">
             <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6">
               <div className="flex items-center justify-between mb-5">
@@ -388,10 +386,10 @@ export default function DemoReportPage() {
                 </div>
               </div>
 
-              {/* Category List and Biomarkers Display */}
+
               {Object.keys(biomarkersByCategory).length > 0 ? (
                 <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-                  {/* Category List */}
+
                   <div className="lg:col-span-1">
                     <div className="bg-slate-950/50 rounded-2xl p-4 border border-slate-800/50">
                       <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">
@@ -402,24 +400,22 @@ export default function DemoReportPage() {
                           const categoryBiomarkers = biomarkersByCategory[categoryLabel] || {};
                           const categoryCount = Object.keys(categoryBiomarkers).length;
                           const isSelected = selectedCategory === categoryLabel;
-                          
+
                           return (
                             <button
                               key={categoryLabel}
                               onClick={() => setSelectedCategory(categoryLabel)}
-                              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                                isSelected
+                              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${isSelected
                                   ? "bg-gradient-to-r from-primary to-emerald-500 text-slate-950 shadow-lg shadow-primary/25"
                                   : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-slate-300 hover:bg-slate-800"
-                              }`}
+                                }`}
                             >
                               <div className="flex items-center justify-between">
                                 <span className="truncate">{categoryLabel || 'Other'}</span>
-                                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0 ${
-                                  isSelected 
-                                    ? "bg-slate-950/30 text-slate-950" 
+                                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0 ${isSelected
+                                    ? "bg-slate-950/30 text-slate-950"
                                     : "bg-slate-700/50 text-slate-500"
-                                }`}>
+                                  }`}>
                                   {categoryCount}
                                 </span>
                               </div>
@@ -430,7 +426,7 @@ export default function DemoReportPage() {
                     </div>
                   </div>
 
-                  {/* Selected Category Biomarkers */}
+
                   <div className="lg:col-span-3">
                     {selectedCategory && biomarkersByCategory[selectedCategory] ? (
                       <>
@@ -461,8 +457,8 @@ export default function DemoReportPage() {
                       <div className="flex flex-col items-center justify-center py-12 text-center">
                         <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-4">
                           <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                           </svg>
                         </div>
                         <p className="text-sm text-slate-400">Select a category to view biomarkers</p>
@@ -489,9 +485,9 @@ export default function DemoReportPage() {
             </div>
           </section>
 
-          {/* Action Cards */}
+
           <section className="px-5 space-y-3">
-            {/* View History */}
+
             <button
               onClick={() => navigate('/biomarkers/history')}
               className="w-full flex items-center justify-between p-4 bg-slate-900/60 backdrop-blur-sm 
@@ -501,8 +497,8 @@ export default function DemoReportPage() {
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
                   <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <div className="text-left">
@@ -510,13 +506,13 @@ export default function DemoReportPage() {
                   <p className="text-xs text-slate-500">See your history & trends</p>
                 </div>
               </div>
-              <svg className="w-5 h-5 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" 
-                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>
 
-            {/* Upload New Report */}
+
             <button
               onClick={() => navigate('/biomarkers/upload')}
               className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-primary/10 to-emerald-500/10 
@@ -534,8 +530,8 @@ export default function DemoReportPage() {
                   <p className="text-xs text-slate-500">Analyze latest blood test</p>
                 </div>
               </div>
-              <svg className="w-5 h-5 text-slate-500 group-hover:text-primary group-hover:translate-x-1 transition-all" 
-                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-slate-500 group-hover:text-primary group-hover:translate-x-1 transition-all"
+                fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
               </svg>
             </button>

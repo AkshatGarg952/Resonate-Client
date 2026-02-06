@@ -8,7 +8,7 @@ import { postAuth } from "../api";
 import { useNavigate, Link } from "react-router-dom";
 
 export default function RegisterPage() {
-  const [step, setStep] = useState(1); // Multi-step form
+  const [step, setStep] = useState(1);
   const [form, setForm] = useState({
     email: "",
     password: "",
@@ -38,7 +38,7 @@ export default function RegisterPage() {
 
   const updateField = (field, value) => {
     setForm((prev) => ({ ...prev, [field]: value }));
-    setError(""); // Clear error on input change
+    setError("");
   };
 
   const completeBackendRegistration = async (token) => {
@@ -178,10 +178,10 @@ export default function RegisterPage() {
   return (
     <div className="flex flex-col justify-center items-center min-h-screen px-5 py-8 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
 
-      {/* Animated Background */}
+
       <div className="fixed top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
 
-      {/* Back Button */}
+
       <button
         onClick={() => step > 1 ? prevStep() : navigate("/")}
         className="absolute top-6 left-5 w-10 h-10 rounded-full bg-slate-800/50 backdrop-blur-sm
@@ -193,10 +193,10 @@ export default function RegisterPage() {
         </svg>
       </button>
 
-      {/* Registration Form */}
+
       <div className="w-full max-w-md relative">
 
-        {/* Progress Bar */}
+
         <div className="mb-8">
           <div className="flex items-center justify-between mb-3">
             <span className="text-sm font-semibold text-slate-300">
@@ -214,7 +214,7 @@ export default function RegisterPage() {
           </div>
         </div>
 
-        {/* Logo/Brand */}
+
         <div className="text-center mb-6">
           <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-primary/20 to-emerald-500/20 
                         flex items-center justify-center backdrop-blur-sm border border-primary/20">
@@ -234,16 +234,16 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        {/* Form Card */}
+
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6 shadow-2xl">
 
           <form onSubmit={step === totalSteps ? handleRegister : (e) => { e.preventDefault(); nextStep(); }}>
 
-            {/* STEP 1: Email & Password */}
+
             {step === 1 && (
               <div className="space-y-5 animate-fadeIn">
 
-                {/* Email Input */}
+
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-slate-300">
                     Email address *
@@ -281,7 +281,7 @@ export default function RegisterPage() {
                   </div>
                 </div>
 
-                {/* Password Input */}
+
                 <div className="space-y-2">
                   <label className="block text-sm font-semibold text-slate-300">
                     Password *
@@ -348,7 +348,7 @@ export default function RegisterPage() {
               </div>
             )}
 
-            {/* STEP 2: Personal Info */}
+
             {step === 2 && (
               <div className="space-y-4 animate-fadeIn">
 
@@ -426,7 +426,7 @@ export default function RegisterPage() {
               </div>
             )}
 
-            {/* STEP 3: Menstrual Health (Female Only) */}
+
             {step === 3 && form.gender === "female" && (
               <div className="space-y-4 animate-fadeIn">
 
@@ -490,7 +490,7 @@ export default function RegisterPage() {
               </div>
             )}
 
-            {/* STEP 3/4: Health & Goals */}
+
             {((step === 3 && form.gender !== "female") || step === 4) && (
               <div className="space-y-4 animate-fadeIn">
 
@@ -516,7 +516,7 @@ export default function RegisterPage() {
                   onChange={(e) => updateField("goal", e.target.value)}
                 />
 
-                {/* Medical Condition Toggle */}
+
                 <div className="bg-slate-950/50 border-2 border-slate-700/50 rounded-2xl p-4">
                   <label className="flex items-center justify-between cursor-pointer group">
                     <div className="flex items-center gap-3">
@@ -553,7 +553,7 @@ export default function RegisterPage() {
               </div>
             )}
 
-            {/* Error Message */}
+
             {error && (
               <div className="flex items-start gap-3 text-sm text-red-400 bg-red-500/10 rounded-2xl px-4 py-3 border border-red-500/20 animate-shake mt-4">
                 <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
@@ -563,7 +563,7 @@ export default function RegisterPage() {
               </div>
             )}
 
-            {/* Navigation Buttons */}
+
             <div className="flex gap-3 mt-6">
               {step > 1 && (
                 <button
@@ -615,7 +615,7 @@ export default function RegisterPage() {
 
           </form>
 
-          {/* Login Link */}
+
           <p className="mt-6 text-sm text-slate-400 text-center">
             Already have an account?{" "}
             <Link
@@ -628,7 +628,7 @@ export default function RegisterPage() {
 
         </div>
 
-        {/* Step Indicators */}
+
         <div className="flex justify-center gap-2 mt-6">
           {[...Array(totalSteps)].map((_, index) => (
             <div
@@ -643,7 +643,7 @@ export default function RegisterPage() {
 
       </div>
 
-      {/* Custom CSS */}
+
       <style jsx>{`
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
