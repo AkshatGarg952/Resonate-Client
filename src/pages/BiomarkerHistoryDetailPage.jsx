@@ -13,17 +13,17 @@ export default function BiomarkerHistoryDetailPage() {
     return <Navigate to="/biomarkers/history" replace />;
   }
 
-  // Use biomarkersByCategory if available
+
   const biomarkersByCategory = analysis.biomarkersByCategory || {};
-  
-  // Set first category as default on mount if available
+
+
   useEffect(() => {
     if (Object.keys(biomarkersByCategory).length > 0 && !selectedCategory) {
       setSelectedCategory(Object.keys(biomarkersByCategory)[0]);
     }
   }, [biomarkersByCategory, selectedCategory]);
-  
-  // Flatten biomarkers for overall calculations
+
+
   const biomarkersArr = Object.entries(analysis.biomarkers || {}).map(
     ([name, info]) => ({
       name,
@@ -40,11 +40,11 @@ export default function BiomarkerHistoryDetailPage() {
   const getOverallScore = () => {
     if (analysis.overallScore) return analysis.overallScore;
     if (biomarkersArr.length === 0) return null;
-    
-    // Only count available biomarkers
+
+
     const availableBiomarkers = biomarkersArr.filter(b => b.isAvailable !== false);
     if (availableBiomarkers.length === 0) return null;
-    
+
     const goodCount = availableBiomarkers.filter(
       b => b.status?.toLowerCase() === 'good'
     ).length;
@@ -52,9 +52,9 @@ export default function BiomarkerHistoryDetailPage() {
   };
 
   const getHealthInsights = () => {
-    // Count ALL biomarkers from backend (no filtering)
+
     const total = biomarkersArr.length;
-    
+
     const goodCount = biomarkersArr.filter(
       b => b.status?.toLowerCase() === 'good'
     ).length;
@@ -67,9 +67,9 @@ export default function BiomarkerHistoryDetailPage() {
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString('en-IN', { 
-      day: 'numeric', 
-      month: 'long', 
+    return date.toLocaleDateString('en-IN', {
+      day: 'numeric',
+      month: 'long',
       year: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
@@ -87,7 +87,7 @@ export default function BiomarkerHistoryDetailPage() {
       try {
         await navigator.share(shareData);
       } catch (err) {
-        console.log('Share cancelled');
+        // Share cancelled
       }
     } else {
       setShowShareModal(true);
@@ -99,8 +99,8 @@ export default function BiomarkerHistoryDetailPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-24">
-      
-      {/* Header with Back Button */}
+
+
       <section className="px-5 pt-6 pb-4 sticky top-0 bg-slate-950/80 backdrop-blur-lg z-10 border-b border-slate-800/50">
         <div className="flex items-center justify-between mb-4">
           <button
@@ -114,7 +114,7 @@ export default function BiomarkerHistoryDetailPage() {
             <span className="text-sm font-medium">Back</span>
           </button>
 
-          {/* Action Buttons */}
+
           <div className="flex items-center gap-2">
             <button
               onClick={handleShare}
@@ -122,8 +122,8 @@ export default function BiomarkerHistoryDetailPage() {
                        flex items-center justify-center hover:bg-slate-800 active:scale-95 transition-all"
             >
               <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
               </svg>
             </button>
           </div>
@@ -135,15 +135,15 @@ export default function BiomarkerHistoryDetailPage() {
           </h1>
           <p className="text-sm text-slate-400 flex items-center gap-1.5">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
             {formatDate(analysis.updatedAt)}
           </p>
         </div>
       </section>
 
-      {/* Overall Health Score Card */}
+
       {overallScore !== null && (
         <section className="px-5 py-6">
           <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm 
@@ -155,29 +155,27 @@ export default function BiomarkerHistoryDetailPage() {
                   {overallScore}
                   <span className="text-xl font-normal text-slate-500 ml-2">/100</span>
                 </h2>
-                <p className={`text-sm font-semibold ${
-                  overallScore >= 70 ? 'text-emerald-400' : 
+                <p className={`text-sm font-semibold ${overallScore >= 70 ? 'text-emerald-400' :
                   overallScore >= 40 ? 'text-amber-400' : 'text-red-400'
-                }`}>
-                  {overallScore >= 70 ? 'Excellent Health' : 
-                   overallScore >= 40 ? 'Needs Attention' : 'Consult Doctor'}
+                  }`}>
+                  {overallScore >= 70 ? 'Excellent Health' :
+                    overallScore >= 40 ? 'Needs Attention' : 'Consult Doctor'}
                 </p>
               </div>
 
-              {/* Circular Progress */}
+
               <div className="relative w-28 h-28">
                 <svg className="w-28 h-28 transform -rotate-90">
-                  <circle cx="56" cy="56" r="48" strokeWidth="8" fill="transparent" className="stroke-slate-800"/>
-                  <circle 
-                    cx="56" cy="56" r="48" 
-                    strokeWidth="8" 
+                  <circle cx="56" cy="56" r="48" strokeWidth="8" fill="transparent" className="stroke-slate-800" />
+                  <circle
+                    cx="56" cy="56" r="48"
+                    strokeWidth="8"
                     fill="transparent"
                     strokeDasharray={`${2 * Math.PI * 48}`}
                     strokeDashoffset={`${2 * Math.PI * 48 * (1 - overallScore / 100)}`}
-                    className={`transition-all duration-1000 ${
-                      overallScore >= 70 ? 'stroke-emerald-400' : 
+                    className={`transition-all duration-1000 ${overallScore >= 70 ? 'stroke-emerald-400' :
                       overallScore >= 40 ? 'stroke-amber-400' : 'stroke-red-400'
-                    }`}
+                      }`}
                     strokeLinecap="round"
                   />
                 </svg>
@@ -187,7 +185,7 @@ export default function BiomarkerHistoryDetailPage() {
               </div>
             </div>
 
-            {/* Stats Grid */}
+
             <div className="grid grid-cols-3 gap-3">
               <div className="bg-slate-950/30 rounded-2xl p-3 text-center">
                 <p className="text-2xl font-black text-slate-50">{insights.total}</p>
@@ -206,16 +204,16 @@ export default function BiomarkerHistoryDetailPage() {
         </section>
       )}
 
-      {/* Health Insight Banner */}
+
       {insights.badCount > 0 && (
         <section className="px-5 mb-6">
           <div className="bg-gradient-to-r from-amber-500/10 to-red-500/10 border border-amber-500/20 
                         rounded-2xl p-4 flex items-start gap-3 animate-fadeIn"
-               style={{ animationDelay: '0.1s' }}>
+            style={{ animationDelay: '0.1s' }}>
             <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
               <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
               </svg>
             </div>
             <div className="flex-1">
@@ -230,7 +228,7 @@ export default function BiomarkerHistoryDetailPage() {
         </section>
       )}
 
-      {/* Biomarkers by Category */}
+
       <section className="px-5 mb-6">
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6">
           <div className="flex items-center justify-between mb-5">
@@ -255,10 +253,10 @@ export default function BiomarkerHistoryDetailPage() {
             </div>
           </div>
 
-          {/* Category List and Biomarkers Display */}
+
           {Object.keys(biomarkersByCategory).length > 0 ? (
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-              {/* Category List */}
+
               <div className="lg:col-span-1">
                 <div className="bg-slate-950/50 rounded-2xl p-4 border border-slate-800/50">
                   <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">
@@ -269,24 +267,22 @@ export default function BiomarkerHistoryDetailPage() {
                       const categoryBiomarkers = biomarkersByCategory[categoryLabel] || {};
                       const categoryCount = Object.keys(categoryBiomarkers).length;
                       const isSelected = selectedCategory === categoryLabel;
-                      
+
                       return (
                         <button
                           key={categoryLabel}
                           onClick={() => setSelectedCategory(categoryLabel)}
-                          className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${
-                            isSelected
-                              ? "bg-gradient-to-r from-primary to-emerald-500 text-slate-950 shadow-lg shadow-primary/25"
-                              : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-slate-300 hover:bg-slate-800"
-                          }`}
+                          className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${isSelected
+                            ? "bg-gradient-to-r from-primary to-emerald-500 text-slate-950 shadow-lg shadow-primary/25"
+                            : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-slate-300 hover:bg-slate-800"
+                            }`}
                         >
                           <div className="flex items-center justify-between">
                             <span className="truncate">{categoryLabel || 'Other'}</span>
-                            <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0 ${
-                              isSelected 
-                                ? "bg-slate-950/30 text-slate-950" 
-                                : "bg-slate-700/50 text-slate-500"
-                            }`}>
+                            <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0 ${isSelected
+                              ? "bg-slate-950/30 text-slate-950"
+                              : "bg-slate-700/50 text-slate-500"
+                              }`}>
                               {categoryCount}
                             </span>
                           </div>
@@ -297,7 +293,7 @@ export default function BiomarkerHistoryDetailPage() {
                 </div>
               </div>
 
-              {/* Selected Category Biomarkers */}
+
               <div className="lg:col-span-3">
                 {selectedCategory && biomarkersByCategory[selectedCategory] ? (
                   <>
@@ -328,8 +324,8 @@ export default function BiomarkerHistoryDetailPage() {
                   <div className="flex flex-col items-center justify-center py-12 text-center">
                     <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-4">
                       <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                       </svg>
                     </div>
                     <p className="text-sm text-slate-400">Select a category to view biomarkers</p>
@@ -356,7 +352,7 @@ export default function BiomarkerHistoryDetailPage() {
         </div>
       </section>
 
-      {/* Detailed Summary - What needs attention */}
+
       {insights.badCount > 0 && (
         <section className="px-5 mb-6">
           <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6">
@@ -365,7 +361,7 @@ export default function BiomarkerHistoryDetailPage() {
               {biomarkersArr
                 .filter(b => b.isAvailable !== false && b.status?.toLowerCase() === 'bad')
                 .map((b, idx) => (
-                  <div 
+                  <div
                     key={idx}
                     className="flex items-center justify-between p-4 bg-red-500/5 border border-red-500/20 
                              rounded-2xl animate-fadeIn"
@@ -394,9 +390,9 @@ export default function BiomarkerHistoryDetailPage() {
         </section>
       )}
 
-      {/* Action Cards */}
+
       <section className="px-5 space-y-3">
-        {/* View PDF */}
+
         {analysis.pdfUrl && (
           <a
             href={analysis.pdfUrl}
@@ -409,8 +405,8 @@ export default function BiomarkerHistoryDetailPage() {
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                 <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                 </svg>
               </div>
               <div>
@@ -418,14 +414,14 @@ export default function BiomarkerHistoryDetailPage() {
                 <p className="text-xs text-slate-500">Open in new tab</p>
               </div>
             </div>
-            <svg className="w-5 h-5 text-slate-500 group-hover:text-primary group-hover:translate-x-1 transition-all" 
-                 fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-slate-500 group-hover:text-primary group-hover:translate-x-1 transition-all"
+              fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
           </a>
         )}
 
-        {/* Back to History */}
+
         <button
           onClick={() => navigate('/biomarkers/history')}
           className="w-full flex items-center justify-between p-4 bg-slate-900/60 backdrop-blur-sm 
@@ -435,8 +431,8 @@ export default function BiomarkerHistoryDetailPage() {
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
               <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div className="text-left">
@@ -444,13 +440,13 @@ export default function BiomarkerHistoryDetailPage() {
               <p className="text-xs text-slate-500">Compare with past results</p>
             </div>
           </div>
-          <svg className="w-5 h-5 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all" 
-               fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
 
-        {/* Upload New Report */}
+
         <button
           onClick={() => navigate('/biomarkers/upload')}
           className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-primary/10 to-emerald-500/10 
@@ -468,21 +464,21 @@ export default function BiomarkerHistoryDetailPage() {
               <p className="text-xs text-slate-500">Track your progress</p>
             </div>
           </div>
-          <svg className="w-5 h-5 text-slate-500 group-hover:text-primary group-hover:translate-x-1 transition-all" 
-               fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-5 h-5 text-slate-500 group-hover:text-primary group-hover:translate-x-1 transition-all"
+            fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
           </svg>
         </button>
       </section>
 
-      {/* Share Modal (Fallback for non-native share) */}
+
       {showShareModal && (
-        <div 
+        <div
           className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-end sm:items-center 
                    justify-center p-0 sm:p-5 animate-fadeIn"
           onClick={() => setShowShareModal(false)}
         >
-          <div 
+          <div
             className="bg-slate-900 border-t sm:border border-slate-800 rounded-t-3xl sm:rounded-3xl 
                      w-full sm:max-w-md p-6 animate-slideUp"
             onClick={(e) => e.stopPropagation()}
@@ -513,7 +509,7 @@ export default function BiomarkerHistoryDetailPage() {
         </div>
       )}
 
-      {/* Custom CSS */}
+
       <style jsx>{`
         @keyframes fadeIn {
           from { opacity: 0; transform: translateY(10px); }

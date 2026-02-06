@@ -3,7 +3,7 @@ import React, { useEffect, useState, useRef } from "react";
 import MetricCard from "../components/MetricCard";
 import BarChart from "../components/BarChart";
 import QuickAddWidget from "../components/QuickAddWidget";
-import WaterTracker from "../components/WaterTracker"; // [NEW]
+import WaterTracker from "../components/WaterTracker";
 import { normalizeFitnessData } from "../utils/fitnessNormalizer";
 import { getWithCookie, postWithCookie } from "../api";
 
@@ -12,7 +12,7 @@ export default function FitnessDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  const [syncStatus, setSyncStatus] = useState('synced'); // synced, syncing, error
+  const [syncStatus, setSyncStatus] = useState('synced');
   const [stepGoal, setStepGoal] = useState(0);
   const [newStepGoal, setNewStepGoal] = useState(0);
   const [isEditingStepGoal, setIsEditingStepGoal] = useState(false);
@@ -45,7 +45,7 @@ export default function FitnessDashboardPage() {
     loadFitness();
   }, []);
 
-  // Pull-to-refresh
+
   const handleTouchStart = (e) => {
     touchStartY.current = e.touches[0].clientY;
   };
@@ -62,7 +62,7 @@ export default function FitnessDashboardPage() {
 
   const getStepsProgress = () => {
     if (!fitness?.todaySteps) return 0;
-    if (stepGoal === 0) return 0; // Avoid division by zero
+    if (stepGoal === 0) return 0;
     return Math.min((fitness.todaySteps / stepGoal) * 100, 100);
   };
 
@@ -119,7 +119,7 @@ export default function FitnessDashboardPage() {
       className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-24"
     >
 
-      {/* Pull-to-refresh indicator */}
+
       {refreshing && (
         <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-slate-800/90 backdrop-blur-sm 
                       border border-slate-700 rounded-full px-4 py-2 flex items-center gap-2 shadow-lg">
@@ -131,9 +131,9 @@ export default function FitnessDashboardPage() {
         </div>
       )}
 
-      {/* Header Section */}
+
       <section className="px-5 pt-6 pb-4 relative">
-        {/* Ambient Background Glow */}
+
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10"></div>
 
         <div className="flex items-start justify-between mb-6">
@@ -146,7 +146,7 @@ export default function FitnessDashboardPage() {
             </p>
           </div>
 
-          {/* Sync Status Badge */}
+
           <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold backdrop-blur-sm
                          transition-all duration-300 hover:scale-105
                          ${syncStatus === 'synced' ? 'glass-card border-emerald-500/30 text-emerald-400 shadow-glow' : ''}
@@ -180,7 +180,7 @@ export default function FitnessDashboardPage() {
           </div>
         </div>
 
-        {/* Quick Action Button */}
+
         <button
           onClick={() => loadFitness(true)}
           disabled={refreshing}
@@ -199,7 +199,7 @@ export default function FitnessDashboardPage() {
       </section>
 
       {!fitness ? (
-        /* No Data State */
+
         <section className="px-5">
           <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-8 text-center">
             <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-slate-800/50 flex items-center justify-center">
@@ -221,11 +221,11 @@ export default function FitnessDashboardPage() {
         </section>
       ) : (
         <>
-          {/* Hero Metrics - Today's Stats */}
+
           <section className="px-5 mb-6">
-            {/* Responsive Grid Layout */}
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-              {/* Left Column - Steps Progress */}
+
               <div className="glass-card rounded-3xl p-6 hover:border-primary/50 hover:bg-white/10
                             transition-all duration-300 hover:shadow-premium shimmer">
                 <div className="flex items-center justify-between mb-4">
@@ -269,7 +269,7 @@ export default function FitnessDashboardPage() {
                     )}
                   </div>
 
-                  {/* Circular Progress */}
+
                   <div className="relative w-28 h-28 float">
                     <svg className="w-28 h-28 transform -rotate-90">
                       <circle
@@ -306,7 +306,7 @@ export default function FitnessDashboardPage() {
                   </div>
                 </div>
 
-                {/* Progress Bar */}
+
                 <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
                   <div
                     className="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full transition-all duration-1000 shadow-glow"
@@ -315,11 +315,11 @@ export default function FitnessDashboardPage() {
                 </div>
               </div>
 
-              {/* Right Column - Sleep, Workouts, Water */}
+
               <div className="space-y-4">
-                {/* Sleep & Workouts Grid */}
+
                 <div className="grid grid-cols-2 gap-3">
-                  {/* Sleep Card */}
+
                   <div className="glass-card rounded-3xl p-5 group hover:border-purple-500/50 hover:bg-white/10
                                 transition-all duration-300 hover:scale-[1.02] hover:shadow-glow-purple shimmer">
                     <div className="flex items-center gap-2 mb-3">
@@ -339,7 +339,7 @@ export default function FitnessDashboardPage() {
                     </span>
                   </div>
 
-                  {/* Workouts Card */}
+
                   <div className="glass-card rounded-3xl p-5 group hover:border-amber-500/50 hover:bg-white/10
                                 transition-all duration-300 hover:scale-[1.02] hover:shadow-glow-amber shimmer">
                     <div className="flex items-center gap-2 mb-3">
@@ -362,22 +362,22 @@ export default function FitnessDashboardPage() {
                   </div>
                 </div>
 
-                {/* Water Tracker */}
+
                 <WaterTracker />
               </div>
             </div>
           </section>
 
-          {/* Quick Add Widget */}
+
           <section className="px-5 mb-6">
             <QuickAddWidget />
           </section>
 
-          {/* Charts Section */}
+
           <section className="px-5 mb-6">
-            {/* Responsive Grid for Charts */}
+
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-              {/* Steps Chart */}
+
               <div className="glass-card rounded-3xl p-6 hover:border-primary/30 transition-all duration-300">
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -396,7 +396,7 @@ export default function FitnessDashboardPage() {
                 />
               </div>
 
-              {/* Sleep Chart */}
+
               <div className="glass-card rounded-3xl p-6 hover:border-purple-500/30 transition-all duration-300">
                 <div className="flex items-center justify-between mb-4">
                   <div>
@@ -417,15 +417,15 @@ export default function FitnessDashboardPage() {
             </div>
           </section>
 
-          {/* Insights Section */}
+
           <section className="px-5 mb-6">
             <h3 className="text-xl font-black text-slate-50 mb-4">Quick Insights</h3>
             <div className="space-y-3">
-              {/* Steps Insight */}
+
               {fitness.todaySteps >= 10000 && (
                 <div className="relative glass-card rounded-2xl p-4 flex items-start gap-3 overflow-hidden group
                               hover:border-primary/50 transition-all duration-300 hover:shadow-premium">
-                  {/* Animated gradient background */}
+
                   <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-emerald-500/5 to-primary/5 
                               opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-gradient"></div>
 
@@ -445,7 +445,7 @@ export default function FitnessDashboardPage() {
                 </div>
               )}
 
-              {/* Sleep Insight */}
+
               {fitness.sleepHours < 7 && fitness.sleepHours > 0 && (
                 <div className="glass-card border-amber-500/30 rounded-2xl p-4 flex items-start gap-3
                               hover:border-amber-500/50 transition-all duration-300">
@@ -467,7 +467,7 @@ export default function FitnessDashboardPage() {
             </div>
           </section>
 
-          {/* Last Sync Info */}
+
           <section className="px-5">
             <div className="text-center py-4">
               <p className="text-xs text-slate-500">

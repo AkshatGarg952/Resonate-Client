@@ -8,7 +8,7 @@ export default function WaterTracker() {
     const [isEditingGoal, setIsEditingGoal] = useState(false);
     const [newGoal, setNewGoal] = useState(0);
 
-    // Custom amount state
+
     const [isAddingCustom, setIsAddingCustom] = useState(false);
     const [customAmount, setCustomAmount] = useState("");
 
@@ -60,7 +60,7 @@ export default function WaterTracker() {
 
     return (
         <div className="bg-gradient-to-br from-cyan-900/40 to-blue-900/40 backdrop-blur-xl border border-blue-500/20 rounded-3xl p-6 relative overflow-hidden group">
-            {/* Background decoration */}
+
             <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
 
             <div className="flex items-start justify-between mb-6 relative z-10">
@@ -105,7 +105,7 @@ export default function WaterTracker() {
                 <span className="text-sm font-medium text-blue-300 mb-2">/ {data.goalMl} ml</span>
             </div>
 
-            {/* Progress Bar */}
+
             <div className="w-full h-3 bg-slate-900/50 rounded-full overflow-hidden mb-6 border border-blue-500/10">
                 <div
                     className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-700 ease-out relative"
@@ -115,7 +115,7 @@ export default function WaterTracker() {
                 </div>
             </div>
 
-            {/* Controls */}
+
             {isEditingGoal ? (
                 <div className="flex gap-2 animate-fade-in">
                     <input

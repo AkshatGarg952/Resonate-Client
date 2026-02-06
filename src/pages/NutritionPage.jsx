@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { getWithCookie, postWithCookie } from "../api";
+import { useNavigate } from "react-router-dom";
 
 export default function NutritionPage() {
+    const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
     const [regenerating, setRegenerating] = useState(false);
     const [error, setError] = useState("");
@@ -15,9 +17,7 @@ export default function NutritionPage() {
         try {
             setLoading(true);
             setError("");
-            // Call the endpoint. The response format is { status: "success", plan: { ... } } or just the plan depending on controller
-            // My controller returns response.data from microservice.
-            // Microservice returns { status: "success", plan: { ... } }
+
             const data = await getWithCookie("/nutrition/daily-suggestions");
 
             if (data.status === "success" && data.plan) {
@@ -26,17 +26,15 @@ export default function NutritionPage() {
                     normalizedPlan[key.toLowerCase()] = data.plan[key];
                 });
                 setSuggestions(normalizedPlan);
-            } else if (data.breakfast || data.Breakfast) {
-                const normalizedPlan = {};
-                Object.keys(data).forEach(key => {
-                    normalizedPlan[key.toLowerCase()] = data[key];
-                });
-                setSuggestions(normalizedPlan);
+            } else if (data.status === "no_plan") {
+                setSuggestions(null);
             } else {
-                // If no plan, we might want to trigger generation automatically or just show empty state
-                // For now, let's treat it as "no plan found", maybe trigger generation
-                if (!suggestions) {
-                    generateSuggestions();
+                if (data.breakfast || data.Breakfast) {
+                    const normalizedPlan = {};
+                    Object.keys(data).forEach(key => {
+                        normalizedPlan[key.toLowerCase()] = data[key];
+                    });
+                    setSuggestions(normalizedPlan);
                 }
             }
 
@@ -52,7 +50,10 @@ export default function NutritionPage() {
         try {
             setRegenerating(true);
             setError("");
-            // Use POST to force regeneration
+
+            // If we are generating from scratch (not regenerating), show loading state differently
+            if (!suggestions) setLoading(true);
+
             const data = await postWithCookie("/nutrition/daily-suggestions", {});
 
             if (data.status === "success" && data.plan) {
@@ -75,91 +76,98 @@ export default function NutritionPage() {
 
     if (loading && !suggestions) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-orange-400/20 to-red-500/20 flex items-center justify-center mb-4 animate-pulse">
-                    <svg className="w-8 h-8 text-orange-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                    </svg>
-                </div>
-                <p className="text-slate-400 text-sm">Chef AI is accessing your pantry...</p>
-            </div>
-        );
-    }
-
-    if (error && !suggestions) {
-        return (
-            <div className="min-h-screen flex items-center justify-center bg-slate-950 px-4">
-                <div className="bg-red-500/10 border border-red-500/20 rounded-2xl p-6 max-w-md w-full text-center">
-                    <h2 className="text-lg font-bold text-red-400 mb-2">Oops!</h2>
-                    <p className="text-slate-300 mb-4">{error}</p>
-                    <button
-                        onClick={fetchSuggestions}
-                        className="px-4 py-2 bg-red-500/20 hover:bg-red-500/30 text-red-400 rounded-xl transition-colors"
-                    >
-                        Try Again
-                    </button>
-                </div>
+            <div className="flex flex-col items-center justify-center min-h-screen bg-slate-950 text-slate-50">
+                <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-4" />
+                <p className="text-slate-400 text-sm animate-pulse">Chef AI is preparing your menu...</p>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-24">
-            <section className="px-5 pt-8 pb-4">
-                <div className="flex items-center justify-between mb-6">
+        <div className="min-h-screen bg-slate-950 text-slate-50 pb-24 relative overflow-hidden">
+            {/* Background Effects */}
+            <div className="fixed top-[-10%] right-[-10%] w-96 h-96 bg-orange-500/10 rounded-full blur-[100px] pointer-events-none" />
+            <div className="fixed bottom-[-10%] left-[-10%] w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
+
+            <section className="px-6 pt-8 pb-4 max-w-4xl mx-auto relative z-10">
+                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
                     <div>
-                        <h1 className="text-3xl font-black text-slate-50 mb-1">Daily Meal Plan</h1>
-                        <p className="text-sm text-slate-400">Personalized AI suggestions based on your goals.</p>
+                        <h1 className="text-3xl font-black bg-gradient-to-r from-orange-400 to-amber-200 bg-clip-text text-transparent mb-1">
+                            Daily Nutrition
+                        </h1>
+                        <p className="text-sm text-slate-400">Fuel your body with AI-curated meals.</p>
                     </div>
 
-                    <button
-                        onClick={generateSuggestions}
-                        disabled={regenerating}
-                        className="flex items-center justify-center w-10 h-10 rounded-xl bg-slate-800 border border-slate-700 text-slate-300 hover:text-white hover:bg-slate-700 transition-all active:scale-95 disabled:opacity-50"
-                        title="Regenerate Plan"
-                    >
-                        {regenerating ? (
-                            <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                        ) : (
-                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
+                    <div className="flex gap-3">
+                        <button
+                            onClick={() => navigate('/meal-history')}
+                            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-semibold transition-colors border border-slate-700"
+                        >
+                            History
+                        </button>
+
+                        {suggestions && (
+                            <button
+                                onClick={generateSuggestions}
+                                disabled={regenerating}
+                                className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-semibold transition-colors border border-slate-700 disabled:opacity-50"
+                            >
+                                {regenerating ? 'Regenerating...' : 'Regenerate'}
+                            </button>
                         )}
-                    </button>
+                    </div>
                 </div>
+
+                {!suggestions && !loading && (
+                    <div className="flex flex-col items-center justify-center py-20 bg-slate-900/50 rounded-3xl border border-white/5 backdrop-blur-sm">
+                        <div className="text-6xl mb-4">🥗</div>
+                        <h2 className="text-2xl font-bold text-white mb-2">No Meal Plan for Today</h2>
+                        <p className="text-slate-400 text-center max-w-md mb-8">
+                            Ready to eat right? Generate your personalized meal plan for the day based on your goals.
+                        </p>
+                        <button
+                            onClick={generateSuggestions}
+                            disabled={regenerating}
+                            className="px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 rounded-xl font-bold text-lg text-white shadow-lg shadow-orange-500/20 transition-all hover:scale-105"
+                        >
+                            {regenerating ? 'Generating...' : 'Generate Daily Plan'}
+                        </button>
+                    </div>
+                )}
+
+                {error && (
+                    <div className="bg-red-500/10 border border-red-500/20 text-red-200 p-4 rounded-xl mb-6 text-center">
+                        {error}
+                        <button onClick={fetchSuggestions} className="underline ml-2">Retry</button>
+                    </div>
+                )}
 
                 {suggestions && (
                     <div className={`space-y-6 transition-opacity duration-300 ${regenerating ? 'opacity-50' : 'opacity-100'}`}>
-
-                        {/* Summary Stats */}
-                        <div className="flex gap-4">
-                            <div className="flex-1 bg-slate-800/50 rounded-2xl p-4 border border-slate-700/50">
-                                <p className="text-xs text-slate-400 mb-1">Total Calories</p>
-                                <p className="text-2xl font-black text-slate-50">{suggestions.total_calories || "--"}</p>
-                            </div>
-                            <div className="flex-1 bg-slate-800/50 rounded-2xl p-4 border border-slate-700/50">
-                                <p className="text-xs text-slate-400 mb-1">Protein</p>
-                                <p className="text-2xl font-black text-emerald-400">{suggestions.total_protein || "--"}</p>
-                            </div>
+                        {/* Macro Summary */}
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            <MacroCard title="Calories" value={suggestions.total_calories} unit="kcal" color="white" />
+                            <MacroCard title="Protein" value={suggestions.total_protein} unit="" color="emerald" />
+                            <MacroCard title="Carbs" value={suggestions.total_carbs || "--"} unit="" color="blue" />
+                            <MacroCard title="Fats" value={suggestions.total_fats || "--"} unit="" color="amber" />
                         </div>
 
-                        {/* Meals */}
-                        <MealCard title="Breakfast" data={suggestions.breakfast} icon="🍳" color="orange" />
-                        <MealCard title="Lunch" data={suggestions.lunch} icon="🍛" color="emerald" />
-                        <MealCard title="Dinner" data={suggestions.dinner} icon="🥘" color="indigo" />
+                        <div className="space-y-4">
+                            <MealCard title="Breakfast" data={suggestions.breakfast} icon="🍳" color="orange" />
+                            <MealCard title="Lunch" data={suggestions.lunch} icon="🍛" color="emerald" />
+                            <MealCard title="Dinner" data={suggestions.dinner} icon="🥘" color="indigo" />
 
-                        {/* Snacks */}
-                        {suggestions.snacks && suggestions.snacks.length > 0 && (
-                            <div className="space-y-3">
-                                <h3 className="text-lg font-bold text-slate-300 px-1">Snacks</h3>
-                                {suggestions.snacks.map((snack, idx) => (
-                                    <MealCard key={idx} title={`Snack ${idx + 1}`} data={snack} icon="🥨" color="pink" />
-                                ))}
-                            </div>
-                        )}
+                            {suggestions.snacks && suggestions.snacks.length > 0 && (
+                                <div className="pt-4">
+                                    <h3 className="text-lg font-bold text-slate-300 mb-3 px-1">Snacks</h3>
+                                    <div className="space-y-4">
+                                        {suggestions.snacks.map((snack, idx) => (
+                                            <MealCard key={idx} title={`Snack ${idx + 1}`} data={snack} icon="🥨" color="pink" />
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 )}
             </section>
@@ -167,40 +175,73 @@ export default function NutritionPage() {
     );
 }
 
+function MacroCard({ title, value, unit, color }) {
+    const colors = {
+        white: "text-slate-100",
+        emerald: "text-emerald-400",
+        blue: "text-blue-400",
+        amber: "text-amber-400"
+    };
+
+    return (
+        <div className="bg-slate-900/60 backdrop-blur-md border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center text-center">
+            <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">{title}</span>
+            <div className={`text-2xl font-black ${colors[color] || colors.white}`}>
+                {value} <span className="text-xs font-normal text-slate-500 ml-0.5">{unit}</span>
+            </div>
+        </div>
+    );
+}
+
 function MealCard({ title, data, icon, color }) {
     if (!data) return null;
 
-    // Define color classes map
     const colors = {
-        orange: "from-orange-500/10 to-amber-500/10 border-orange-500/20 text-orange-400",
-        emerald: "from-emerald-500/10 to-teal-500/10 border-emerald-500/20 text-emerald-400",
-        indigo: "from-indigo-500/10 to-blue-500/10 border-indigo-500/20 text-indigo-400",
-        pink: "from-pink-500/10 to-rose-500/10 border-pink-500/20 text-pink-400"
+        orange: "from-orange-500/10 to-amber-500/5 border-orange-500/20 text-orange-400",
+        emerald: "from-emerald-500/10 to-teal-500/5 border-emerald-500/20 text-emerald-400",
+        indigo: "from-indigo-500/10 to-blue-500/5 border-indigo-500/20 text-indigo-400",
+        pink: "from-pink-500/10 to-rose-500/5 border-pink-500/20 text-pink-400"
     };
 
     const styleClass = colors[color] || colors.orange;
+    const accentColor = styleClass.split(' ').pop();
 
     return (
-        <div className={`bg-gradient-to-r ${styleClass} border rounded-3xl p-5 relative overflow-hidden`}>
-            <div className="flex justify-between items-start mb-2 relative z-10">
-                <div className="flex items-center gap-2">
-                    <span className="text-2xl">{icon}</span>
-                    <h3 className={`font-bold text-lg ${styleClass.split(' ').pop()}`}>{title}</h3>
-                </div>
-                <div className="text-right">
-                    <span className="text-xs font-semibold bg-slate-950/30 px-2 py-1 rounded-lg text-slate-300">
-                        {data.calories} kcal
-                    </span>
-                </div>
-            </div>
+        <div className={`bg-gradient-to-r ${styleClass} border rounded-3xl p-6 relative overflow-hidden group hover:border-opacity-40 transition-all`}>
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 relative z-10">
+                <div className="flex-1">
+                    <div className="flex items-center gap-3 mb-3">
+                        <span className="text-2xl bg-white/5 p-2 rounded-xl">{icon}</span>
+                        <div>
+                            <h3 className={`font-bold text-sm uppercase tracking-wider opacity-80 ${accentColor}`}>{title}</h3>
+                            <h4 className="text-xl font-bold text-slate-50 group-hover:text-white transition-colors">{data.name}</h4>
+                        </div>
+                    </div>
 
-            <div className="relative z-10">
-                <h4 className="text-xl font-bold text-slate-50 mb-1">{data.name}</h4>
-                <p className="text-sm text-slate-400 leading-relaxed mb-3">{data.description}</p>
-                <div className="flex gap-3">
-                    <span className="text-xs font-medium text-slate-500">Protein: <span className="text-slate-300">{data.protein}</span></span>
+                    <p className="text-sm text-slate-400 leading-relaxed mb-4 md:max-w-xl">{data.description}</p>
+
+                    <div className="flex flex-wrap gap-3">
+                        <NutrientBadge label="Protein" value={data.protein} />
+                        <NutrientBadge label="Carbs" value={data.carbs} />
+                        <NutrientBadge label="Fats" value={data.fats} />
+                    </div>
+                </div>
+
+                <div className="flex flex-col items-end justify-center min-w-[80px]">
+                    <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">Energy</div>
+                    <div className="text-2xl font-black text-slate-200">{data.calories}</div>
+                    <div className="text-xs text-slate-500">kcal</div>
                 </div>
             </div>
         </div>
+    );
+}
+
+function NutrientBadge({ label, value }) {
+    if (!value) return null;
+    return (
+        <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-950/30 border border-white/5 text-xs font-medium text-slate-300">
+            <span className="text-slate-500 mr-1.5">{label}:</span> {value}
+        </span>
     );
 }

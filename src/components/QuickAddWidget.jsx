@@ -11,7 +11,7 @@ const COMMON_INTERVENTIONS = [
 ];
 
 export default function QuickAddWidget({ onInterventionAdded }) {
-    const [loading, setLoading] = useState(null); // 'name' of item loading
+    const [loading, setLoading] = useState(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleQuickAdd = async (item) => {
@@ -41,7 +41,7 @@ export default function QuickAddWidget({ onInterventionAdded }) {
 
     return (
         <div className="relative bg-gradient-to-br from-slate-900/80 via-slate-900/60 to-slate-800/80 backdrop-blur-xl border border-slate-700/50 rounded-3xl p-6 mb-6 overflow-hidden shadow-xl">
-            {/* Decorative gradient overlay */}
+
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-emerald-500/5 pointer-events-none" />
 
             <div className="relative z-10">
@@ -69,7 +69,7 @@ export default function QuickAddWidget({ onInterventionAdded }) {
                                      hover:shadow-2xl hover:shadow-primary/20
                                      transition-all duration-300 active:scale-95 group relative overflow-hidden"
                         >
-                            {/* Animated gradient overlay effect */}
+
                             <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-primary/0 via-primary/5 to-emerald-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
 
                             <div className="relative z-10 flex flex-col items-center">
@@ -94,7 +94,7 @@ export default function QuickAddWidget({ onInterventionAdded }) {
                         </button>
                     ))}
 
-                    {/* Custom Add Button */}
+
                     <button
                         onClick={() => setIsModalOpen(true)}
                         className="flex-shrink-0 flex flex-col items-center justify-center w-28 h-32 rounded-2xl 
