@@ -210,13 +210,34 @@ export default function FitnessDashboardPage() {
             </div>
             <h3 className="text-xl font-bold text-slate-50 mb-2">No Fitness Data</h3>
             <p className="text-sm text-slate-400 mb-6 max-w-sm mx-auto">
-              Connect your Google Fit or other fitness devices to see your activity, sleep, and workout data here.
+              Connect your fitness device to see your activity, sleep, and workout data here.
             </p>
-            <button className="px-6 py-3 rounded-2xl bg-gradient-to-r from-primary to-emerald-500 
-                             text-slate-950 font-bold shadow-lg shadow-primary/25
-                             hover:shadow-xl hover:shadow-primary/30 active:scale-95 transition-all duration-200">
-              Connect Device
-            </button>
+
+            {/* Connection Options */}
+            <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
+              <button
+                onClick={() => window.location.href = `${import.meta.env.VITE_API_BASE_URL}/fit/google`}
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl 
+                         bg-gradient-to-r from-primary to-emerald-500 text-slate-950 font-bold 
+                         shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 
+                         active:scale-95 transition-all duration-200"
+              >
+                <span className="text-lg">🏃</span>
+                Connect Google Fit
+              </button>
+
+              <button
+                disabled
+                className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl 
+                         bg-slate-800/50 text-slate-600 font-bold cursor-not-allowed
+                         border border-slate-700/50"
+                title="Available only on iOS devices"
+              >
+                <span className="text-lg">🍎</span>
+                Apple Health
+                <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600">iOS Only</span>
+              </button>
+            </div>
           </div>
         </section>
       ) : (
@@ -366,11 +387,6 @@ export default function FitnessDashboardPage() {
                 <WaterTracker />
               </div>
             </div>
-          </section>
-
-
-          <section className="px-5 mb-6">
-            <QuickAddWidget />
           </section>
 
 

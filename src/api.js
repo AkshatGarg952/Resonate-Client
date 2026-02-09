@@ -154,3 +154,21 @@ export async function createDailyLog(body) {
 export async function fetchWeeklyLogs() {
   return getWithCookie("/api/daily-logs/weekly");
 }
+
+
+export async function getUserMemories(category) {
+  return getWithCookie(`/user/memories${category ? `?category=${category}` : ""}`);
+}
+
+// Admin Dashboard APIs
+export async function fetchAdminStats() {
+  return getWithCookie("/api/admin/dashboard/stats");
+}
+
+export async function fetchAdminInsights() {
+  return getWithCookie("/api/admin/dashboard/insights/recent");
+}
+
+export async function fetchUserAdminMemory(userId) {
+  return getWithCookie(`/api/admin/dashboard/user/${userId}`);
+}

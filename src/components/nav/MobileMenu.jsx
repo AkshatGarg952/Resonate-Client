@@ -90,6 +90,9 @@ export default function MobileMenu({
                                     <Link to="/biomarkers/upload" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
                                         <span>📤</span> Upload New
                                     </Link>
+                                    <Link to="/memories" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-slate-300 border-b border-slate-800/50">
+                                        <span>🧠</span> My Memories
+                                    </Link>
                                     <Link to="/demo-report" className="flex items-center gap-3 px-4 py-3 hover:bg-slate-800 text-purple-400">
                                         <span>🧪</span> View Demo
                                     </Link>
@@ -114,18 +117,32 @@ export default function MobileMenu({
                         <Link to="/profile" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors">
                             <span>👤</span> Profile Settings
                         </Link>
-                        <button
-                            onClick={onConnectGoogleFit}
-                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-slate-800 text-slate-400 hover:text-white transition-colors text-left"
-                        >
-                            <span>🏃</span> Google Fit Sync
-                        </button>
-                        <button
-                            onClick={onLogout}
-                            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/10 text-red-500 transition-colors text-left"
-                        >
-                            <span>🚪</span> Sign Out
-                        </button>
+
+                        {/* Fitness Sync Section */}
+                        <div className="space-y-1">
+                            <p className="px-4 py-1 text-xs font-semibold text-slate-500 uppercase tracking-wider">Sync Fitness</p>
+                            <button
+                                onClick={onConnectGoogleFit}
+                                className="w-full flex items-center gap-3 px-4 py-2 rounded-xl text-slate-400 hover:bg-slate-800 hover:text-white transition-colors text-left"
+                            >
+                                <span>🏃</span> Google Fit
+                            </button>
+                            <button
+                                disabled
+                                className="w-full flex items-center gap-3 px-4 py-2 rounded-xl text-slate-700 cursor-not-allowed text-left"
+                            >
+                                <span>🍎</span> Apple Health <span className="ml-auto text-[10px] text-slate-600 border border-slate-800 px-1.5 py-0.5 rounded">iOS Only</span>
+                            </button>
+                        </div>
+
+                        <div className="border-t border-slate-800 pt-2">
+                            <button
+                                onClick={onLogout}
+                                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/10 text-red-500 transition-colors text-left"
+                            >
+                                <span>🚪</span> Sign Out
+                            </button>
+                        </div>
                     </div>
                 )}
             </div>

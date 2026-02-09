@@ -23,6 +23,8 @@ import NutritionPage from "./pages/NutritionPage";
 import MealHistoryPage from "./pages/MealHistoryPage";
 import FoodAnalyzer from "./components/FoodAnalyzer";
 import InterventionsPage from "./pages/InterventionsPage";
+import AdminMemoryDashboard from "./pages/AdminMemoryDashboard";
+import MemoriesPage from "./pages/MemoriesPage";
 
 export const AuthContext = createContext(null);
 
@@ -142,6 +144,25 @@ function AppWrapper() {
             }
           />
 
+
+
+
+          <Route path="/admin/memory"
+            element={
+              <ProtectedRoute>
+                <AdminMemoryDashboard />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="/memories"
+            element={
+              <ProtectedRoute>
+                <MemoriesPage />
+              </ProtectedRoute>
+            }
+          />
+
           <Route path="/dashboard"
             element={
               <ProtectedRoute>
@@ -193,7 +214,7 @@ function AppWrapper() {
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
       </main>
-    </AuthContext.Provider>
+    </AuthContext.Provider >
   );
 }
 

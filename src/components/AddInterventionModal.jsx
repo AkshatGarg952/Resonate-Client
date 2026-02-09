@@ -7,38 +7,38 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
 
     const [formData, setFormData] = useState({
         type: 'supplement',
-        name: '',
+        recommendation: '',
+        rationale: '',
         startDate: new Date().toISOString().split('T')[0],
-        endDate: '',
-        dosage: '',
-        frequency: '',
-        status: 'active',
-        notes: ''
+        durationDays: 30,
+        targetMetric: 'adherence_rate',
+        targetValue: 80,
+        status: 'active'
     });
 
     useEffect(() => {
         if (initialData) {
             setFormData({
                 type: initialData.type || 'supplement',
-                name: initialData.name || '',
+                recommendation: initialData.recommendation || '',
+                rationale: initialData.rationale || '',
                 startDate: initialData.startDate ? initialData.startDate.split('T')[0] : new Date().toISOString().split('T')[0],
-                endDate: initialData.endDate ? initialData.endDate.split('T')[0] : '',
-                dosage: initialData.dosage || '',
-                frequency: initialData.frequency || '',
-                status: initialData.status || 'active',
-                notes: initialData.notes || ''
+                durationDays: initialData.durationDays || 30,
+                targetMetric: initialData.targetMetric || 'adherence_rate',
+                targetValue: initialData.targetValue || 80,
+                status: initialData.status || 'active'
             });
         } else {
             // Reset if adding new
             setFormData({
                 type: 'supplement',
-                name: '',
+                recommendation: '',
+                rationale: '',
                 startDate: new Date().toISOString().split('T')[0],
-                endDate: '',
-                dosage: '',
-                frequency: '',
-                status: 'active',
-                notes: ''
+                durationDays: 30,
+                targetMetric: 'adherence_rate',
+                targetValue: 80,
+                status: 'active'
             });
         }
     }, [initialData, isOpen]);
@@ -62,7 +62,8 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                 payload.endDate = null;
             }
 
-            if (initialData) {
+            // If initialData has an _id, it's an update. Otherwise, it's a new intervention (including restarts)
+            if (initialData?._id) {
                 await updateIntervention(initialData._id, payload);
             } else {
                 await createIntervention(payload);
@@ -114,7 +115,7 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                             value={formData.type}
                             onChange={handleChange}
                             className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                       focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none appearance-none"
+                                     focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none appearance-none"
                         >
                             <option value="supplement">💊 Supplement</option>
                             <option value="diet">🥗 Diet / Nutrition</option>
@@ -126,17 +127,17 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
 
                     <div>
                         <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-                            Name
+                            Recommendation
                         </label>
                         <input
                             type="text"
-                            name="name"
-                            placeholder="e.g. Vitamin D3, Keto Diet"
+                            name="recommendation"
+                            placeholder="e.g. Take Vitamin D3 5000 IU daily"
                             required
-                            value={formData.name}
+                            value={formData.recommendation}
                             onChange={handleChange}
                             className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                       focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
+                                     focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
                         />
                     </div>
 
@@ -150,7 +151,7 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                                 value={formData.status}
                                 onChange={handleChange}
                                 className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                           focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none appearance-none"
+                                         focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none appearance-none"
                             >
                                 <option value="active">🟢 Active (Ongoing)</option>
                                 <option value="completed">✅ Completed</option>
@@ -170,7 +171,7 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                                 value={formData.startDate}
                                 onChange={handleChange}
                                 className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                          focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
+                                         focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
                             />
                         </div>
                     </div>
@@ -187,59 +188,80 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                                 value={formData.endDate}
                                 onChange={handleChange}
                                 className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                          focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
+                                         focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
                             />
                         </div>
                     )}
 
                     <div className="grid grid-cols-2 gap-4">
-                        {(formData.type === 'supplement' || formData.type === 'fitness') && (
-                            <div className={formData.status !== 'active' ? "" : "col-span-2"}>
-                                <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-                                    {formData.type === 'supplement' ? 'Dosage' : 'Duration'}
-                                </label>
-                                <input
-                                    type="text"
-                                    name="dosage"
-                                    placeholder={formData.type === 'supplement' ? "e.g. 5000 IU" : "e.g. 30 mins"}
-                                    value={formData.dosage}
-                                    onChange={handleChange}
-                                    required
-                                    className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                            focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
-                                />
-                            </div>
-                        )}
-
-                        <div className={(formData.type !== 'supplement' && formData.type !== 'fitness') ? "col-span-2" : ""}>
+                        <div>
                             <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-                                Frequency
+                                Duration (Days)
                             </label>
                             <input
-                                type="text"
-                                name="frequency"
-                                placeholder="e.g. Daily, 3x/week"
-                                value={formData.frequency}
+                                type="number"
+                                name="durationDays"
+                                placeholder="e.g. 30"
+                                value={formData.durationDays}
                                 onChange={handleChange}
                                 required
+                                min="1"
                                 className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                        focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
+                                         focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
+                            />
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                                Target Value (%)
+                            </label>
+                            <input
+                                type="number"
+                                name="targetValue"
+                                placeholder="e.g. 80"
+                                value={formData.targetValue}
+                                onChange={handleChange}
+                                required
+                                min="0"
+                                max="100"
+                                className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
+                                         focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
                             />
                         </div>
                     </div>
 
                     <div>
                         <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
-                            Notes (Optional)
+                            Target Metric
                         </label>
-                        <textarea
-                            name="notes"
-                            rows="3"
-                            placeholder="Any specific protocols or goals..."
-                            value={formData.notes}
+                        <select
+                            name="targetMetric"
+                            value={formData.targetMetric}
                             onChange={handleChange}
                             className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                       focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none resize-none"
+                                     focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none appearance-none"
+                        >
+                            <option value="adherence_rate">Adherence Rate</option>
+                            <option value="completion_rate">Completion Rate</option>
+                            <option value="sleep_hours">Sleep Hours</option>
+                            <option value="rpe_avg">Average RPE</option>
+                            <option value="stress_level">Stress Level</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                            Rationale
+                        </label>
+                        <textarea
+                            name="rationale"
+                            rows="3"
+                            placeholder="Why is this intervention recommended?"
+                            value={formData.rationale}
+                            onChange={handleChange}
+                            required
+                            className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
+                                     focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none resize-none"
                         ></textarea>
                     </div>
 
@@ -248,7 +270,7 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                             type="button"
                             onClick={onClose}
                             className="flex-1 px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-medium 
-                       hover:bg-slate-800 transition-colors"
+                                     hover:bg-slate-800 transition-colors"
                         >
                             Cancel
                         </button>
@@ -256,7 +278,7 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                             type="submit"
                             disabled={loading}
                             className="flex-1 px-4 py-2.5 rounded-xl bg-primary text-slate-950 font-bold 
-                       hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                     hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Saving...' : (initialData ? 'Update Intervention' : 'Start Intervention')}
                         </button>
