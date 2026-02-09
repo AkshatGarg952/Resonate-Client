@@ -48,12 +48,22 @@ export default function UserDropdown({ user, isOpen, onToggle, onClose, onConnec
                             >
                                 <span>👤</span> My Profile
                             </Link>
-                            <button
-                                onClick={onConnectGoogleFit}
-                                className="w-full flex items-center gap-3 px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors text-left"
-                            >
-                                <span>🏃</span> Sync Fitness
-                            </button>
+                            <div className="px-3 py-1">
+                                <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Sync Fitness</p>
+                                <button
+                                    onClick={onConnectGoogleFit}
+                                    className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors text-left"
+                                >
+                                    <span>🏃</span> Google Fit
+                                </button>
+                                <button
+                                    disabled
+                                    className="w-full flex items-center gap-2 px-2 py-1.5 text-sm text-slate-600 cursor-not-allowed rounded-lg text-left"
+                                    title="Available only on iOS devices"
+                                >
+                                    <span>🍎</span> Apple Health
+                                </button>
+                            </div>
                             <div className="border-t border-slate-800 my-1"></div>
                             <button
                                 onClick={onLogout}

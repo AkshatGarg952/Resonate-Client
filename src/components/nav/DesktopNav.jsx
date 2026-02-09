@@ -112,7 +112,11 @@ export default function DesktopNav({
                                 <Link to="/biomarkers/api" className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
                                     🔗 Fetch via API
                                 </Link>
+
                                 <div className="border-t border-slate-800 my-1"></div>
+                                <Link to="/memories" className="block px-3 py-2 text-sm text-cyan-400 hover:bg-slate-800 rounded-xl transition-colors">
+                                    🧠 My Memories
+                                </Link>
                                 <Link to="/demo-report" className="block px-3 py-2 text-sm text-emerald-400 hover:bg-slate-800 rounded-xl transition-colors">
                                     🧪 View Demo Report
                                 </Link>

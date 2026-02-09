@@ -59,16 +59,14 @@ export default function InterventionsPage() {
     };
 
     const handleRestart = (intervention) => {
+        // Create a new intervention based on the old one, but don't include _id
+        const { _id, createdAt, updatedAt, outcomes, endDate, discontinuationReason, ...restartData } = intervention;
 
         const restartedIntervention = {
-            ...intervention,
-            _id: undefined,
+            ...restartData,
             status: 'active',
-            startDate: new Date().toISOString().split('T')[0],
-            endDate: '',
-            notes: ''
+            startDate: new Date().toISOString().split('T')[0]
         };
-
 
         setEditingIntervention(restartedIntervention);
         setIsModalOpen(true);
@@ -189,23 +187,19 @@ export default function InterventionsPage() {
                                 </div>
 
                                 <h3 className="text-xl font-bold text-white mb-1 group-hover:text-primary transition-colors">
-                                    {item.name}
+                                    {item.recommendation}
                                 </h3>
-                                {item.notes && <p className="text-sm text-slate-500 line-clamp-2 mb-3">{item.notes}</p>}
+                                {item.rationale && <p className="text-sm text-slate-500 line-clamp-2 mb-3">{item.rationale}</p>}
 
                                 <div className="space-y-2 mt-4 text-sm text-slate-400">
-                                    {item.dosage && (
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-4 text-center">📏</span>
-                                            <span>{item.dosage}</span>
-                                        </div>
-                                    )}
-                                    {item.frequency && (
-                                        <div className="flex items-center gap-2">
-                                            <span className="w-4 text-center">🔄</span>
-                                            <span>{item.frequency}</span>
-                                        </div>
-                                    )}
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-4 text-center">⏱️</span>
+                                        <span>{item.durationDays} days</span>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <span className="w-4 text-center">🎯</span>
+                                        <span>{item.targetMetric}: {item.targetValue}%</span>
+                                    </div>
                                     <div className="flex items-center gap-2 text-slate-500">
                                         <span className="w-4 text-center">📅</span>
                                         <span>Started {new Date(item.startDate).toLocaleDateString()}</span>
@@ -228,13 +222,13 @@ export default function InterventionsPage() {
                                             </div>
                                             <div className="flex gap-2">
                                                 <button
-                                                    onClick={() => handleComplete(item._id, item.name)}
+                                                    onClick={() => handleComplete(item._id, item.recommendation)}
                                                     className="px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-500 text-xs font-bold hover:bg-emerald-500/20 transition-colors"
                                                 >
                                                     Complete
                                                 </button>
                                                 <button
-                                                    onClick={() => handleDiscontinue(item._id, item.name)}
+                                                    onClick={() => handleDiscontinue(item._id, item.recommendation)}
                                                     className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-500 text-xs font-bold hover:bg-red-500/20 transition-colors"
                                                 >
                                                     Discontinue
