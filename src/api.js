@@ -172,3 +172,20 @@ export async function fetchAdminInsights() {
 export async function fetchUserAdminMemory(userId) {
   return getWithCookie(`/api/admin/dashboard/user/${userId}`);
 }
+
+export async function addMemoryManual(userId, body) {
+  return postWithCookie(`/api/admin/memory/${userId}`, body);
+}
+
+export async function deleteMemory(memoryId) {
+  const res = await fetch(`${BASE_URL}/api/admin/memory/${memoryId}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+
+  const data = await res.json();
+  if (!res.ok) {
+    throw new Error(data.message || "Request failed");
+  }
+  return data;
+}
