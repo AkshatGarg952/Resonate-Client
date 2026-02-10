@@ -49,6 +49,11 @@ export default function MobileMenu({
                                 <Link to="/dashboard" className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-800/50 text-slate-200">
                                     <span>🏠</span> Dashboard
                                 </Link>
+                                {user?.email === import.meta.env.VITE_ADMIN_EMAIL && (
+                                    <Link to="/admin/memory" className="flex items-center gap-3 px-4 py-3 rounded-2xl bg-slate-800/50 text-red-300 border border-red-900/30">
+                                        <span>🛡️</span> Admin Panel
+                                    </Link>
+                                )}
                             </div>
 
                             {/* Fitness */}

@@ -136,6 +136,17 @@ export default function DesktopNav({
                         Coach
                     </Link>
 
+                    {/* Admin Link */}
+                    {user?.email === import.meta.env.VITE_ADMIN_EMAIL && (
+                        <Link
+                            to="/admin/memory"
+                            className={`font-medium transition-colors flex items-center gap-2 ${isActive("/admin/memory") ? "text-red-400" : "text-slate-300 hover:text-red-400"
+                                }`}
+                        >
+                            🛡️ Admin
+                        </Link>
+                    )}
+
                     <div className="h-6 w-px bg-slate-800 mx-2"></div>
 
                     <UserDropdown
