@@ -39,7 +39,7 @@ export default function LoginPage() {
       }
     } catch (err) {
       await auth.signOut();
-      setError(err.response?.data?.message || "Invalid email or password");
+      setError(err.message || "Invalid email or password");
     } finally {
       setLoading(false);
     }

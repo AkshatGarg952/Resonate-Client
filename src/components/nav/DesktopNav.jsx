@@ -26,13 +26,31 @@ export default function DesktopNav({
                         Dashboard
                     </Link>
 
-                    <Link
-                        to="/interventions"
-                        className={`font-medium transition-colors flex items-center gap-2 ${isActive("/interventions") ? "text-primary" : "text-slate-300 hover:text-slate-50"
-                            }`}
-                    >
-                        Interventions
-                    </Link>
+
+                    {/* Interventions Dropdown */}
+                    <div className="relative group">
+                        <button
+                            className={`flex items-center gap-1.5 font-medium transition-colors ${isActiveGroup(["/interventions"]) ? "text-primary" : "text-slate-300 hover:text-slate-50"
+                                }`}
+                        >
+                            Interventions
+                            <svg className="w-4 h-4 transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+
+                        <div className="absolute left-0 mt-4 w-48 rounded-2xl bg-slate-900 border border-slate-800 shadow-xl overflow-hidden opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-20 transform translate-y-2 group-hover:translate-y-0">
+                            <div className="p-2 space-y-1">
+                                <Link to="/interventions" className="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 rounded-xl transition-colors">
+                                    📋 My Plans
+                                </Link>
+                                <Link to="/interventions/suggest" className="block px-3 py-2 text-sm text-purple-400 hover:bg-slate-800 rounded-xl transition-colors">
+                                    ✨ Get Suggestions
+                                </Link>
+                            </div>
+                        </div>
+                    </div>
+
 
                     {/* Workouts Dropdown */}
                     <div className="relative group">
