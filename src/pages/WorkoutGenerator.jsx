@@ -9,6 +9,10 @@ const WorkoutGenerator = () => {
     const [generatedPlan, setGeneratedPlan] = useState(null);
     const [error, setError] = useState(null);
 
+    const [workoutId, setWorkoutId] = useState(null);
+    const [completing, setCompleting] = useState(false);
+    const [completed, setCompleted] = useState(false);
+
     const [formData, setFormData] = useState({
         fitnessLevel: '',
         equipment: [],
@@ -61,11 +65,30 @@ const WorkoutGenerator = () => {
                 goalBarriers: finalBarriers.includes('None') ? [] : finalBarriers
             });
             setGeneratedPlan(res.plan);
+            setWorkoutId(res.workoutId);
             setStep(totalSteps + 1);
         } catch (err) {
             setError(err.message || "Failed to generate plan");
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleComplete = async () => {
+        if (!workoutId) return;
+        setCompleting(true);
+        try {
+            await postWithCookie('/workout/complete', {
+                workoutId,
+                rpe: 5, // Default/Average
+                energyLevel: 5, // Default
+                notes: "Quick completed from generator"
+            });
+            setCompleted(true);
+        } catch (err) {
+            setError("Failed to mark workout as complete");
+        } finally {
+            setCompleting(false);
         }
     };
 
@@ -350,6 +373,22 @@ const WorkoutGenerator = () => {
                                         ))}
                                     </ul>
                                 </div>
+                            </div>
+
+                            <div className="mt-8 flex justify-center">
+                                {!completed ? (
+                                    <button
+                                        onClick={handleComplete}
+                                        disabled={completing}
+                                        className="px-8 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-lg shadow-lg hover:shadow-green-500/25 transition-all text-white disabled:opacity-70 disabled:cursor-wait flex items-center gap-2"
+                                    >
+                                        {completing ? 'Completing...' : 'Mark Workout Complete'}
+                                    </button>
+                                ) : (
+                                    <div className="text-green-400 font-bold text-lg flex items-center gap-2 animate-bounce">
+                                        🎉 Workout Recorded!
+                                    </div>
+                                )}
                             </div>
                         </div>
                     )}

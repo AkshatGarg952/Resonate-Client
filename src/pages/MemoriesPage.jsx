@@ -69,8 +69,8 @@ export default function MemoriesPage() {
                                 key={cat}
                                 onClick={() => setCategoryFilter(cat)}
                                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${categoryFilter === cat || (categoryFilter === "" && cat === "All")
-                                        ? "bg-slate-800 text-emerald-400 shadow-sm"
-                                        : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
+                                    ? "bg-slate-800 text-emerald-400 shadow-sm"
+                                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
                                     }`}
                             >
                                 {cat.charAt(0).toUpperCase() + cat.slice(1)}
@@ -107,10 +107,12 @@ export default function MemoriesPage() {
                             >
                                 <div className="flex items-start justify-between mb-4">
                                     <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide 
-                    ${memory.metadata?.category === 'workout' ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' :
-                                            memory.metadata?.category === 'diet' ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
-                                                memory.metadata?.category === 'health' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-                                                    'bg-slate-700/30 text-slate-400 border border-slate-700/50'}`}>
+                    ${(memory.metadata?.category || '').startsWith('fitness') ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' :
+                                            (memory.metadata?.category || '').startsWith('nutrition') ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
+                                                (memory.metadata?.category || '').startsWith('diagnostics') ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
+                                                    (memory.metadata?.category || '').startsWith('recovery') ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
+                                                        (memory.metadata?.category || '').startsWith('intervention') ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
+                                                            'bg-slate-700/30 text-slate-400 border border-slate-700/50'}`}>
                                         {memory.metadata?.category || "General"}
                                     </span>
                                     <span className="text-xs text-slate-500 font-mono">

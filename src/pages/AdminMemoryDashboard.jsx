@@ -54,13 +54,14 @@ const AdminMemoryDashboard = () => {
 
         setAddingMemory(true);
         try {
-            await addMemoryManual(userData.userId, {
+            const targetUserId = userData.memoryUserId || userData.userId;
+            await addMemoryManual(targetUserId, {
                 text: newMemoryText,
                 metadata: { category: newMemoryCategory, source: 'admin_manual' }
             });
 
             // Refresh list
-            const data = await fetchUserAdminMemory(userData.userId);
+            const data = await fetchUserAdminMemory(targetUserId);
             setUserData(data);
             setNewMemoryText('');
             setNewMemoryCategory('user.defined');
@@ -77,7 +78,8 @@ const AdminMemoryDashboard = () => {
         try {
             await deleteMemory(memoryId);
             // Refresh list
-            const data = await fetchUserAdminMemory(userData.userId);
+            const targetUserId = userData.memoryUserId || userData.userId;
+            const data = await fetchUserAdminMemory(targetUserId);
             setUserData(data);
         } catch (err) {
             alert("Failed to delete memory: " + err.message);
@@ -132,7 +134,7 @@ const AdminMemoryDashboard = () => {
                         <form onSubmit={handleUserSearch} className="flex flex-col sm:flex-row gap-3 mb-8">
                             <input
                                 type="text"
-                                placeholder="Enter User ID (UUID)"
+                                placeholder="Enter Firebase UID, Email, or Mongo User ID"
                                 className="flex-1 glass-card border-slate-700 bg-slate-900/50 text-slate-200 placeholder-slate-500 rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
                                 value={userIdInput}
                                 onChange={(e) => setUserIdInput(e.target.value)}

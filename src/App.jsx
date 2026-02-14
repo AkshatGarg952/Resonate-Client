@@ -23,6 +23,7 @@ import NutritionPage from "./pages/NutritionPage";
 import MealHistoryPage from "./pages/MealHistoryPage";
 import FoodAnalyzer from "./components/FoodAnalyzer";
 import InterventionsPage from "./pages/InterventionsPage";
+import InterventionSuggestions from "./pages/InterventionSuggestions";
 import AdminMemoryDashboard from "./pages/AdminMemoryDashboard";
 import MemoriesPage from "./pages/MemoriesPage";
 
@@ -132,6 +133,14 @@ function AppWrapper() {
             element={
               <ProtectedRoute>
                 <InterventionsPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="/interventions/suggest"
+            element={
+              <ProtectedRoute>
+                <InterventionSuggestions />
               </ProtectedRoute>
             }
           />
