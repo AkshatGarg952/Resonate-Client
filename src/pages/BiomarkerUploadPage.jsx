@@ -10,7 +10,7 @@ export default function BiomarkerUploadPage() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [biomarkers, setBiomarkers] = useState([]);
   const [biomarkersByCategory, setBiomarkersByCategory] = useState({});
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState('blood');
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [analysisComplete, setAnalysisComplete] = useState(false);
@@ -94,7 +94,7 @@ export default function BiomarkerUploadPage() {
     }, 200);
 
     try {
-      const data = await uploadPdfWithCookie("/diagnostics/upload", file);
+      const data = await uploadPdfWithCookie("/diagnostics/upload", file, selectedCategory || 'blood');
 
       clearInterval(progressInterval);
       setUploadProgress(100);
@@ -142,7 +142,7 @@ export default function BiomarkerUploadPage() {
     setError("");
     setBiomarkers([]);
     setBiomarkersByCategory({});
-    setSelectedCategory(null);
+    setSelectedCategory('blood');
     setAnalysisComplete(false);
     if (fileInputRef.current) {
       fileInputRef.current.value = "";
@@ -195,6 +195,23 @@ export default function BiomarkerUploadPage() {
       <section className="px-5 mb-6">
         <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6">
 
+          <div className="mb-6">
+            <label className="block text-sm font-semibold text-slate-400 mb-3">Report Category</label>
+            <div className="flex flex-wrap gap-2">
+              {['blood', 'urine', 'bca', 'cgm', 'other'].map(cat => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border ${selectedCategory === cat
+                    ? "bg-emerald-500 text-slate-950 border-emerald-500 hover:bg-emerald-400"
+                    : "bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600 hover:text-slate-300"
+                    }`}
+                >
+                  {cat.charAt(0).toUpperCase() + cat.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 mb-6">
             <div className="flex items-start gap-3">
@@ -458,15 +475,15 @@ export default function BiomarkerUploadPage() {
                             key={categoryLabel}
                             onClick={() => setSelectedCategory(categoryLabel)}
                             className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${isSelected
-                                ? "bg-gradient-to-r from-primary to-emerald-500 text-slate-950 shadow-lg shadow-primary/25"
-                                : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-slate-300 hover:bg-slate-800"
+                              ? "bg-gradient-to-r from-primary to-emerald-500 text-slate-950 shadow-lg shadow-primary/25"
+                              : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-slate-300 hover:bg-slate-800"
                               }`}
                           >
                             <div className="flex items-center justify-between">
                               <span className="truncate">{categoryLabel || 'Other'}</span>
                               <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0 ${isSelected
-                                  ? "bg-slate-950/30 text-slate-950"
-                                  : "bg-slate-700/50 text-slate-500"
+                                ? "bg-slate-950/30 text-slate-950"
+                                : "bg-slate-700/50 text-slate-500"
                                 }`}>
                                 {categoryCount}
                               </span>

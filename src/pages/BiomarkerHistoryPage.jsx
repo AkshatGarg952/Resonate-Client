@@ -15,11 +15,14 @@ export default function BiomarkerHistoryPage() {
 
   const navigate = useNavigate();
 
-  const fetchHistory = async (isRefresh = false) => {
+  const [categoryFilter, setCategoryFilter] = useState('all');
+
+  const fetchHistory = async (isRefresh = false, cat = categoryFilter) => {
     if (isRefresh) setRefreshing(true);
 
     try {
-      const data = await getWithCookie("/diagnostics/history");
+      const query = cat !== 'all' ? `?category=${cat}` : '';
+      const data = await getWithCookie(`/diagnostics/history${query}`);
       setHistory(data || []);
       setFilteredHistory(data || []);
       setError("");
@@ -33,8 +36,8 @@ export default function BiomarkerHistoryPage() {
   };
 
   useEffect(() => {
-    fetchHistory();
-  }, []);
+    fetchHistory(false, categoryFilter);
+  }, [categoryFilter]);
 
 
   useEffect(() => {
@@ -209,6 +212,21 @@ export default function BiomarkerHistoryPage() {
             </div>
           </div>
         )}
+
+        <div className="flex gap-2 overflow-x-auto pb-4 scrollbar-hide mb-2">
+          {['all', 'blood', 'urine', 'bca', 'cgm', 'other'].map(cat => (
+            <button
+              key={cat}
+              onClick={() => setCategoryFilter(cat)}
+              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border ${categoryFilter === cat
+                  ? "bg-slate-50 text-slate-950 border-slate-50 shadow-lg shadow-white/10"
+                  : "bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600 hover:text-slate-300"
+                }`}
+            >
+              {cat === 'all' ? 'All Categories' : cat.charAt(0).toUpperCase() + cat.slice(1)}
+            </button>
+          ))}
+        </div>
 
 
         {!error && history.length > 0 && (
