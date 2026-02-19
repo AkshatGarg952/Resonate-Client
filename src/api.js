@@ -87,9 +87,12 @@ export async function patchWithCookie(path, body) {
 }
 
 
-export async function uploadPdfWithCookie(path, file) {
+export async function uploadPdfWithCookie(path, file, category) {
   const formData = new FormData();
   formData.append("report", file);
+  if (category) {
+    formData.append("category", category);
+  }
 
   const res = await fetch(`${BASE_URL}${path}`, {
     method: "POST",
