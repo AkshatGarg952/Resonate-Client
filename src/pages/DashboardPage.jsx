@@ -77,7 +77,7 @@ export default function DashboardPage() {
 
   const loadProfile = async () => {
     try {
-      const data = await getWithCookie("/user/profile");
+      const data = await getWithCookie("/api/user/profile");
       const u = data.user;
 
       setProfile({
@@ -165,7 +165,7 @@ export default function DashboardPage() {
           payload.menstrualProfile.phase = profile.menstrualPhase;
       }
 
-      await putWithCookie("/user/profile", payload);
+      await putWithCookie("/api/user/profile", payload);
       setMessage("Profile updated successfully ✓");
       setEditMode(false);
       setTimeout(() => setMessage(""), 3000);

@@ -14,7 +14,7 @@ const MealHistoryPage = () => {
 
     const loadHistory = async () => {
         try {
-            const res = await getWithCookie('/nutrition/history');
+            const res = await getWithCookie('/api/nutrition/history');
             setMeals(res.history || []);
         } catch (err) {
             console.error("Failed to load history", err);

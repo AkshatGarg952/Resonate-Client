@@ -56,7 +56,7 @@ export default function GetACoachPage() {
         goal: form.goal,
       };
 
-      const res = await postWithCookie("/coach/create", payload);
+      const res = await postWithCookie("/api/coach/create", payload);
 
       if (res.message === "Coach request submitted successfully" || res.success) {
         setSuccess(true);

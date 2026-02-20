@@ -26,7 +26,7 @@ export default function FitnessDashboardPage() {
     }
 
     try {
-      const apiData = await getWithCookie("/fit/getGoogleFitData");
+      const apiData = await getWithCookie("/api/fit/getGoogleFitData");
       const normalizedData = normalizeFitnessData(apiData);
       setFitness(normalizedData);
       setStepGoal(apiData.stepGoal || 0);
@@ -68,7 +68,7 @@ export default function FitnessDashboardPage() {
 
   const updateStepGoal = async (newGoal) => {
     try {
-      await postWithCookie("/fit/step-goal", { stepGoal: parseInt(newGoal) });
+      await postWithCookie("/api/fit/step-goal", { stepGoal: parseInt(newGoal) });
       setStepGoal(parseInt(newGoal));
       setIsEditingStepGoal(false);
     } catch (error) {
@@ -216,7 +216,7 @@ export default function FitnessDashboardPage() {
             {/* Connection Options */}
             <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
               <button
-                onClick={() => window.location.href = `${import.meta.env.VITE_API_BASE_URL}/fit/google`}
+                onClick={() => window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/fit/google`}
                 className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl 
                          bg-gradient-to-r from-primary to-emerald-500 text-slate-950 font-bold 
                          shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 

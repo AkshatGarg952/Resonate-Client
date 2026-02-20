@@ -70,7 +70,7 @@ export default function BiomarkerFetchFromApiPage() {
     setError("");
 
     try {
-      const data = await postWithCookie("/diagnostics/fetch-from-api", {
+      const data = await postWithCookie("/api/diagnostics/fetch-from-api", {
         labId: selectedLab
       });
 
@@ -230,8 +230,8 @@ export default function BiomarkerFetchFromApiPage() {
 
 
                     <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected
-                        ? 'border-primary bg-primary'
-                        : 'border-slate-600'
+                      ? 'border-primary bg-primary'
+                      : 'border-slate-600'
                       }`}>
                       {isSelected && (
                         <svg className="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -344,7 +344,7 @@ export default function BiomarkerFetchFromApiPage() {
                                   bg-slate-950/30 border border-slate-700">
                       <span className="text-xs font-medium text-slate-400">Health Score:</span>
                       <span className={`text-base font-black ${overallScore >= 70 ? 'text-emerald-400' :
-                          overallScore >= 40 ? 'text-amber-400' : 'text-red-400'
+                        overallScore >= 40 ? 'text-amber-400' : 'text-red-400'
                         }`}>
                         {overallScore}/100
                       </span>

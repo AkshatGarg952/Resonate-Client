@@ -1,3 +1,5 @@
+import { handleNetworkError, handleServerError, handleRateLimitError } from "./utils/apiError.js";
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 /**
@@ -13,14 +15,31 @@ async function fetchWithRetry(url, options = {}, retries = 2) {
   for (let attempt = 0; attempt <= retries; attempt++) {
     try {
       const res = await fetch(url, options);
-      // Only retry on server errors, not client errors (4xx)
-      if (res.status >= 500 && attempt < retries) {
-        await new Promise((r) => setTimeout(r, 500 * 2 ** attempt));
-        continue;
+
+      // Rate limit hit
+      if (res.status === 429) {
+        handleRateLimitError();
+        return res;
       }
+
+      // Server error — retry with backoff, then toast on final failure
+      if (res.status >= 500) {
+        if (attempt < retries) {
+          await new Promise((r) => setTimeout(r, 500 * 2 ** attempt));
+          continue;
+        }
+        // Final attempt failed — show toast
+        handleServerError(res.status);
+        return res;
+      }
+
       return res;
     } catch (networkErr) {
-      if (attempt === retries) throw networkErr;
+      if (attempt === retries) {
+        // Network completely failed after all retries
+        handleNetworkError(networkErr);
+        throw networkErr;
+      }
       await new Promise((r) => setTimeout(r, 500 * 2 ** attempt));
     }
   }
@@ -114,7 +133,7 @@ export async function analyzeFoodImage(file, cuisine) {
   if (cuisine) formData.append("cuisine", cuisine);
 
   const res = await fetchWithRetry(
-    `${BASE_URL}/food/analyze`,
+    `${BASE_URL}/api/food/analyze`,
     { method: "POST", credentials: "include", body: formData },
     0 // no retry for uploads
   );
@@ -153,7 +172,7 @@ export async function fetchWeeklyLogs() {
 }
 
 export async function getUserMemories(category) {
-  return getWithCookie(`/user/memories${category ? `?category=${category}` : ""}`);
+  return getWithCookie(`/api/user/memories${category ? `?category=${category}` : ""}`);
 }
 
 // Admin Dashboard APIs

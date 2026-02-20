@@ -18,7 +18,7 @@ export default function NutritionPage() {
             setLoading(true);
             setError("");
 
-            const data = await getWithCookie("/nutrition/daily-suggestions");
+            const data = await getWithCookie("/api/nutrition/daily-suggestions");
 
             if (data.status === "success" && data.plan) {
                 const normalizedPlan = {};
@@ -54,7 +54,7 @@ export default function NutritionPage() {
             // If we are generating from scratch (not regenerating), show loading state differently
             if (!suggestions) setLoading(true);
 
-            const data = await postWithCookie("/nutrition/daily-suggestions", {});
+            const data = await postWithCookie("/api/nutrition/daily-suggestions", {});
 
             if (data.status === "success" && data.plan) {
                 const normalizedPlan = {};

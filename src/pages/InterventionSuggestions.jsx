@@ -13,7 +13,7 @@ const InterventionSuggestions = () => {
         setLoading(true);
         setError(null);
         try {
-            const res = await postWithCookie('/interventions/suggest', {});
+            const res = await postWithCookie('/api/interventions/suggest', {});
             setSuggestions(res.suggestions || []);
             setContextUsed(res.contextUsed);
         } catch (err) {
@@ -25,7 +25,7 @@ const InterventionSuggestions = () => {
 
     const handleAccept = async (suggestion) => {
         try {
-            await postWithCookie('/interventions', {
+            await postWithCookie('/api/interventions', {
                 type: suggestion.type,
                 title: suggestion.title,
                 description: suggestion.description,
@@ -102,9 +102,9 @@ const InterventionSuggestions = () => {
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
                                             <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${suggestion.type === 'sleep' ? 'bg-indigo-500/20 text-indigo-300' :
-                                                    suggestion.type === 'nutrition' ? 'bg-green-500/20 text-green-300' :
-                                                        suggestion.type === 'stress' ? 'bg-amber-500/20 text-amber-300' :
-                                                            'bg-blue-500/20 text-blue-300'
+                                                suggestion.type === 'nutrition' ? 'bg-green-500/20 text-green-300' :
+                                                    suggestion.type === 'stress' ? 'bg-amber-500/20 text-amber-300' :
+                                                        'bg-blue-500/20 text-blue-300'
                                                 }`}>
                                                 {suggestion.type}
                                             </span>

@@ -18,7 +18,7 @@ export default function WaterTracker() {
 
     const fetchWaterData = async () => {
         try {
-            const res = await getWithCookie('/water');
+            const res = await getWithCookie('/api/water');
             if (res && res.today) {
                 setData(res.today);
                 setNewGoal(res.today.goalMl);
@@ -33,7 +33,7 @@ export default function WaterTracker() {
     const logWater = async (amount) => {
         setAdding(true);
         try {
-            const res = await postWithCookie('/water/log', { amountMl: amount });
+            const res = await postWithCookie('/api/water/log', { amountMl: amount });
             setData(res);
             setIsAddingCustom(false);
             setCustomAmount("");
@@ -46,7 +46,7 @@ export default function WaterTracker() {
 
     const updateGoal = async () => {
         try {
-            const res = await postWithCookie('/water/goal', { goalMl: parseInt(newGoal) });
+            const res = await postWithCookie('/api/water/goal', { goalMl: parseInt(newGoal) });
             setData(res);
             setIsEditingGoal(false);
         } catch (error) {

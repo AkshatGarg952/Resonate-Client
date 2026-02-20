@@ -28,7 +28,7 @@ export default function LoginPage() {
     try {
       const cred = await signInWithEmailAndPassword(auth, email, password);
       const token = await cred.user.getIdToken();
-      const res = await postAuth("/auth/login", token, {});
+      const res = await postAuth("/api/auth/login", token, {});
 
       if (res.message === "Login Success") {
         sessionStorage.setItem("verifiedUser", "true");
