@@ -22,7 +22,7 @@ export default function BiomarkerHistoryPage() {
 
     try {
       const query = cat !== 'all' ? `?category=${cat}` : '';
-      const data = await getWithCookie(`/diagnostics/history${query}`);
+      const data = await getWithCookie(`/api/diagnostics/history${query}`);
       setHistory(data || []);
       setFilteredHistory(data || []);
       setError("");
@@ -219,8 +219,8 @@ export default function BiomarkerHistoryPage() {
               key={cat}
               onClick={() => setCategoryFilter(cat)}
               className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border ${categoryFilter === cat
-                  ? "bg-slate-50 text-slate-950 border-slate-50 shadow-lg shadow-white/10"
-                  : "bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600 hover:text-slate-300"
+                ? "bg-slate-50 text-slate-950 border-slate-50 shadow-lg shadow-white/10"
+                : "bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600 hover:text-slate-300"
                 }`}
             >
               {cat === 'all' ? 'All Categories' : cat.charAt(0).toUpperCase() + cat.slice(1)}

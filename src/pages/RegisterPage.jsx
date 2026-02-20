@@ -83,7 +83,7 @@ export default function RegisterPage() {
       payload.phone = `${form.countryCode}${form.phone}`.replace(/\s+/g, "");
     }
 
-    const res = await postAuth("/auth/register", token, payload);
+    const res = await postAuth("/api/auth/register", token, payload);
 
     if (res.message === "User Registered") {
       sessionStorage.setItem("verifiedUser", "true");

@@ -58,7 +58,7 @@ const WorkoutGenerator = () => {
                 finalBarriers.push(customBarrier.trim());
             }
 
-            const res = await postWithCookie('/workout/generate', {
+            const res = await postWithCookie('/api/workout/generate', {
                 ...formData,
                 equipment: formData.equipment.includes('None (Bodyweight)') ? [] : formData.equipment,
                 injuries: formData.injuries.includes('None') ? [] : formData.injuries,
@@ -78,7 +78,7 @@ const WorkoutGenerator = () => {
         if (!workoutId) return;
         setCompleting(true);
         try {
-            await postWithCookie('/workout/complete', {
+            await postWithCookie('/api/workout/complete', {
                 workoutId,
                 rpe: 5, // Default/Average
                 energyLevel: 5, // Default

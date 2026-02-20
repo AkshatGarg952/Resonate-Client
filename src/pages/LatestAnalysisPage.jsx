@@ -19,7 +19,7 @@ export default function LatestAnalysisPage() {
     if (isRefresh) setRefreshing(true);
 
     try {
-      const latest = await getWithCookie("/diagnostics/latest");
+      const latest = await getWithCookie("/api/diagnostics/latest");
 
       if (!latest || latest.status !== "completed") {
         setError("No completed analysis found yet.");
@@ -246,7 +246,7 @@ export default function LatestAnalysisPage() {
                       <span className="text-xl font-normal text-slate-500 ml-2">/100</span>
                     </h2>
                     <p className={`text-sm font-semibold ${overallScore >= 70 ? 'text-emerald-400' :
-                        overallScore >= 40 ? 'text-amber-400' : 'text-red-400'
+                      overallScore >= 40 ? 'text-amber-400' : 'text-red-400'
                       }`}>
                       {overallScore >= 70 ? 'Excellent Health' :
                         overallScore >= 40 ? 'Needs Attention' : 'Consult Doctor'}
@@ -264,7 +264,7 @@ export default function LatestAnalysisPage() {
                         strokeDasharray={`${2 * Math.PI * 48}`}
                         strokeDashoffset={`${2 * Math.PI * 48 * (1 - overallScore / 100)}`}
                         className={`transition-all duration-1000 ${overallScore >= 70 ? 'stroke-emerald-400' :
-                            overallScore >= 40 ? 'stroke-amber-400' : 'stroke-red-400'
+                          overallScore >= 40 ? 'stroke-amber-400' : 'stroke-red-400'
                           }`}
                         strokeLinecap="round"
                       />
@@ -362,15 +362,15 @@ export default function LatestAnalysisPage() {
                               key={categoryLabel}
                               onClick={() => setSelectedCategory(categoryLabel)}
                               className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${isSelected
-                                  ? "bg-gradient-to-r from-primary to-emerald-500 text-slate-950 shadow-lg shadow-primary/25"
-                                  : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-slate-300 hover:bg-slate-800"
+                                ? "bg-gradient-to-r from-primary to-emerald-500 text-slate-950 shadow-lg shadow-primary/25"
+                                : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-slate-300 hover:bg-slate-800"
                                 }`}
                             >
                               <div className="flex items-center justify-between">
                                 <span className="truncate">{categoryLabel || 'Other'}</span>
                                 <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0 ${isSelected
-                                    ? "bg-slate-950/30 text-slate-950"
-                                    : "bg-slate-700/50 text-slate-500"
+                                  ? "bg-slate-950/30 text-slate-950"
+                                  : "bg-slate-700/50 text-slate-500"
                                   }`}>
                                   {categoryCount}
                                 </span>

@@ -17,7 +17,7 @@ const WorkoutHistoryPage = () => {
 
     const loadHistory = async () => {
         try {
-            const res = await getWithCookie('/workout/history');
+            const res = await getWithCookie('/api/workout/history');
             setWorkouts(res.workouts || []);
         } catch (err) {
             console.error("Failed to load history", err);
@@ -36,7 +36,7 @@ const WorkoutHistoryPage = () => {
         if (!selectedWorkout) return;
         setIsSubmitting(true);
         try {
-            await postWithCookie('/workout/complete', {
+            await postWithCookie('/api/workout/complete', {
                 workoutId: selectedWorkout._id,
                 ...completionData
             });
