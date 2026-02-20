@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchWeeklyLogs } from "../api";
 
-const WeeklyTrends = () => {
+const WeeklyTrends = ({ refreshTrigger = 0 }) => {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
@@ -24,7 +24,7 @@ const WeeklyTrends = () => {
         };
 
         getLogs();
-    }, []);
+    }, [refreshTrigger]);
 
     const getMetricColor = (value, type) => {
         if (type === 'stress') {
