@@ -25,17 +25,24 @@ const InterventionSuggestions = () => {
 
     const handleAccept = async (suggestion) => {
         try {
+            // Map AI suggestion fields to Intervention model fields:
+            // AI returns:  description → model needs: recommendation
+            // AI returns:  rationale   → model needs: rationale (direct)
+            // AI returns:  duration (string e.g. "14") → model needs: durationDays (number)
+            const durationDays = parseInt(suggestion.duration, 10) || 14;
+            const startDate = new Date();
+            const endDate = new Date(startDate.getTime() + durationDays * 86400000);
+
             await postWithCookie('/api/interventions', {
                 type: suggestion.type,
-                title: suggestion.title,
-                description: suggestion.description,
+                recommendation: suggestion.description,   // model field is 'recommendation'
+                rationale: suggestion.rationale || suggestion.description,
                 status: 'active',
-                startDate: new Date(),
-                // Default duration if not provided
-                endDate: new Date(Date.now() + (suggestion.durationDays || 14) * 86400000)
+                startDate,
+                endDate,
+                durationDays,
             });
             alert("Intervention added to your active plans!");
-            // Remove from list or mark as added
             setSuggestions(prev => prev.filter(s => s !== suggestion));
         } catch (err) {
             alert("Failed to add intervention: " + err.message);
