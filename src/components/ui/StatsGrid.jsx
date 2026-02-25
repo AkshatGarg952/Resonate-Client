@@ -120,3 +120,4 @@ export default function StatsGrid({ profile, calculateAge, calculateBMI, getBMIC
         </div>
     );
 }
+

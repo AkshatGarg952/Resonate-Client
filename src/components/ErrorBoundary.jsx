@@ -107,3 +107,4 @@ export function ErrorBoundaryWrapper({ children, fallback }) {
         </ErrorBoundary>
     );
 }
+

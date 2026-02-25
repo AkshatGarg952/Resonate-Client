@@ -43,3 +43,4 @@ export function StepDots({ step, totalSteps }) {
         </div>
     );
 }
+

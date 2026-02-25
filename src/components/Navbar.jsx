@@ -40,7 +40,7 @@ export default function Navbar() {
   const isActiveGroup = (paths) => paths.some((p) => location.pathname.startsWith(p));
 
   const handleConnectGoogleFit = () => {
-    window.location.href = `${API_BASE_URL}/fit/google`;
+    window.location.href = `${API_BASE_URL}/api/fit/google`;
   };
 
   const handleLogout = async () => {
@@ -107,3 +107,4 @@ export default function Navbar() {
     </>
   );
 }
+

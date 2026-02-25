@@ -78,3 +78,4 @@ export default function UserDropdown({ user, isOpen, onToggle, onClose, onConnec
         </div>
     );
 }
+

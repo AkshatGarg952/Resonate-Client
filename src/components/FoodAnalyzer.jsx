@@ -182,3 +182,4 @@ const FoodAnalyzer = () => {
 };
 
 export default FoodAnalyzer;
+

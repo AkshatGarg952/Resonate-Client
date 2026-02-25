@@ -230,3 +230,4 @@ const WeeklyTrends = ({ refreshTrigger = 0 }) => {
 };
 
 export default WeeklyTrends;
+

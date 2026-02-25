@@ -154,3 +154,4 @@ const DailyCheckInModal = ({ isOpen, onClose, onCheckInComplete }) => {
 };
 
 export default DailyCheckInModal;
+

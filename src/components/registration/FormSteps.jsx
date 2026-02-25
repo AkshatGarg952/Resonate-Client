@@ -307,3 +307,4 @@ export function GoalsStep({ form, updateField }) {
         </div>
     );
 }
+

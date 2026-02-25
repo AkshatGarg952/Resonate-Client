@@ -29,3 +29,4 @@ export default function ProfileHeader({ name, email }) {
         </div>
     );
 }
+

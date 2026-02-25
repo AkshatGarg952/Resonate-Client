@@ -275,3 +275,4 @@ const WorkoutHistoryPage = () => {
 };
 
 export default WorkoutHistoryPage;
+

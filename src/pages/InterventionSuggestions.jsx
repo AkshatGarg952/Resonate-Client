@@ -182,3 +182,4 @@ const InterventionSuggestions = () => {
 };
 
 export default InterventionSuggestions;
+

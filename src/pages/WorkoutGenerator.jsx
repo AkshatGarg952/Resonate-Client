@@ -399,3 +399,4 @@ const WorkoutGenerator = () => {
 };
 
 export default WorkoutGenerator;
+

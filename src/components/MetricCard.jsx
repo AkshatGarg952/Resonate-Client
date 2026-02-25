@@ -8,3 +8,4 @@ export default function MetricCard({ title, value }) {
     </div>
   );
 }
+

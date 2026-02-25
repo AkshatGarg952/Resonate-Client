@@ -102,3 +102,4 @@ export default function BottomNav({ isActive, isActiveGroup }) {
         </nav>
     );
 }
+

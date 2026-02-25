@@ -245,3 +245,4 @@ function NutrientBadge({ label, value }) {
         </span>
     );
 }
+

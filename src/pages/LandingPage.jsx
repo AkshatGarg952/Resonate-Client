@@ -272,8 +272,8 @@ export default function LandingPage() {
             <div
               key={index}
               className={`h-1.5 rounded-full transition-all duration-300 ${activeCard === index
-                  ? 'w-8 bg-primary'
-                  : 'w-1.5 bg-slate-700 hover:bg-slate-600'
+                ? 'w-8 bg-primary'
+                : 'w-1.5 bg-slate-700 hover:bg-slate-600'
                 }`}
             ></div>
           ))}
@@ -340,7 +340,7 @@ export default function LandingPage() {
       </section>
 
 
-      <style jsx>{`
+      <style>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;
         }
@@ -366,3 +366,4 @@ export default function LandingPage() {
     </div>
   );
 }
+

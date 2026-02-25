@@ -2,9 +2,9 @@ import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyAZRttP0lpLDWolCSxGI5TG3fZ_0zhyZV0",
-  authDomain: "resonate-client.firebaseapp.com",
-  projectId: "resonate-client",
+  apiKey: "AIzaSyCFj_nT5tKcPD4JOOzank9G6Cjw_Fs6Y8M",
+  authDomain: "resonate-health.firebaseapp.com",
+  projectId: "resonate-health",
 };
 
 const app = initializeApp(firebaseConfig);

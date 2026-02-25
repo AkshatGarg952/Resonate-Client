@@ -159,3 +159,4 @@ function MealDetailSection({ title, data }) {
 }
 
 export default MealHistoryPage;
+
