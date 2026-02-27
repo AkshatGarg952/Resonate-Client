@@ -2,6 +2,16 @@ import React, { useState, useEffect } from 'react';
 import AddInterventionModal from '../components/AddInterventionModal';
 import { getAllInterventions, stopIntervention } from '../api';
 
+const ICONS = {
+    supplement: '💊', diet: '🥗', fitness: '💪', meditation: '🧘',
+};
+
+const STATUS_STYLE = {
+    active: { bg: "rgba(52,199,89,0.10)", border: "rgba(52,199,89,0.25)", color: "#14532D", label: "Active" },
+    completed: { bg: "rgba(124,111,205,0.10)", border: "rgba(124,111,205,0.25)", color: "#4A3D6B", label: "Completed" },
+    discontinued: { bg: "rgba(239,68,68,0.08)", border: "rgba(239,68,68,0.20)", color: "#991B1B", label: "Discontinued" },
+};
+
 export default function InterventionsPage() {
     const [interventions, setInterventions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -25,7 +35,6 @@ export default function InterventionsPage() {
 
     const handleComplete = async (id, name) => {
         if (!window.confirm(`Mark ${name} as successfully completed?`)) return;
-
         try {
             await stopIntervention(id, 'completed');
             fetchInterventions();
@@ -38,7 +47,6 @@ export default function InterventionsPage() {
     const handleDiscontinue = async (id, name) => {
         const reason = window.prompt(`Why are you stopping ${name}? (Optional)`);
         if (reason === null) return;
-
         try {
             await stopIntervention(id, 'discontinued', reason);
             fetchInterventions();
@@ -59,206 +67,183 @@ export default function InterventionsPage() {
     };
 
     const handleRestart = (intervention) => {
-        // Create a new intervention based on the old one, but don't include _id
         const { _id, createdAt, updatedAt, outcomes, endDate, discontinuationReason, ...restartData } = intervention;
-
-        const restartedIntervention = {
-            ...restartData,
-            status: 'active',
-            startDate: new Date().toISOString().split('T')[0]
-        };
-
-        setEditingIntervention(restartedIntervention);
+        setEditingIntervention({ ...restartData, status: 'active', startDate: new Date().toISOString().split('T')[0] });
         setIsModalOpen(true);
     };
 
-    useEffect(() => {
-        fetchInterventions();
-    }, []);
-
-    const getIcon = (type) => {
-        switch (type) {
-            case 'supplement': return '💊';
-            case 'diet': return '🥗';
-            case 'fitness': return '💪';
-            case 'meditation': return '🧘';
-            default: return '⚡';
-        }
-    };
+    useEffect(() => { fetchInterventions(); }, []);
 
     const activeInterventions = interventions.filter(i => i.status === 'active');
     const historyInterventions = interventions.filter(i => i.status !== 'active');
     const displayedInterventions = activeTab === 'active' ? activeInterventions : historyInterventions;
 
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-200 font-sans selection:bg-primary/30">
-
-            <main className="max-w-7xl mx-auto px-5 py-8">
-
-
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
-                    <div>
-                        <h1 className="text-3xl font-black text-white tracking-tight mb-1">
-                            Interventions <span className="text-primary">Manager</span>
-                        </h1>
-                        <p className="text-slate-400">Track your active protocols and health experiments.</p>
-                    </div>
-
-                    <button
-                        onClick={() => setIsModalOpen(true)}
-                        className="group px-5 py-3 rounded-2xl bg-primary text-slate-950 font-bold hover:bg-white transition-colors flex items-center gap-2 shadow-lg shadow-primary/20"
-                    >
-                        <span className="text-lg bg-slate-950/20 w-6 h-6 rounded-full flex items-center justify-center text-slate-950 group-hover:bg-slate-950/20 transition-colors">+</span>
-                        New Intervention
-                    </button>
+        <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            {/* Header */}
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 24 }}>
+                <div>
+                    <h1 style={{ fontSize: 28, fontWeight: 700, color: "#1A1A18", margin: "0 0 4px" }}>
+                        Interventions <span style={{ color: "#CADB00" }}>Manager</span>
+                    </h1>
+                    <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)", margin: 0 }}>Track your active protocols and health experiments.</p>
                 </div>
+                <button
+                    onClick={() => setIsModalOpen(true)}
+                    style={{ padding: "10px 20px", borderRadius: 12, border: "none", background: "#1A1A18", color: "#FFF", fontSize: 13, fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: 8 }}
+                >
+                    <span style={{ fontSize: 18, lineHeight: 1 }}>+</span> New Intervention
+                </button>
+            </div>
 
+            {/* Tabs */}
+            <div style={{ display: "flex", gap: 0, borderBottom: "2px solid rgba(26,26,24,0.08)", marginBottom: 20 }}>
+                {["active", "history"].map(tab => {
+                    const count = tab === "active" ? activeInterventions.length : historyInterventions.length;
+                    const isActive = activeTab === tab;
+                    return (
+                        <button
+                            key={tab}
+                            onClick={() => setActiveTab(tab)}
+                            style={{
+                                padding: "10px 18px", border: "none", background: "none", cursor: "pointer", fontSize: 13, fontWeight: 700,
+                                color: isActive ? "#1A1A18" : "rgba(26,26,24,0.40)",
+                                borderBottom: isActive ? "2px solid #CADB00" : "2px solid transparent",
+                                marginBottom: -2, transition: "all 0.15s", textTransform: "uppercase", letterSpacing: "0.06em",
+                            }}
+                        >
+                            {tab === "active" ? `Active (${count})` : `History (${count})`}
+                        </button>
+                    );
+                })}
+            </div>
 
-                <div className="flex gap-4 border-b border-slate-800 mb-6">
-                    <button
-                        onClick={() => setActiveTab('active')}
-                        className={`pb-3 text-sm font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'active' ? 'text-primary border-primary' : 'text-slate-500 border-transparent hover:text-slate-300'
-                            }`}
-                    >
-                        Active Protocols ({activeInterventions.length})
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('history')}
-                        className={`pb-3 text-sm font-bold uppercase tracking-wider transition-all border-b-2 ${activeTab === 'history' ? 'text-primary border-primary' : 'text-slate-500 border-transparent hover:text-slate-300'
-                            }`}
-                    >
-                        History ({historyInterventions.length})
-                    </button>
+            {/* Error */}
+            {error && (
+                <div style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.20)", borderRadius: 12, padding: "12px 16px", fontSize: 13, color: "#EF4444", marginBottom: 16, textAlign: "center" }}>
+                    {error}
                 </div>
+            )}
 
-
-                {loading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="w-8 h-8 border-4 border-slate-800 border-t-primary rounded-full animate-spin"></div>
-                    </div>
-                ) : error ? (
-                    <div className="p-4 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-center">
-                        {error}
-                    </div>
-                ) : displayedInterventions.length === 0 ? (
-                    <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-slate-800/50 border-dashed">
-                        <div className="text-6xl mb-4 opacity-50">🧪</div>
-                        <h3 className="text-xl font-bold text-white mb-2">No {activeTab} interventions</h3>
-                        <p className="text-slate-400 max-w-md mx-auto mb-6">
-                            {activeTab === 'active'
-                                ? "You're not tracking any active protocols right now. Start an experiment!"
-                                : "You haven't completed or discontinued any protocols yet."}
-                        </p>
-                        {activeTab === 'active' && (
-                            <button
-                                onClick={() => setIsModalOpen(true)}
-                                className="text-primary hover:text-white font-bold underline decoration-primary/50 hover:decoration-white transition-all"
+            {/* Loading */}
+            {loading ? (
+                <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
+                    <div style={{ width: 36, height: 36, borderRadius: "50%", border: "3px solid rgba(202,219,0,0.20)", borderTopColor: "#CADB00", animation: "spin 0.8s linear infinite" }} />
+                </div>
+            ) : displayedInterventions.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "64px 20px", background: "rgba(255,255,255,0.65)", backdropFilter: "blur(12px)", border: "1.5px dashed rgba(26,26,24,0.15)", borderRadius: 24 }}>
+                    <div style={{ fontSize: 48, marginBottom: 16, opacity: 0.5 }}>🧪</div>
+                    <h3 style={{ fontSize: 17, fontWeight: 700, color: "#1A1A18", marginBottom: 8 }}>
+                        No {activeTab} interventions
+                    </h3>
+                    <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)", maxWidth: 360, margin: "0 auto 20px" }}>
+                        {activeTab === 'active'
+                            ? "You're not tracking any active protocols. Start an experiment!"
+                            : "You haven't completed or discontinued any protocols yet."}
+                    </p>
+                    {activeTab === 'active' && (
+                        <button
+                            onClick={() => setIsModalOpen(true)}
+                            style={{ fontSize: 13, fontWeight: 700, color: "#3D4000", textDecoration: "underline", background: "none", border: "none", cursor: "pointer" }}
+                        >
+                            Add your first protocol
+                        </button>
+                    )}
+                </div>
+            ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 14 }}>
+                    {displayedInterventions.map((item) => {
+                        const ss = STATUS_STYLE[item.status] || STATUS_STYLE.discontinued;
+                        return (
+                            <div
+                                key={item._id}
+                                className="glass-card"
+                                style={{
+                                    borderRadius: 20, padding: 20,
+                                    opacity: item.status !== 'active' ? 0.80 : 1,
+                                    borderTop: `3px solid ${item.status === 'active' ? '#CADB00' : item.status === 'completed' ? '#7C6FCD' : '#EF4444'}`,
+                                    transition: "transform 0.15s",
+                                }}
+                                onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; }}
+                                onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; }}
                             >
-                                Add your first protocol
-                            </button>
-                        )}
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {displayedInterventions.map((item) => (
-                            <div key={item._id} className={`group relative bg-slate-900 border ${item.status === 'active' ? 'border-slate-800' : 'border-slate-800/50 opacity-75'} rounded-3xl p-6 hover:border-primary/30 transition-all hover:shadow-2xl hover:shadow-primary/5`}>
-
-                                <div className="flex justify-between items-start mb-4">
-                                    <div className="w-12 h-12 rounded-2xl bg-slate-800 flex items-center justify-center text-2xl border border-slate-700 group-hover:scale-110 transition-transform">
-                                        {getIcon(item.type)}
+                                {/* Card header */}
+                                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 14 }}>
+                                    <div style={{ width: 44, height: 44, borderRadius: 12, background: "rgba(26,26,24,0.06)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22 }}>
+                                        {ICONS[item.type] || '⚡'}
                                     </div>
-                                    <div className='flex gap-2'>
+                                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
                                         <button
                                             onClick={() => handleEdit(item)}
-                                            className="p-2 rounded-lg bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+                                            style={{ width: 30, height: 30, borderRadius: 8, background: "rgba(26,26,24,0.06)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}
                                             title="Edit"
                                         >
-                                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                            <svg width="14" height="14" fill="none" stroke="#1A1A18" strokeWidth="1.7" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                             </svg>
                                         </button>
-                                        <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide border flex items-center ${item.status === 'active' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
-                                            item.status === 'completed' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
-                                                'bg-red-500/10 text-red-400 border-red-500/20'
-                                            }`}>
+                                        <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 10px", borderRadius: 9999, background: ss.bg, border: `1px solid ${ss.border}`, color: ss.color, textTransform: "uppercase", letterSpacing: "0.06em" }}>
                                             {item.status}
                                         </span>
                                     </div>
                                 </div>
 
-                                <h3 className="text-xl font-bold text-white mb-1 group-hover:text-primary transition-colors">
-                                    {item.recommendation}
-                                </h3>
-                                {item.rationale && <p className="text-sm text-slate-500 line-clamp-2 mb-3">{item.rationale}</p>}
+                                {/* Title & rationale */}
+                                <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1A1A18", marginBottom: 6, lineHeight: 1.4 }}>{item.recommendation}</h3>
+                                {item.rationale && <p style={{ fontSize: 12, color: "rgba(26,26,24,0.55)", marginBottom: 10, display: "-webkit-box", WebkitLineClamp: 2, WebkitBoxOrient: "vertical", overflow: "hidden" }}>{item.rationale}</p>}
 
-                                <div className="space-y-2 mt-4 text-sm text-slate-400">
-                                    <div className="flex items-center gap-2">
-                                        <span className="w-4 text-center">⏱️</span>
-                                        <span>{item.durationDays} days</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <span className="w-4 text-center">🎯</span>
-                                        <span>{item.targetMetric}: {item.targetValue}%</span>
-                                    </div>
-                                    <div className="flex items-center gap-2 text-slate-500">
-                                        <span className="w-4 text-center">📅</span>
-                                        <span>Started {new Date(item.startDate).toLocaleDateString()}</span>
-                                    </div>
-
+                                {/* Meta */}
+                                <div style={{ display: "flex", flexDirection: "column", gap: 5, fontSize: 12, color: "rgba(26,26,24,0.55)", marginBottom: 14 }}>
+                                    <span>⏱️ {item.durationDays} days</span>
+                                    <span>🎯 {item.targetMetric}: {item.targetValue}%</span>
+                                    <span>📅 Started {new Date(item.startDate).toLocaleDateString()}</span>
                                     {item.endDate && item.status !== 'active' && (
-                                        <div className="flex items-center gap-2 text-red-400">
-                                            <span className="w-4 text-center">🛑</span>
-                                            <span>Ended {new Date(item.endDate).toLocaleDateString()}</span>
-                                        </div>
+                                        <span style={{ color: "#DC2626" }}>🛑 Ended {new Date(item.endDate).toLocaleDateString()}</span>
                                     )}
                                 </div>
 
-
-                                <div className="mt-6 flex items-center justify-between gap-4">
-                                    {item.status === 'active' ? (
-                                        <>
-                                            <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden flex-1">
-                                                <div className="h-full bg-gradient-to-r from-primary to-emerald-400 w-full animate-pulse opacity-50"></div>
-                                            </div>
-                                            <div className="flex gap-2">
-                                                <button
-                                                    onClick={() => handleComplete(item._id, item.recommendation)}
-                                                    className="px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-500 text-xs font-bold hover:bg-emerald-500/20 transition-colors"
-                                                >
-                                                    Complete
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDiscontinue(item._id, item.recommendation)}
-                                                    className="px-3 py-1.5 rounded-lg bg-red-500/10 text-red-500 text-xs font-bold hover:bg-red-500/20 transition-colors"
-                                                >
-                                                    Discontinue
-                                                </button>
-                                            </div>
-                                        </>
-                                    ) : (
-                                        <div className="flex items-center justify-between mt-6 gap-3">
-                                            <div className="text-xs text-slate-500 font-medium bg-slate-800/50 py-2 px-3 rounded-lg flex-1 text-center border border-slate-700/50">
-                                                {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-                                            </div>
+                                {/* Actions */}
+                                {item.status === 'active' ? (
+                                    <div>
+                                        <div style={{ height: 4, borderRadius: 2, background: "rgba(26,26,24,0.08)", overflow: "hidden", marginBottom: 10 }}>
+                                            <div style={{ height: "100%", width: "100%", background: "#CADB00", borderRadius: 2, opacity: 0.6 }} />
+                                        </div>
+                                        <div style={{ display: "flex", gap: 8 }}>
                                             <button
-                                                onClick={() => handleRestart(item)}
-                                                className="px-3 py-2 rounded-lg bg-primary/10 text-primary text-xs font-bold hover:bg-primary/20 transition-colors border border-primary/20 flex items-center gap-1.5"
+                                                onClick={() => handleComplete(item._id, item.recommendation)}
+                                                style={{ flex: 1, padding: "8px 0", fontSize: 12, fontWeight: 700, borderRadius: 8, border: "1px solid rgba(52,199,89,0.25)", background: "rgba(52,199,89,0.08)", color: "#14532D", cursor: "pointer" }}
                                             >
-                                                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                                                </svg>
-                                                Restart
+                                                Complete
+                                            </button>
+                                            <button
+                                                onClick={() => handleDiscontinue(item._id, item.recommendation)}
+                                                style={{ flex: 1, padding: "8px 0", fontSize: 12, fontWeight: 700, borderRadius: 8, border: "1px solid rgba(239,68,68,0.20)", background: "rgba(239,68,68,0.06)", color: "#DC2626", cursor: "pointer" }}
+                                            >
+                                                Discontinue
                                             </button>
                                         </div>
-                                    )}
-                                </div>
-
+                                    </div>
+                                ) : (
+                                    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+                                        <div style={{ flex: 1, textAlign: "center", fontSize: 12, fontWeight: 600, color: "rgba(26,26,24,0.45)", padding: "8px 0", borderRadius: 8, background: "rgba(26,26,24,0.04)" }}>
+                                            {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                                        </div>
+                                        <button
+                                            onClick={() => handleRestart(item)}
+                                            style={{ padding: "8px 14px", fontSize: 12, fontWeight: 700, borderRadius: 8, border: "1.5px solid rgba(202,219,0,0.40)", background: "rgba(202,219,0,0.10)", color: "#3D4000", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}
+                                        >
+                                            <svg width="12" height="12" fill="none" stroke="#3D4000" strokeWidth="2" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                            </svg>
+                                            Restart
+                                        </button>
+                                    </div>
+                                )}
                             </div>
-                        ))}
-                    </div>
-                )}
-
-            </main>
+                        );
+                    })}
+                </div>
+            )}
 
             <AddInterventionModal
                 isOpen={isModalOpen}
@@ -267,8 +252,7 @@ export default function InterventionsPage() {
                 initialData={editingIntervention}
             />
 
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
     );
 }
-
-

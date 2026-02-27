@@ -1,6 +1,42 @@
 import React, { useEffect, useState } from "react";
 import { getUserMemories } from "../api";
-import { Link } from "react-router-dom";
+
+const S = {
+    page: {
+        fontFamily: "'DM Sans', sans-serif",
+    },
+    header: {
+        marginBottom: 28,
+    },
+    h1: {
+        fontSize: 28, fontWeight: 700, color: "#1A1A18", margin: "0 0 4px",
+    },
+    sub: {
+        fontSize: 13, color: "rgba(26,26,24,0.55)", margin: 0, maxWidth: 480,
+    },
+    filterBar: {
+        display: "flex", flexWrap: "wrap", gap: 8, marginTop: 16,
+    },
+    grid: {
+        display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 16,
+    },
+};
+
+const categoryColors = {
+    fitness: { bg: "rgba(224,122,58,0.10)", border: "rgba(224,122,58,0.25)", text: "#92400E" },
+    nutrition: { bg: "rgba(52,199,89,0.10)", border: "rgba(52,199,89,0.25)", text: "#14532D" },
+    diagnostics: { bg: "rgba(124,111,205,0.10)", border: "rgba(124,111,205,0.25)", text: "#4A3D6B" },
+    recovery: { bg: "rgba(56,189,248,0.10)", border: "rgba(56,189,248,0.25)", text: "#075985" },
+    intervention: { bg: "rgba(239,68,68,0.10)", border: "rgba(239,68,68,0.25)", text: "#991B1B" },
+    default: { bg: "rgba(26,26,24,0.05)", border: "rgba(26,26,24,0.10)", text: "rgba(26,26,24,0.55)" },
+};
+
+function getCategoryStyle(cat = "") {
+    for (const key of Object.keys(categoryColors)) {
+        if (cat.toLowerCase().startsWith(key)) return categoryColors[key];
+    }
+    return categoryColors.default;
+}
 
 export default function MemoriesPage() {
     const [memories, setMemories] = useState([]);
@@ -10,26 +46,15 @@ export default function MemoriesPage() {
 
     const categories = ["All", "diet", "workout", "health", "preference", "general"];
 
-    useEffect(() => {
-        fetchMemories();
-    }, [categoryFilter]);
+    useEffect(() => { fetchMemories(); }, [categoryFilter]);
 
     const fetchMemories = async () => {
         try {
             setLoading(true);
             const data = await getUserMemories(categoryFilter === "All" ? "" : categoryFilter);
-            // Mem0 returns { results: [...] } or just [...] depending on endpoint, 
-            // but our service returns { success: true, results: [...] } or just the array if we mapped it in controller.
-            // Let's check controller: return res.json(memories);
-            // Service `getAllMemories` returns { success: true, results: [...], count: ... }
-
-            if (data.results) {
-                setMemories(data.results);
-            } else if (Array.isArray(data)) {
-                setMemories(data);
-            } else {
-                setMemories([]);
-            }
+            if (data.results) setMemories(data.results);
+            else if (Array.isArray(data)) setMemories(data);
+            else setMemories([]);
         } catch (err) {
             console.error("Failed to fetch memories:", err);
             setError("Failed to load your memories. Please try again later.");
@@ -41,97 +66,112 @@ export default function MemoriesPage() {
     const formatDate = (isoString) => {
         if (!isoString) return "";
         return new Date(isoString).toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
+            year: "numeric", month: "short", day: "numeric",
         });
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-50 p-6 md:p-12">
-            <div className="max-w-7xl mx-auto">
-                {/* Header */}
-                <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-                    <div>
-                        <h1 className="text-3xl md:text-4xl font-black bg-gradient-to-r from-emerald-400 to-cyan-500 bg-clip-text text-transparent mb-2">
-                            My Memories
-                        </h1>
-                        <p className="text-slate-400 max-w-2xl">
-                            This is what your AI coach knows about you. These memories refine your
-                            workout and diet plans to match your evolving needs.
-                        </p>
-                    </div>
+        <div style={S.page}>
+            {/* Header */}
+            <div style={S.header}>
+                <h1 style={S.h1}>My Memories</h1>
+                <p style={S.sub}>
+                    This is what your AI coach knows about you. These memories refine your
+                    workout and diet plans to match your evolving needs.
+                </p>
 
-                    {/* Filter */}
-                    <div className="flex items-center gap-3 bg-slate-900 p-1.5 rounded-xl border border-slate-800">
-                        {categories.map((cat) => (
+                {/* Filter bar */}
+                <div style={S.filterBar}>
+                    {categories.map((cat) => {
+                        const isActive = categoryFilter === cat || (categoryFilter === "" && cat === "All");
+                        return (
                             <button
                                 key={cat}
                                 onClick={() => setCategoryFilter(cat)}
-                                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${categoryFilter === cat || (categoryFilter === "" && cat === "All")
-                                    ? "bg-slate-800 text-emerald-400 shadow-sm"
-                                    : "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50"
-                                    }`}
+                                style={{
+                                    padding: "6px 14px", borderRadius: 9999, fontSize: 13, fontWeight: 600,
+                                    border: isActive ? "none" : "1px solid rgba(26,26,24,0.12)",
+                                    background: isActive ? "#1A1A18" : "rgba(255,255,255,0.70)",
+                                    color: isActive ? "#FFF" : "rgba(26,26,24,0.60)",
+                                    cursor: "pointer", backdropFilter: "blur(8px)",
+                                    transition: "all 0.15s",
+                                }}
                             >
                                 {cat.charAt(0).toUpperCase() + cat.slice(1)}
                             </button>
-                        ))}
-                    </div>
+                        );
+                    })}
                 </div>
+            </div>
 
-                {/* Content */}
-                {loading ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
-                        {[1, 2, 3, 4, 5, 6].map((i) => (
-                            <div key={i} className="h-40 bg-slate-900/50 rounded-2xl border border-slate-800"></div>
-                        ))}
-                    </div>
-                ) : error ? (
-                    <div className="p-6 bg-red-500/10 border border-red-500/20 rounded-2xl text-red-400 text-center">
-                        {error}
-                    </div>
-                ) : memories.length === 0 ? (
-                    <div className="text-center py-20 bg-slate-900/30 rounded-3xl border border-slate-800/50 dashed">
-                        <div className="text-6xl mb-4">🧠</div>
-                        <h3 className="text-xl font-bold text-slate-300 mb-2">No memories yet</h3>
-                        <p className="text-slate-500 max-w-md mx-auto">
-                            Start interacting with your AI coach, log your meals, or complete workouts to build your profile.
-                        </p>
-                    </div>
-                ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {memories.map((memory) => (
+            {/* Content */}
+            {loading ? (
+                <div style={S.grid}>
+                    {[1, 2, 3, 4, 5, 6].map((i) => (
+                        <div key={i} style={{
+                            height: 140, borderRadius: 20,
+                            background: "rgba(255,255,255,0.50)", border: "1px solid rgba(255,255,255,0.60)",
+                            animation: "pulse 1.5s ease-in-out infinite",
+                        }} />
+                    ))}
+                </div>
+            ) : error ? (
+                <div style={{
+                    padding: "16px 20px", borderRadius: 12,
+                    background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.20)",
+                    fontSize: 13, color: "#EF4444", textAlign: "center",
+                }}>
+                    {error}
+                </div>
+            ) : memories.length === 0 ? (
+                <div style={{
+                    textAlign: "center", padding: "64px 20px",
+                    background: "rgba(255,255,255,0.60)", backdropFilter: "blur(12px)",
+                    border: "1.5px dashed rgba(26,26,24,0.15)", borderRadius: 24,
+                }}>
+                    <div style={{ fontSize: 48, marginBottom: 16 }}>🧠</div>
+                    <h3 style={{ fontSize: 17, fontWeight: 700, color: "#1A1A18", marginBottom: 8 }}>No memories yet</h3>
+                    <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)", maxWidth: 360, margin: "0 auto" }}>
+                        Start interacting with your AI coach, log meals, or complete workouts to build your profile.
+                    </p>
+                </div>
+            ) : (
+                <div style={S.grid}>
+                    {memories.map((memory) => {
+                        const cat = memory.metadata?.category || "";
+                        const cs = getCategoryStyle(cat);
+                        return (
                             <div
                                 key={memory.id}
-                                className="group relative bg-slate-900/50 hover:bg-slate-900 border border-slate-800 hover:border-emerald-500/30 rounded-2xl p-6 transition-all duration-300 hover:-translate-y-1 shadow-lg hover:shadow-emerald-500/10"
+                                className="glass-card"
+                                style={{
+                                    borderRadius: 20, padding: 20,
+                                    transition: "box-shadow 0.2s, transform 0.2s",
+                                    cursor: "default",
+                                }}
                             >
-                                <div className="flex items-start justify-between mb-4">
-                                    <span className={`px-2.5 py-1 rounded-full text-xs font-bold uppercase tracking-wide 
-                    ${(memory.metadata?.category || '').startsWith('fitness') ? 'bg-orange-500/10 text-orange-400 border border-orange-500/20' :
-                                            (memory.metadata?.category || '').startsWith('nutrition') ? 'bg-green-500/10 text-green-400 border border-green-500/20' :
-                                                (memory.metadata?.category || '').startsWith('diagnostics') ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' :
-                                                    (memory.metadata?.category || '').startsWith('recovery') ? 'bg-blue-500/10 text-blue-400 border border-blue-500/20' :
-                                                        (memory.metadata?.category || '').startsWith('intervention') ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-                                                            'bg-slate-700/30 text-slate-400 border border-slate-700/50'}`}>
-                                        {memory.metadata?.category || "General"}
+                                <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 12 }}>
+                                    <span style={{
+                                        fontSize: 11, fontWeight: 700, padding: "3px 10px", borderRadius: 9999,
+                                        background: cs.bg, border: `1px solid ${cs.border}`, color: cs.text,
+                                        textTransform: "uppercase", letterSpacing: "0.06em",
+                                    }}>
+                                        {cat || "General"}
                                     </span>
-                                    <span className="text-xs text-slate-500 font-mono">
+                                    <span style={{ fontSize: 11, color: "rgba(26,26,24,0.35)", fontVariantNumeric: "tabular-nums" }}>
                                         {formatDate(memory.created_at)}
                                     </span>
                                 </div>
-
-                                <p className="text-slate-200 leading-relaxed font-medium">
+                                <p style={{ fontSize: 13, color: "#1A1A18", lineHeight: 1.65, margin: 0 }}>
                                     {memory.memory}
                                 </p>
-
-                                {/* Decorative glow */}
-                                <div className="absolute inset-0 bg-gradient-to-tr from-emerald-500/0 via-emerald-500/0 to-emerald-500/5 opacity-0 group-hover:opacity-100 transition-opacity rounded-2xl pointer-events-none"></div>
                             </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+                        );
+                    })}
+                </div>
+            )}
+
+            <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }`}</style>
         </div>
     );
 }
-

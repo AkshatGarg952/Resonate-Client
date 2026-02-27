@@ -32,7 +32,6 @@ const WorkoutGenerator = () => {
     const barrierOptions = ['Time Constraints', 'Low Energy', 'Lack of Discipline', 'Boredom', 'Slow Progress', 'None'];
 
     const totalSteps = 7;
-
     const handleNext = () => setStep(prev => prev + 1);
     const handleBack = () => setStep(prev => prev - 1);
 
@@ -54,10 +53,7 @@ const WorkoutGenerator = () => {
         setError(null);
         try {
             const finalBarriers = [...formData.goalBarriers];
-            if (customBarrier.trim()) {
-                finalBarriers.push(customBarrier.trim());
-            }
-
+            if (customBarrier.trim()) finalBarriers.push(customBarrier.trim());
             const res = await postWithCookie('/api/workout/generate', {
                 ...formData,
                 equipment: formData.equipment.includes('None (Bodyweight)') ? [] : formData.equipment,
@@ -78,12 +74,7 @@ const WorkoutGenerator = () => {
         if (!workoutId) return;
         setCompleting(true);
         try {
-            await postWithCookie('/api/workout/complete', {
-                workoutId,
-                rpe: 5, // Default/Average
-                energyLevel: 5, // Default
-                notes: "Quick completed from generator"
-            });
+            await postWithCookie('/api/workout/complete', { workoutId, rpe: 5, energyLevel: 5, notes: "Quick completed from generator" });
             setCompleted(true);
         } catch (err) {
             setError("Failed to mark workout as complete");
@@ -92,311 +83,272 @@ const WorkoutGenerator = () => {
         }
     };
 
+    const cardStyle = {
+        background: "rgba(255,255,255,0.75)", backdropFilter: "blur(16px)",
+        border: "1px solid rgba(255,255,255,0.80)", borderRadius: 24,
+        boxShadow: "0 4px 24px rgba(0,0,0,0.06)", padding: "32px",
+        width: "100%", maxWidth: 560,
+    };
+
+    const btnPrimary = {
+        padding: "12px 28px", borderRadius: 12, border: "none",
+        background: "#1A1A18", color: "#FFF", fontSize: 14, fontWeight: 700,
+        cursor: "pointer", transition: "all 0.15s",
+    };
+
+    const btnSecondary = {
+        padding: "10px 20px", borderRadius: 12,
+        background: "none", border: "none", color: "rgba(26,26,24,0.50)",
+        fontSize: 14, fontWeight: 600, cursor: "pointer",
+    };
+
+    const optionBtn = (isSelected) => ({
+        padding: "16px 20px", borderRadius: 14, textAlign: "left", width: "100%",
+        border: `2px solid ${isSelected ? "#CADB00" : "rgba(26,26,24,0.10)"}`,
+        background: isSelected ? "rgba(202,219,0,0.10)" : "rgba(255,255,255,0.60)",
+        cursor: "pointer", transition: "all 0.15s",
+    });
+
+    const pillBtn = (isSelected, color = "#CADB00") => ({
+        padding: "8px 16px", borderRadius: 9999, fontSize: 13, fontWeight: 600,
+        border: `2px solid ${isSelected ? color : "rgba(26,26,24,0.10)"}`,
+        background: isSelected ? `${color}22` : "rgba(255,255,255,0.60)",
+        color: isSelected ? "#1A1A18" : "rgba(26,26,24,0.60)",
+        cursor: "pointer", transition: "all 0.15s",
+    });
+
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col items-center justify-center p-4 gradient-bg relative overflow-hidden">
+        <div style={{ fontFamily: "'DM Sans', sans-serif", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
+            {/* Header */}
+            {step <= totalSteps && !generatedPlan && (
+                <div style={{ textAlign: "center", marginBottom: 24, width: "100%", maxWidth: 560 }}>
+                    <h1 style={{ fontSize: 28, fontWeight: 700, color: "#1A1A18", margin: "0 0 4px" }}>
+                        AI Workout Planner
+                    </h1>
+                    <p style={{ fontSize: 13, color: "rgba(26,26,24,0.50)", marginBottom: 14 }}>
+                        Step {step + 1} of {totalSteps}
+                    </p>
+                    <div style={{ height: 6, borderRadius: 3, background: "rgba(26,26,24,0.08)", overflow: "hidden" }}>
+                        <div style={{ height: "100%", width: `${((step + 1) / totalSteps) * 100}%`, background: "#CADB00", borderRadius: 3, transition: "width 0.4s ease" }} />
+                    </div>
+                </div>
+            )}
 
-            <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-green-500/20 rounded-full blur-[100px]" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-500/20 rounded-full blur-[100px]" />
+            <div style={cardStyle}>
+                {loading ? (
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", padding: "40px 0" }}>
+                        <div style={{ width: 44, height: 44, borderRadius: "50%", border: "3px solid rgba(202,219,0,0.20)", borderTopColor: "#CADB00", animation: "spin 0.8s linear infinite", marginBottom: 16 }} />
+                        <p style={{ fontSize: 15, color: "rgba(26,26,24,0.55)" }}>Constructing your perfect routine…</p>
+                    </div>
 
-            <div className="z-10 w-full max-w-2xl">
-                {step <= totalSteps && !generatedPlan && (
-                    <div className="mb-8 text-center">
-                        <h1 className="text-4xl font-bold bg-gradient-to-r from-green-400 to-blue-500 bg-clip-text text-transparent mb-2">
-                            AI Workout Planner
-                        </h1>
-                        <p className="text-slate-400">Step {step + 1} of {totalSteps}</p>
-                        <div className="w-full bg-slate-800 h-2 rounded-full mt-4 overflow-hidden">
-                            <div
-                                className="h-full bg-gradient-to-r from-green-400 to-blue-500 transition-all duration-500"
-                                style={{ width: `${((step + 1) / totalSteps) * 100}%` }}
-                            />
+                ) : step === 0 ? (
+                    <div>
+                        <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1A1A18", textAlign: "center", marginBottom: 20 }}>What's your current fitness level?</h2>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                            {levels.map(level => (
+                                <button key={level} onClick={() => { setFormData({ ...formData, fitnessLevel: level }); handleNext(); }} style={optionBtn(formData.fitnessLevel === level)}>
+                                    <div style={{ fontSize: 15, fontWeight: 700, color: "#1A1A18", marginBottom: 2 }}>{level}</div>
+                                    <div style={{ fontSize: 12, color: "rgba(26,26,24,0.50)" }}>
+                                        {level === 'Beginner' && "I'm just starting out"}
+                                        {level === 'Intermediate' && "I train regularly"}
+                                        {level === 'Advanced' && "I'm looking for a challenge"}
+                                    </div>
+                                </button>
+                            ))}
                         </div>
                     </div>
-                )}
 
-                <div className="bg-slate-900/50 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl">
-                    {loading ? (
-                        <div className="flex flex-col items-center py-20">
-                            <div className="w-16 h-16 border-4 border-green-500 border-t-transparent rounded-full animate-spin mb-4" />
-                            <p className="text-xl animate-pulse">Constructing your perfect routine...</p>
-                        </div>
-                    ) : step === 0 ? (
-                        <div className="space-y-6">
-                            <h2 className="text-2xl font-semibold mb-4 text-center">What's your current fitness level?</h2>
-                            <div className="grid gap-4">
-                                {levels.map(level => (
-                                    <button
-                                        key={level}
-                                        onClick={() => { setFormData({ ...formData, fitnessLevel: level }); handleNext(); }}
-                                        className={`p-6 rounded-2xl border-2 transition-all hover:scale-[1.02] text-left group ${formData.fitnessLevel === level
-                                            ? 'border-green-500 bg-green-500/10'
-                                            : 'border-white/5 hover:border-white/20 hover:bg-white/5'
-                                            }`}
-                                    >
-                                        <div className="text-xl font-bold mb-1">{level}</div>
-                                        <div className="text-slate-400 text-sm">
-                                            {level === 'Beginner' && "I'm just starting out"}
-                                            {level === 'Intermediate' && "I train regularly"}
-                                            {level === 'Advanced' && "I'm looking for a challenge"}
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    ) : step === 1 ? (
-                        <div>
-                            <h2 className="text-2xl font-semibold mb-6 text-center">What equipment do you have?</h2>
-                            <div className="grid grid-cols-2 gap-3 mb-8">
-                                {equipmentList.map(item => (
-                                    <button
-                                        key={item}
-                                        onClick={() => toggleSelection('equipment', item)}
-                                        className={`p-4 rounded-xl border text-sm transition-all ${formData.equipment.includes(item)
-                                            ? 'border-blue-500 bg-blue-500/20 text-blue-100'
-                                            : 'border-white/10 hover:bg-white/5 text-slate-300'
-                                            }`}
-                                    >
-                                        {item}
-                                    </button>
-                                ))}
-                            </div>
-                            <div className="flex justify-between">
-                                <button onClick={handleBack} className="text-slate-400 hover:text-white transition-colors">Back</button>
-                                <button
-                                    onClick={handleNext}
-                                    disabled={formData.equipment.length === 0}
-                                    className="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-                                >
-                                    Next
+                ) : step === 1 ? (
+                    <div>
+                        <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1A1A18", textAlign: "center", marginBottom: 20 }}>What equipment do you have?</h2>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 24, justifyContent: "center" }}>
+                            {equipmentList.map(item => (
+                                <button key={item} onClick={() => toggleSelection('equipment', item)} style={pillBtn(formData.equipment.includes(item), "#CADB00")}>
+                                    {item}
                                 </button>
-                            </div>
+                            ))}
                         </div>
-                    ) : step === 2 ? (
-                        <div>
-                            <h2 className="text-2xl font-semibold mb-6 text-center">How much time do you have?</h2>
-                            <div className="mb-8 px-4">
-                                <input
-                                    type="range"
-                                    min="15"
-                                    max="90"
-                                    step="5"
-                                    value={formData.timeAvailable}
-                                    onChange={(e) => setFormData({ ...formData, timeAvailable: parseInt(e.target.value) })}
-                                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-green-500"
-                                />
-                                <div className="text-center mt-4">
-                                    <span className="text-5xl font-bold text-green-400">{formData.timeAvailable}</span>
-                                    <span className="text-xl text-slate-400 ml-2">minutes</span>
-                                </div>
-                            </div>
-                            <div className="flex justify-between">
-                                <button onClick={handleBack} className="text-slate-400 hover:text-white transition-colors">Back</button>
-                                <button
-                                    onClick={handleNext}
-                                    className="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold transition-colors"
-                                >
-                                    Next
-                                </button>
-                            </div>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <button style={btnSecondary} onClick={handleBack}>Back</button>
+                            <button style={{ ...btnPrimary, opacity: formData.equipment.length === 0 ? 0.4 : 1 }} disabled={formData.equipment.length === 0} onClick={handleNext}>Next</button>
                         </div>
-                    ) : step === 3 ? (
-                        <div>
-                            <h2 className="text-2xl font-semibold mb-2 text-center">Any injuries or limitations?</h2>
-                            <p className="text-center text-slate-400 mb-6 text-sm">We'll filter out exercises that might aggravate these areas.</p>
-                            <div className="flex flex-wrap gap-3 justify-center mb-8">
-                                {injuryList.map(item => (
-                                    <button
-                                        key={item}
-                                        onClick={() => toggleSelection('injuries', item)}
-                                        className={`px-4 py-2 rounded-full border transition-all ${formData.injuries.includes(item)
-                                            ? 'border-red-500 bg-red-500/20 text-red-100'
-                                            : 'border-white/10 hover:bg-white/5 text-slate-300'
-                                            }`}
-                                    >
-                                        {item}
-                                    </button>
-                                ))}
-                            </div>
-                            <div className="flex justify-between items-center">
-                                <button onClick={handleBack} className="text-slate-400 hover:text-white transition-colors">Back</button>
-                                <button
-                                    onClick={handleNext}
-                                    className="px-6 py-2 bg-blue-600 hover:bg-blue-500 rounded-lg font-semibold transition-colors"
-                                >
-                                    Next
-                                </button>
-                            </div>
-                        </div>
-                    ) : step === 4 ? (
-                        <div className="space-y-6">
-                            <h2 className="text-2xl font-semibold mb-4 text-center">How motivated are you today?</h2>
-                            <div className="grid gap-4">
-                                {motivationLevels.map(level => (
-                                    <button
-                                        key={level}
-                                        onClick={() => { setFormData({ ...formData, motivationLevel: level }); handleNext(); }}
-                                        className={`p-6 rounded-2xl border-2 transition-all hover:scale-[1.02] text-center group ${formData.motivationLevel === level
-                                            ? 'border-amber-500 bg-amber-500/10 text-amber-100'
-                                            : 'border-white/5 hover:border-white/20 hover:bg-white/5'
-                                            }`}
-                                    >
-                                        <div className="text-xl font-bold mb-1">{level}</div>
-                                        <div className="text-slate-400 text-sm">
-                                            {level === 'Low' && "I need something easy to get moving"}
-                                            {level === 'Medium' && "I'm ready for a solid workout"}
-                                            {level === 'High' && "Push me to my limits!"}
-                                        </div>
-                                    </button>
-                                ))}
-                            </div>
-                            <div className="flex justify-between items-center mt-4">
-                                <button onClick={handleBack} className="text-slate-400 hover:text-white transition-colors">Back</button>
-                            </div>
-                        </div>
-                    ) : step === 5 ? (
-                        <div className="space-y-6">
-                            <h2 className="text-2xl font-semibold mb-4 text-center">When do you plan to workout?</h2>
-                            <div className="grid grid-cols-3 gap-4">
-                                {timingOptions.map(time => (
-                                    <button
-                                        key={time}
-                                        onClick={() => { setFormData({ ...formData, workoutTiming: time }); handleNext(); }}
-                                        className={`p-4 rounded-2xl border-2 transition-all hover:scale-[1.02] text-center group ${formData.workoutTiming === time
-                                            ? 'border-indigo-500 bg-indigo-500/10 text-indigo-100'
-                                            : 'border-white/5 hover:border-white/20 hover:bg-white/5'
-                                            }`}
-                                    >
-                                        <div className="text-lg font-bold">{time}</div>
-                                    </button>
-                                ))}
-                            </div>
-                            <div className="flex justify-between items-center mt-4">
-                                <button onClick={handleBack} className="text-slate-400 hover:text-white transition-colors">Back</button>
-                            </div>
-                        </div>
-                    ) : step === 6 ? (
-                        <div>
-                            <h2 className="text-2xl font-semibold mb-2 text-center">Any barriers to your goal?</h2>
-                            <p className="text-center text-slate-400 mb-6 text-sm">We'll tailor the plan to help you overcome these.</p>
-                            <div className="flex flex-wrap gap-3 justify-center mb-8">
-                                {barrierOptions.map(item => (
-                                    <button
-                                        key={item}
-                                        onClick={() => toggleSelection('goalBarriers', item)}
-                                        className={`px-4 py-2 rounded-full border transition-all ${formData.goalBarriers.includes(item)
-                                            ? 'border-pink-500 bg-pink-500/20 text-pink-100'
-                                            : 'border-white/10 hover:bg-white/5 text-slate-300'
-                                            }`}
-                                    >
-                                        {item}
-                                    </button>
-                                ))}
-                            </div>
+                    </div>
 
-                            <div className="mb-8 max-w-sm mx-auto">
-                                <input
-                                    type="text"
-                                    placeholder="Any other constraints? (e.g. Quiet apartment, no jumping)"
-                                    value={customBarrier}
-                                    onChange={(e) => setCustomBarrier(e.target.value)}
-                                    className="w-full bg-slate-800/50 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-green-500 transition-colors"
-                                />
-                            </div>
-
-                            {error && <div className="text-red-400 text-center mb-4">{error}</div>}
-                            <div className="flex justify-between items-center">
-                                <button onClick={handleBack} className="text-slate-400 hover:text-white transition-colors">Back</button>
-                                <button
-                                    onClick={generatePlan}
-                                    disabled={loading}
-                                    className="px-8 py-3 bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-400 hover:to-blue-500 rounded-xl font-bold text-lg shadow-lg hover:shadow-green-500/25 transition-all text-white disabled:opacity-70 disabled:cursor-wait"
-                                >
-                                    {loading ? 'Generating...' : 'Generate Plan'}
-                                </button>
+                ) : step === 2 ? (
+                    <div>
+                        <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1A1A18", textAlign: "center", marginBottom: 20 }}>How much time do you have?</h2>
+                        <div style={{ padding: "0 8px", marginBottom: 24 }}>
+                            <input type="range" min="15" max="90" step="5" value={formData.timeAvailable}
+                                onChange={(e) => setFormData({ ...formData, timeAvailable: parseInt(e.target.value) })}
+                                style={{ width: "100%", accentColor: "#CADB00" }}
+                            />
+                            <div style={{ textAlign: "center", marginTop: 12 }}>
+                                <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: 48, color: "#1A1A18" }}>{formData.timeAvailable}</span>
+                                <span style={{ fontSize: 16, color: "rgba(26,26,24,0.50)", marginLeft: 6 }}>minutes</span>
                             </div>
                         </div>
-                    ) : (
-                        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
-                            <div className="flex justify-between items-start mb-6 border-b border-white/10 pb-6">
-                                <div>
-                                    <h2 className="text-3xl font-bold text-white mb-2">{generatedPlan?.title}</h2>
-                                    <div className="flex gap-4 text-sm text-slate-400">
-                                        <span className="flex items-center"><span className="text-green-400 mr-2">⏱</span> {generatedPlan?.duration}</span>
-                                        <span className="flex items-center"><span className="text-blue-400 mr-2">🎯</span> {generatedPlan?.focus}</span>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <button style={btnSecondary} onClick={handleBack}>Back</button>
+                            <button style={btnPrimary} onClick={handleNext}>Next</button>
+                        </div>
+                    </div>
+
+                ) : step === 3 ? (
+                    <div>
+                        <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1A1A18", textAlign: "center", marginBottom: 6 }}>Any injuries or limitations?</h2>
+                        <p style={{ textAlign: "center", fontSize: 13, color: "rgba(26,26,24,0.50)", marginBottom: 20 }}>We'll filter out exercises that might aggravate these areas.</p>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginBottom: 24 }}>
+                            {injuryList.map(item => (
+                                <button key={item} onClick={() => toggleSelection('injuries', item)} style={pillBtn(formData.injuries.includes(item), "#EF4444")}>
+                                    {item}
+                                </button>
+                            ))}
+                        </div>
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <button style={btnSecondary} onClick={handleBack}>Back</button>
+                            <button style={btnPrimary} onClick={handleNext}>Next</button>
+                        </div>
+                    </div>
+
+                ) : step === 4 ? (
+                    <div>
+                        <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1A1A18", textAlign: "center", marginBottom: 20 }}>How motivated are you today?</h2>
+                        <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+                            {motivationLevels.map(level => (
+                                <button key={level} onClick={() => { setFormData({ ...formData, motivationLevel: level }); handleNext(); }} style={optionBtn(formData.motivationLevel === level)}>
+                                    <div style={{ fontSize: 15, fontWeight: 700, color: "#1A1A18", marginBottom: 2 }}>{level}</div>
+                                    <div style={{ fontSize: 12, color: "rgba(26,26,24,0.50)" }}>
+                                        {level === 'Low' && "I need something easy to get moving"}
+                                        {level === 'Medium' && "I'm ready for a solid workout"}
+                                        {level === 'High' && "Push me to my limits!"}
                                     </div>
+                                </button>
+                            ))}
+                        </div>
+                        <button style={btnSecondary} onClick={handleBack}>Back</button>
+                    </div>
+
+                ) : step === 5 ? (
+                    <div>
+                        <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1A1A18", textAlign: "center", marginBottom: 20 }}>When do you plan to workout?</h2>
+                        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 20 }}>
+                            {timingOptions.map(time => (
+                                <button key={time} onClick={() => { setFormData({ ...formData, workoutTiming: time }); handleNext(); }} style={{ ...optionBtn(formData.workoutTiming === time), textAlign: "center", padding: "20px 8px" }}>
+                                    <div style={{ fontSize: 22, marginBottom: 4 }}>
+                                        {time === 'Morning' ? '🌅' : time === 'Afternoon' ? '☀️' : '🌙'}
+                                    </div>
+                                    <div style={{ fontSize: 14, fontWeight: 700, color: "#1A1A18" }}>{time}</div>
+                                </button>
+                            ))}
+                        </div>
+                        <button style={btnSecondary} onClick={handleBack}>Back</button>
+                    </div>
+
+                ) : step === 6 ? (
+                    <div>
+                        <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1A1A18", textAlign: "center", marginBottom: 6 }}>Any barriers to your goal?</h2>
+                        <p style={{ textAlign: "center", fontSize: 13, color: "rgba(26,26,24,0.50)", marginBottom: 20 }}>We'll tailor the plan to help you overcome these.</p>
+                        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, justifyContent: "center", marginBottom: 18 }}>
+                            {barrierOptions.map(item => (
+                                <button key={item} onClick={() => toggleSelection('goalBarriers', item)} style={pillBtn(formData.goalBarriers.includes(item), "#7C6FCD")}>
+                                    {item}
+                                </button>
+                            ))}
+                        </div>
+                        <input
+                            type="text" placeholder="Other constraints? (e.g. quiet apartment)"
+                            value={customBarrier} onChange={(e) => setCustomBarrier(e.target.value)}
+                            style={{ width: "100%", padding: "10px 14px", borderRadius: 12, border: "2px solid rgba(26,26,24,0.10)", fontSize: 13, color: "#1A1A18", outline: "none", marginBottom: 20, boxSizing: "border-box", fontFamily: "'DM Sans',sans-serif" }}
+                        />
+                        {error && <div style={{ fontSize: 13, color: "#EF4444", marginBottom: 12, textAlign: "center" }}>{error}</div>}
+                        <div style={{ display: "flex", justifyContent: "space-between" }}>
+                            <button style={btnSecondary} onClick={handleBack}>Back</button>
+                            <button style={{ ...btnPrimary, opacity: loading ? 0.6 : 1 }} onClick={generatePlan} disabled={loading}>
+                                {loading ? 'Generating…' : '✨ Generate Plan'}
+                            </button>
+                        </div>
+                    </div>
+
+                ) : (
+                    // Generated plan view
+                    <div>
+                        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", borderBottom: "1.5px solid rgba(26,26,24,0.08)", paddingBottom: 16, marginBottom: 20 }}>
+                            <div>
+                                <h2 style={{ fontSize: 22, fontWeight: 700, color: "#1A1A18", margin: "0 0 6px" }}>{generatedPlan?.title}</h2>
+                                <div style={{ display: "flex", gap: 16, fontSize: 12, color: "rgba(26,26,24,0.50)" }}>
+                                    <span>⏱ {generatedPlan?.duration}</span>
+                                    <span>🎯 {generatedPlan?.focus}</span>
                                 </div>
-                                <button onClick={() => { setStep(0); setGeneratedPlan(null); }} className="text-sm text-slate-400 hover:text-white">Start Over</button>
+                            </div>
+                            <button onClick={() => { setStep(0); setGeneratedPlan(null); }} style={{ fontSize: 12, fontWeight: 600, color: "rgba(26,26,24,0.45)", background: "none", border: "none", cursor: "pointer" }}>
+                                Start Over
+                            </button>
+                        </div>
+
+                        <div style={{ maxHeight: "50vh", overflowY: "auto", display: "flex", flexDirection: "column", gap: 14, paddingRight: 4 }}>
+                            {/* Warmup */}
+                            <div style={{ background: "rgba(52,199,89,0.06)", border: "1px solid rgba(52,199,89,0.15)", borderRadius: 12, padding: "12px 14px" }}>
+                                <h3 style={{ fontSize: 11, fontWeight: 700, color: "#14532D", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Warmup</h3>
+                                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+                                    {generatedPlan?.warmup.map((ex, i) => (
+                                        <li key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#1A1A18" }}>
+                                            <span>{ex.name}</span><span style={{ color: "rgba(26,26,24,0.45)" }}>{ex.duration || ex.reps}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
 
-                            <div className="space-y-6 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                                <div className="bg-white/5 p-4 rounded-xl">
-                                    <h3 className="text-green-400 font-semibold mb-3 uppercase tracking-wider text-xs">Warmup</h3>
-                                    <ul className="space-y-3">
-                                        {generatedPlan?.warmup.map((ex, i) => (
-                                            <li key={i} className="flex justify-between items-center">
-                                                <span>{ex.name}</span>
-                                                <span className="text-slate-400 text-sm">{ex.duration || ex.reps}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-
-                                <div className="space-y-3">
-                                    <h3 className="text-blue-400 font-semibold uppercase tracking-wider text-xs">Main Circuit</h3>
+                            {/* Main circuit */}
+                            <div>
+                                <h3 style={{ fontSize: 11, fontWeight: 700, color: "#3D4000", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Main Circuit</h3>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                                     {generatedPlan?.exercises.map((ex, i) => (
-                                        <div key={i} className="flex justify-between items-center bg-white/5 p-4 rounded-xl border border-white/5 hover:border-white/10 transition-colors">
+                                        <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(202,219,0,0.07)", border: "1px solid rgba(202,219,0,0.16)", borderRadius: 10, padding: "10px 12px" }}>
                                             <div>
-                                                <div className="font-medium text-lg">{ex.name}</div>
-                                                <div className="text-slate-400 text-sm">
-                                                    {ex.sets && `${ex.sets} sets`}
-                                                    {ex.sets && ex.reps && ' × '}
-                                                    {ex.reps && `${ex.reps}`}
-                                                    {ex.duration && `${ex.duration}`}
+                                                <div style={{ fontSize: 13, fontWeight: 600, color: "#1A1A18" }}>{ex.name}</div>
+                                                <div style={{ fontSize: 12, color: "rgba(26,26,24,0.45)" }}>
+                                                    {ex.sets && `${ex.sets} sets`}{ex.sets && ex.reps && ' × '}{ex.reps && `${ex.reps}`}{ex.duration && `${ex.duration}`}
                                                 </div>
-                                                {ex.notes && <div className="text-xs text-slate-500 mt-1 italic">{ex.notes}</div>}
+                                                {ex.notes && <div style={{ fontSize: 11, color: "#E07A3A", fontStyle: "italic" }}>{ex.notes}</div>}
                                             </div>
-                                            <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center text-sm font-mono text-slate-400">
-                                                {i + 1}
-                                            </div>
+                                            <div style={{ width: 26, height: 26, borderRadius: "50%", background: "rgba(26,26,24,0.08)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 11, color: "rgba(26,26,24,0.40)", fontWeight: 700 }}>{i + 1}</div>
                                         </div>
                                     ))}
                                 </div>
-
-                                <div className="bg-white/5 p-4 rounded-xl">
-                                    <h3 className="text-indigo-400 font-semibold mb-3 uppercase tracking-wider text-xs">Cooldown</h3>
-                                    <ul className="space-y-3">
-                                        {generatedPlan?.cooldown.map((ex, i) => (
-                                            <li key={i} className="flex justify-between items-center">
-                                                <span>{ex.name}</span>
-                                                <span className="text-slate-400 text-sm">{ex.duration || ex.reps}</span>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
                             </div>
 
-                            <div className="mt-8 flex justify-center">
-                                {!completed ? (
-                                    <button
-                                        onClick={handleComplete}
-                                        disabled={completing}
-                                        className="px-8 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-lg shadow-lg hover:shadow-green-500/25 transition-all text-white disabled:opacity-70 disabled:cursor-wait flex items-center gap-2"
-                                    >
-                                        {completing ? 'Completing...' : 'Mark Workout Complete'}
-                                    </button>
-                                ) : (
-                                    <div className="text-green-400 font-bold text-lg flex items-center gap-2 animate-bounce">
-                                        🎉 Workout Recorded!
-                                    </div>
-                                )}
+                            {/* Cooldown */}
+                            <div style={{ background: "rgba(124,111,205,0.06)", border: "1px solid rgba(124,111,205,0.15)", borderRadius: 12, padding: "12px 14px" }}>
+                                <h3 style={{ fontSize: 11, fontWeight: 700, color: "#4A3D6B", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Cooldown</h3>
+                                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
+                                    {generatedPlan?.cooldown.map((ex, i) => (
+                                        <li key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#1A1A18" }}>
+                                            <span>{ex.name}</span><span style={{ color: "rgba(26,26,24,0.45)" }}>{ex.duration || ex.reps}</span>
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
                         </div>
-                    )}
-                </div>
+
+                        {/* CTA */}
+                        <div style={{ marginTop: 20, display: "flex", justifyContent: "center" }}>
+                            {!completed ? (
+                                <button onClick={handleComplete} disabled={completing} style={{ ...btnPrimary, opacity: completing ? 0.6 : 1, padding: "12px 36px" }}>
+                                    {completing ? 'Completing…' : 'Mark Workout Complete'}
+                                </button>
+                            ) : (
+                                <div style={{ textAlign: "center", fontSize: 15, fontWeight: 700, color: "#14532D", padding: "12px 24px", background: "rgba(52,199,89,0.08)", borderRadius: 12, border: "1px solid rgba(52,199,89,0.20)" }}>
+                                    🎉 Workout Recorded!
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                )}
             </div>
+
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
     );
 };
 
 export default WorkoutGenerator;
-

@@ -86,24 +86,15 @@ export default function FitnessDashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-5">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-emerald-500/20 
-                      flex items-center justify-center mb-4 animate-pulse">
-          <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M13 10V3L4 14h7v7l9-11h-7z" />
-          </svg>
-        </div>
-        <p className="text-slate-400 text-sm">Syncing fitness data...</p>
-        <div className="mt-4 flex gap-1">
-          {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="w-2 h-2 rounded-full bg-primary animate-bounce"
-              style={{ animationDelay: `${i * 0.15}s` }}
-            ></div>
-          ))}
-        </div>
+      <div className="flex flex-col items-center justify-center" style={{ minHeight: "60vh" }}>
+        <div style={{
+          width: 40, height: 40, borderRadius: "50%",
+          border: "3px solid rgba(202,219,0,0.20)",
+          borderTopColor: "#CADB00",
+          animation: "spin 0.8s linear infinite",
+        }} />
+        <p style={{ fontSize: 13, color: "rgba(26,26,24,0.45)", marginTop: 12, fontFamily: "'DM Sans',sans-serif" }}>Syncing fitness data…</p>
+        <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
       </div>
     );
   }
@@ -116,394 +107,260 @@ export default function FitnessDashboardPage() {
       ref={scrollRef}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
-      className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-24"
+      style={{ fontFamily: "'DM Sans', sans-serif" }}
     >
-
-
+      {/* Refresh toast */}
       {refreshing && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-slate-800/90 backdrop-blur-sm 
-                      border border-slate-700 rounded-full px-4 py-2 flex items-center gap-2 shadow-lg">
-          <svg className="animate-spin h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <span className="text-sm font-medium text-slate-300">Syncing...</span>
+        <div style={{
+          position: "fixed", top: 80, left: "50%", transform: "translateX(-50%)", zIndex: 50,
+          background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)",
+          border: "1px solid rgba(26,26,24,0.10)", borderRadius: 9999,
+          padding: "8px 16px", display: "flex", alignItems: "center", gap: 8,
+          boxShadow: "0 4px 16px rgba(0,0,0,0.10)",
+        }}>
+          <div style={{ width: 14, height: 14, borderRadius: "50%", border: "2px solid rgba(202,219,0,0.30)", borderTopColor: "#CADB00", animation: "spin 0.8s linear infinite" }} />
+          <span style={{ fontSize: 13, fontWeight: 500, color: "#1A1A18" }}>Syncing…</span>
         </div>
       )}
 
-
-      <section className="px-5 pt-6 pb-4 relative">
-
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl -z-10"></div>
-
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex-1">
-            <h1 className="text-4xl font-black mb-1">
-              <span className="gradient-text">Fitness Dashboard</span>
-            </h1>
-            <p className="text-sm text-slate-400 font-medium">
-              Track your daily activity & recovery
-            </p>
+      {/* Header row */}
+      <div style={{ marginBottom: 24 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
+          <div>
+            <h1 style={{ fontSize: 28, fontWeight: 700, color: "#1A1A18", margin: "0 0 4px" }}>Fitness</h1>
+            <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)", margin: 0 }}>Track your daily activity &amp; recovery</p>
           </div>
 
-
-          <div className={`flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold backdrop-blur-sm
-                         transition-all duration-300 hover:scale-105
-                         ${syncStatus === 'synced' ? 'glass-card border-emerald-500/30 text-emerald-400 shadow-glow' : ''}
-                         ${syncStatus === 'syncing' ? 'glass-card border-primary/30 text-primary' : ''}
-                         ${syncStatus === 'error' ? 'glass-card border-red-500/30 text-red-400' : ''}`}>
-            {syncStatus === 'synced' && (
-              <>
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-                </svg>
-                Synced
-              </>
-            )}
-            {syncStatus === 'syncing' && (
-              <>
-                <svg className="animate-spin w-4 h-4" fill="none" viewBox="0 0 24 24">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"></path>
-                </svg>
-                Syncing
-              </>
-            )}
-            {syncStatus === 'error' && (
-              <>
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-                Error
-              </>
-            )}
-          </div>
+          {/* Sync badge */}
+          <span style={{
+            display: "inline-flex", alignItems: "center", gap: 6,
+            padding: "6px 12px", borderRadius: 9999, fontSize: 12, fontWeight: 600,
+            background: syncStatus === "synced" ? "rgba(52,199,89,0.10)" : syncStatus === "syncing" ? "rgba(202,219,0,0.10)" : "rgba(239,68,68,0.10)",
+            color: syncStatus === "synced" ? "#14532D" : syncStatus === "syncing" ? "#3D4000" : "#EF4444",
+            border: syncStatus === "synced" ? "1px solid rgba(52,199,89,0.20)" : syncStatus === "syncing" ? "1px solid rgba(202,219,0,0.20)" : "1px solid rgba(239,68,68,0.20)",
+          }}>
+            {syncStatus === "synced" && <span>✓</span>}
+            {syncStatus === "syncing" && <div style={{ width: 10, height: 10, borderRadius: "50%", border: "2px solid rgba(202,219,0,0.30)", borderTopColor: "#CADB00", animation: "spin 0.8s linear infinite" }} />}
+            {syncStatus === "error" && <span>!</span>}
+            {syncStatus === "synced" ? "Synced" : syncStatus === "syncing" ? "Syncing" : "Error"}
+          </span>
         </div>
 
-
+        {/* Sync button */}
         <button
           onClick={() => loadFitness(true)}
           disabled={refreshing}
-          className="w-full flex items-center justify-center gap-2 px-4 py-3.5 rounded-2xl 
-                   bg-gradient-to-r from-primary to-emerald-500 text-slate-950 font-bold
-                   hover:shadow-premium hover:scale-[1.02] active:scale-[0.98] 
-                   disabled:opacity-50 transition-all duration-300 shimmer overflow-hidden
-                   relative group"
+          style={{
+            width: "100%", padding: "13px", borderRadius: 14, border: "none",
+            background: refreshing ? "rgba(26,26,24,0.08)" : "#1A1A18",
+            color: refreshing ? "rgba(26,26,24,0.40)" : "#FFFFFF",
+            fontSize: 14, fontWeight: 700, cursor: refreshing ? "not-allowed" : "pointer",
+            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+            transition: "all 0.15s",
+          }}
         >
-          <svg className={`w-5 h-5 relative z-10 ${refreshing ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg style={{ width: 16, height: 16, animation: refreshing ? "spin 1s linear infinite" : "none" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
               d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
           </svg>
-          <span className="relative z-10">{refreshing ? 'Syncing...' : 'Sync Now'}</span>
+          {refreshing ? "Syncing…" : "Sync Now"}
         </button>
-      </section>
+      </div>
 
+      {/* No data state */}
       {!fitness ? (
-
-        <section className="px-5">
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-8 text-center">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-slate-800/50 flex items-center justify-center">
-              <svg className="w-10 h-10 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-slate-50 mb-2">No Fitness Data</h3>
-            <p className="text-sm text-slate-400 mb-6 max-w-sm mx-auto">
-              Connect your fitness device to see your activity, sleep, and workout data here.
-            </p>
-
-            {/* Connection Options */}
-            <div className="flex flex-col sm:flex-row gap-3 justify-center max-w-md mx-auto">
-              <button
-                onClick={() => window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/fit/google`}
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl 
-                         bg-gradient-to-r from-primary to-emerald-500 text-slate-950 font-bold 
-                         shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 
-                         active:scale-95 transition-all duration-200"
-              >
-                <span className="text-lg">🏃</span>
-                Connect Google Fit
-              </button>
-
-              <button
-                disabled
-                className="flex-1 flex items-center justify-center gap-2 px-6 py-3.5 rounded-2xl 
-                         bg-slate-800/50 text-slate-600 font-bold cursor-not-allowed
-                         border border-slate-700/50"
-                title="Available only on iOS devices"
-              >
-                <span className="text-lg">🍎</span>
-                Apple Health
-                <span className="ml-1 text-[10px] px-1.5 py-0.5 rounded bg-slate-700/50 border border-slate-600">iOS Only</span>
-              </button>
-            </div>
+        <div className="glass-card" style={{ borderRadius: 24, padding: 32, textAlign: "center" }}>
+          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(26,26,24,0.06)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+            <svg width="24" height="24" fill="none" stroke="rgba(26,26,24,0.30)" strokeWidth="1.7" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
           </div>
-        </section>
+          <h3 style={{ fontSize: 17, fontWeight: 700, color: "#1A1A18", marginBottom: 8 }}>No Fitness Data</h3>
+          <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)", marginBottom: 24, maxWidth: 320, margin: "0 auto 24px" }}>
+            Connect your fitness device to see your activity, sleep, and workout data here.
+          </p>
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, maxWidth: 320, margin: "0 auto" }}>
+            <button
+              onClick={() => window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/fit/google`}
+              style={{ padding: "12px 20px", borderRadius: 12, background: "#1A1A18", color: "#FFF", fontSize: 14, fontWeight: 700, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+            >
+              <span style={{ fontSize: 16 }}>🏃</span> Connect Google Fit
+            </button>
+            <button disabled style={{ padding: "12px 20px", borderRadius: 12, background: "rgba(26,26,24,0.05)", color: "rgba(26,26,24,0.35)", fontSize: 14, fontWeight: 700, border: "1px solid rgba(26,26,24,0.10)", cursor: "not-allowed", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
+              <span style={{ fontSize: 16 }}>🍎</span> Apple Health
+              <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "rgba(26,26,24,0.06)", marginLeft: 4 }}>iOS Only</span>
+            </button>
+          </div>
+        </div>
       ) : (
         <>
+          {/* Row 1: Steps + Mini stat cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" style={{ marginBottom: 20 }}>
 
-          <section className="px-5 mb-6">
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-4">
-
-              <div className="glass-card rounded-3xl p-6 hover:border-primary/50 hover:bg-white/10
-                            transition-all duration-300 hover:shadow-premium shimmer">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <p className="text-sm font-bold text-primary mb-1 uppercase tracking-wide">Steps Today</p>
-                    <h2 className="text-5xl font-black text-slate-50">
-                      {fitness.todaySteps?.toLocaleString() || "0"}
-                    </h2>
-                    {isEditingStepGoal ? (
-                      <div className="flex items-center gap-2 mt-2">
-                        <input
-                          type="number"
-                          value={newStepGoal}
-                          onChange={(e) => setNewStepGoal(e.target.value)}
-                          className="w-28 glass-card rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-primary/50 transition-all"
-                          autoFocus
-                        />
-                        <button
-                          onClick={() => updateStepGoal(newStepGoal)}
-                          className="px-3 py-2 bg-gradient-to-r from-primary to-emerald-500 text-slate-900 rounded-xl text-xs font-bold hover:shadow-premium transition-all"
-                        >
-                          Save
-                        </button>
-                        <button onClick={() => setIsEditingStepGoal(false)} className="text-xs text-slate-400 hover:text-white p-2 transition-colors">✕</button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2 mt-2">
-                        <p className="text-xs text-slate-500 font-medium">Goal: {stepGoal.toLocaleString()} steps</p>
-                        <button
-                          onClick={() => {
-                            setNewStepGoal(stepGoal);
-                            setIsEditingStepGoal(true);
-                          }}
-                          className="p-1.5 rounded-lg glass-card text-slate-400 hover:text-primary hover:border-primary/30 transition-all"
-                        >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                          </svg>
-                        </button>
-                      </div>
-                    )}
+            {/* Steps card */}
+            <div className="glass-card" style={{ borderRadius: 24, padding: 24, borderTop: "3px solid #CADB00" }}>
+              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
+                <div>
+                  <span className="overline-label">Steps Today</span>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 6, margin: "6px 0 4px" }}>
+                    <span style={{ fontFamily: "'DM Serif Display',serif", fontSize: 42, color: "#1A1A18", lineHeight: 1 }}>{fitness.todaySteps?.toLocaleString() || "0"}</span>
                   </div>
 
-
-                  <div className="relative w-28 h-28 float">
-                    <svg className="w-28 h-28 transform -rotate-90">
-                      <circle
-                        cx="56"
-                        cy="56"
-                        r="48"
-                        stroke="currentColor"
-                        strokeWidth="8"
-                        fill="transparent"
-                        className="text-slate-800"
-                      />
-                      <circle
-                        cx="56"
-                        cy="56"
-                        r="48"
-                        stroke="url(#progressGradient)"
-                        strokeWidth="8"
-                        fill="transparent"
-                        strokeDasharray={`${2 * Math.PI * 48}`}
-                        strokeDashoffset={`${2 * Math.PI * 48 * (1 - stepsProgress / 100)}`}
-                        className="transition-all duration-1000"
-                        strokeLinecap="round"
-                      />
-                      <defs>
-                        <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                          <stop offset="0%" stopColor="#22c55e" />
-                          <stop offset="100%" stopColor="#10b981" />
-                        </linearGradient>
-                      </defs>
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-2xl font-black text-slate-50">{Math.round(stepsProgress)}%</span>
+                  {isEditingStepGoal ? (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
+                      <input type="number" value={newStepGoal} onChange={(e) => setNewStepGoal(e.target.value)}
+                        style={{ width: 100, padding: "6px 10px", borderRadius: 8, border: "2px solid #CADB00", fontSize: 13, fontFamily: "'DM Sans',sans-serif", outline: "none", color: "#1A1A18" }}
+                        autoFocus />
+                      <button onClick={() => updateStepGoal(newStepGoal)}
+                        style={{ padding: "6px 12px", borderRadius: 8, background: "#1A1A18", color: "#FFF", fontSize: 12, fontWeight: 700, border: "none", cursor: "pointer" }}>Save</button>
+                      <button onClick={() => setIsEditingStepGoal(false)}
+                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, color: "rgba(26,26,24,0.40)" }}>✕</button>
                     </div>
-                  </div>
-                </div>
-
-
-                <div className="w-full h-2.5 bg-slate-800 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full transition-all duration-1000 shadow-glow"
-                    style={{ width: `${stepsProgress}%` }}
-                  ></div>
-                </div>
-              </div>
-
-
-              <div className="space-y-4">
-
-                <div className="grid grid-cols-2 gap-3">
-
-                  <div className="glass-card rounded-3xl p-5 group hover:border-purple-500/50 hover:bg-white/10
-                                transition-all duration-300 hover:scale-[1.02] hover:shadow-glow-purple shimmer">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-500/20 to-purple-500/10 
-                                  flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <span className="text-2xl">{sleepQuality.emoji}</span>
-                      </div>
-                    </div>
-                    <p className="text-xs text-slate-400 font-semibold mb-1 uppercase tracking-wide">Last Night</p>
-                    <p className="text-4xl font-black text-slate-50 mb-2">
-                      {fitness.sleepHours || "--"}
-                      {fitness.sleepHours && <span className="text-sm font-normal text-slate-500 ml-1">hrs</span>}
-                    </p>
-                    <span className={`inline-block px-2.5 py-1 rounded-full text-xs font-bold 
-                                    bg-${sleepQuality.color}-500/10 text-${sleepQuality.color}-400 border border-${sleepQuality.color}-500/20`}>
-                      {sleepQuality.label}
-                    </span>
-                  </div>
-
-
-                  <div className="glass-card rounded-3xl p-5 group hover:border-amber-500/50 hover:bg-white/10
-                                transition-all duration-300 hover:scale-[1.02] hover:shadow-glow-amber shimmer">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-500/10 
-                                  flex items-center justify-center group-hover:scale-110 transition-transform">
-                        <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                            d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  ) : (
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
+                      <span style={{ fontSize: 12, color: "rgba(26,26,24,0.45)" }}>Goal: {stepGoal.toLocaleString()} steps</span>
+                      <button onClick={() => { setNewStepGoal(stepGoal); setIsEditingStepGoal(true); }}
+                        style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "rgba(26,26,24,0.35)" }}>
+                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                         </svg>
-                      </div>
+                      </button>
                     </div>
-                    <p className="text-xs text-slate-400 font-semibold mb-1 uppercase tracking-wide">Workouts</p>
-                    <p className="text-4xl font-black text-slate-50 mb-2">
-                      {fitness.workoutCount || "0"}
-                    </p>
-                    <span className="inline-block px-2.5 py-1 rounded-full text-xs font-bold 
-                                    bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                      Today
-                    </span>
-                  </div>
+                  )}
                 </div>
 
-
-                <WaterTracker />
-              </div>
-            </div>
-          </section>
-
-
-          <section className="px-5 mb-6">
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-
-              <div className="glass-card rounded-3xl p-6 hover:border-primary/30 transition-all duration-300">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-black text-slate-50">Steps</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">Last 7 days</p>
-                  </div>
-                  <div className="px-3 py-1.5 rounded-xl glass-card border-primary/30 text-primary text-xs font-bold">
-                    Avg: {Math.round(fitness.weeklySteps?.reduce((a, b) => a + b, 0) / 7) || 0}
+                {/* Ring */}
+                <div style={{ width: 88, height: 88, position: "relative", flexShrink: 0 }}>
+                  <svg width="88" height="88" style={{ transform: "rotate(-90deg)", filter: "drop-shadow(0 0 6px rgba(202,219,0,0.30))" }}>
+                    <circle cx="44" cy="44" r="36" fill="none" stroke="rgba(202,219,0,0.12)" strokeWidth="8" />
+                    <circle cx="44" cy="44" r="36" fill="none" stroke="#CADB00" strokeWidth="8"
+                      strokeDasharray={`${2 * Math.PI * 36}`}
+                      strokeDashoffset={`${2 * Math.PI * 36 * (1 - stepsProgress / 100)}`}
+                      strokeLinecap="round"
+                      style={{ transition: "stroke-dashoffset 1s ease-out" }}
+                    />
+                  </svg>
+                  <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <span style={{ fontFamily: "'DM Serif Display',serif", fontSize: 16, color: "#1A1A18" }}>{Math.round(stepsProgress)}%</span>
                   </div>
                 </div>
-                <BarChart
-                  data={fitness.weeklySteps}
-                  labels={fitness.labels}
-                  unit=""
-                  color="primary"
-                />
               </div>
 
-
-              <div className="glass-card rounded-3xl p-6 hover:border-purple-500/30 transition-all duration-300">
-                <div className="flex items-center justify-between mb-4">
-                  <div>
-                    <h3 className="text-lg font-black text-slate-50">Sleep</h3>
-                    <p className="text-xs text-slate-500 mt-0.5">Last 7 nights</p>
-                  </div>
-                  <div className="px-3 py-1.5 rounded-xl glass-card border-purple-500/30 text-purple-400 text-xs font-bold">
-                    Avg: {(fitness.weeklySleep?.reduce((a, b) => a + b, 0) / 7).toFixed(1) || 0}h
-                  </div>
-                </div>
-                <BarChart
-                  data={fitness.weeklySleep}
-                  labels={fitness.labels}
-                  unit="h"
-                  color="purple"
-                />
+              {/* Progress bar */}
+              <div className="progress-track">
+                <div className="progress-fill-lime" style={{ width: `${stepsProgress}%`, height: "100%", borderRadius: 9999, transition: "width 1s ease-out" }} />
               </div>
             </div>
-          </section>
 
-
-          <section className="px-5 mb-6">
-            <h3 className="text-xl font-black text-slate-50 mb-4">Quick Insights</h3>
-            <div className="space-y-3">
-
-              {fitness.todaySteps >= 10000 && (
-                <div className="relative glass-card rounded-2xl p-4 flex items-start gap-3 overflow-hidden group
-                              hover:border-primary/50 transition-all duration-300 hover:shadow-premium">
-
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-emerald-500/5 to-primary/5 
-                              opacity-0 group-hover:opacity-100 transition-opacity duration-500 animate-gradient"></div>
-
-                  <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-primary/20 to-emerald-500/20 
-                              flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform">
-                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
+            {/* Right col: Sleep + Workouts + Water */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              <div className="grid grid-cols-2 gap-3">
+                {/* Sleep */}
+                <div className="glass-card" style={{ borderRadius: 20, padding: 18, borderTop: "3px solid #7C6FCD" }}>
+                  <span className="overline-label">Last Night</span>
+                  <div style={{ margin: "6px 0 4px" }}>
+                    <span style={{ fontFamily: "'DM Serif Display',serif", fontSize: 28, color: "#1A1A18" }}>{fitness.sleepHours || "–"}</span>
+                    {fitness.sleepHours && <span style={{ fontSize: 12, color: "rgba(26,26,24,0.45)", marginLeft: 4 }}>hrs</span>}
                   </div>
-                  <div className="relative flex-1">
-                    <p className="text-sm font-bold text-primary mb-1">Goal Achieved! 🎉</p>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      You've reached your daily step goal of {stepGoal.toLocaleString()}. Keep up the great work!
-                    </p>
-                  </div>
+                  <span style={{
+                    fontSize: 11, fontWeight: 600, padding: "3px 8px", borderRadius: 9999,
+                    background: sleepQuality.color === "emerald" || sleepQuality.color === "primary" ? "rgba(52,199,89,0.10)" : sleepQuality.color === "amber" ? "rgba(245,165,36,0.10)" : "rgba(26,26,24,0.06)",
+                    color: sleepQuality.color === "emerald" || sleepQuality.color === "primary" ? "#14532D" : sleepQuality.color === "amber" ? "#92400E" : "rgba(26,26,24,0.45)",
+                  }}>{sleepQuality.emoji} {sleepQuality.label}</span>
                 </div>
-              )}
 
-
-              {fitness.sleepHours < 7 && fitness.sleepHours > 0 && (
-                <div className="glass-card border-amber-500/30 rounded-2xl p-4 flex items-start gap-3
-                              hover:border-amber-500/50 transition-all duration-300">
-                  <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500/20 to-amber-500/10 
-                              flex items-center justify-center flex-shrink-0">
-                    <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                    </svg>
+                {/* Workouts */}
+                <div className="glass-card" style={{ borderRadius: 20, padding: 18, borderTop: "3px solid #E07A3A" }}>
+                  <span className="overline-label">Workouts</span>
+                  <div style={{ margin: "6px 0 4px" }}>
+                    <span style={{ fontFamily: "'DM Serif Display',serif", fontSize: 28, color: "#1A1A18" }}>{fitness.workoutCount || "0"}</span>
                   </div>
-                  <div className="flex-1">
-                    <p className="text-sm font-bold text-amber-400 mb-1">Improve Sleep</p>
-                    <p className="text-xs text-slate-400 leading-relaxed">
-                      You slept {fitness.sleepHours}h last night. Aim for 7-9 hours for optimal recovery.
-                    </p>
-                  </div>
+                  <span className="badge-neutral">Today</span>
                 </div>
-              )}
+              </div>
+
+              <WaterTracker />
             </div>
-          </section>
+          </div>
 
-
-          <section className="px-5">
-            <div className="text-center py-4">
-              <p className="text-xs text-slate-500">
-                Last synced:{" "}
-                <span className="text-slate-400 font-medium">
-                  {fitness.lastSyncTime
-                    ? new Date(fitness.lastSyncTime).toLocaleString('en-IN', {
-                      day: 'numeric',
-                      month: 'short',
-                      hour: '2-digit',
-                      minute: '2-digit'
-                    })
-                    : "Never"}
+          {/* Row 2: Chart cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" style={{ marginBottom: 20 }}>
+            {/* Steps chart */}
+            <div className="glass-card" style={{ borderRadius: 20, padding: 24 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <div>
+                  <h3 style={{ fontSize: 15, fontWeight: 600, color: "#1A1A18", margin: "0 0 2px" }}>Steps</h3>
+                  <p style={{ fontSize: 12, color: "rgba(26,26,24,0.45)", margin: 0 }}>Last 7 days</p>
+                </div>
+                <span className="badge-lime">
+                  Avg: {Math.round(fitness.weeklySteps?.reduce((a, b) => a + b, 0) / 7) || 0}
                 </span>
-              </p>
+              </div>
+              <BarChart data={fitness.weeklySteps} labels={fitness.labels} unit="" color="primary" />
             </div>
-          </section>
+
+            {/* Sleep chart */}
+            <div className="glass-card" style={{ borderRadius: 20, padding: 24 }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+                <div>
+                  <h3 style={{ fontSize: 15, fontWeight: 600, color: "#1A1A18", margin: "0 0 2px" }}>Sleep</h3>
+                  <p style={{ fontSize: 12, color: "rgba(26,26,24,0.45)", margin: 0 }}>Last 7 nights</p>
+                </div>
+                <span style={{ fontSize: 12, fontWeight: 600, padding: "4px 10px", borderRadius: 9999, background: "rgba(124,111,205,0.10)", color: "#4A3D6B" }}>
+                  Avg: {(fitness.weeklySleep?.reduce((a, b) => a + b, 0) / 7).toFixed(1) || 0}h
+                </span>
+              </div>
+              <BarChart data={fitness.weeklySleep} labels={fitness.labels} unit="h" color="purple" />
+            </div>
+          </div>
+
+          {/* Row 3: Quick Insights */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10, marginBottom: 20 }}>
+            <h3 style={{ fontSize: 15, fontWeight: 600, color: "#1A1A18", margin: 0 }}>Quick Insights</h3>
+
+            {fitness.todaySteps >= 10000 && (
+              <div className="glass-card insight-block-lime" style={{ borderRadius: "0 12px 12px 0", display: "flex", alignItems: "flex-start", gap: 12, padding: "12px 14px" }}>
+                <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(202,219,0,0.15)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                  <svg width="16" height="16" fill="none" stroke="#CADB00" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#3D4000", marginBottom: 2 }}>Goal Achieved! 🎉</p>
+                  <p style={{ fontSize: 12, color: "rgba(26,26,24,0.55)", lineHeight: 1.5, margin: 0 }}>
+                    You've reached your daily step goal of {stepGoal.toLocaleString()}.
+                  </p>
+                </div>
+              </div>
+            )}
+
+            {fitness.sleepHours < 7 && fitness.sleepHours > 0 && (
+              <div className="badge-amber" style={{ borderRadius: 12, padding: "12px 14px", display: "flex", alignItems: "flex-start", gap: 12, width: "auto" }}>
+                <div>
+                  <p style={{ fontSize: 13, fontWeight: 600, color: "#92400E", marginBottom: 2 }}>Improve Sleep</p>
+                  <p style={{ fontSize: 12, color: "rgba(146,64,14,0.70)", lineHeight: 1.5, margin: 0 }}>
+                    You slept {fitness.sleepHours}h last night. Aim for 7-9 hrs for optimal recovery.
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Footer: Last synced */}
+          <div style={{ textAlign: "center", padding: "8px 0 4px" }}>
+            <p style={{ fontSize: 12, color: "rgba(26,26,24,0.35)", margin: 0 }}>
+              Last synced:{" "}
+              <span style={{ color: "rgba(26,26,24,0.50)", fontWeight: 500 }}>
+                {fitness.lastSyncTime
+                  ? new Date(fitness.lastSyncTime).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' })
+                  : "Never"}
+              </span>
+            </p>
+          </div>
         </>
       )}
 
+      <style>{`@keyframes spin { to { transform:rotate(360deg); } }`}</style>
     </div>
   );
 }

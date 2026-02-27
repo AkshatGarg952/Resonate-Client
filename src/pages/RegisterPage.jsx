@@ -87,7 +87,7 @@ export default function RegisterPage() {
 
     if (res.message === "User Registered") {
       sessionStorage.setItem("verifiedUser", "true");
-      navigate("/profile");
+      navigate("/dashboard");
       return;
     }
 
@@ -175,174 +175,150 @@ export default function RegisterPage() {
     setStep(step - 1);
   };
 
+  const stepTitles = ["Create your account", "Tell us about yourself", form.gender === "female" ? "Menstrual health" : "Health & Goals", "Health & Goals"];
+  const stepSubs = ["Start your health journey today", "Basic info helps personalize your experience", form.gender === "female" ? "Optional but recommended for better insights" : "Set your targets and preferences", "Set your targets and preferences"];
+
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen px-5 py-8 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-
-
-      <div className="fixed top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
-
-
+    <div style={{
+      minHeight: "100vh",
+      background: "linear-gradient(135deg, #EEF5E0 0%, #EAF0F8 45%, #F3EEF5 100%)",
+      display: "flex", flexDirection: "column",
+      alignItems: "center", justifyContent: "center",
+      padding: "20px 16px",
+      fontFamily: "'DM Sans', sans-serif",
+    }}>
+      {/* Back button */}
       <button
         onClick={() => step > 1 ? prevStep() : navigate("/")}
-        className="absolute top-6 left-5 w-10 h-10 rounded-full bg-slate-800/50 backdrop-blur-sm
-                   border border-slate-700/50 flex items-center justify-center
-                   hover:bg-slate-800 active:scale-95 transition-all duration-200 z-10"
+        style={{
+          position: "fixed", top: 20, left: 20,
+          width: 40, height: 40, borderRadius: "50%",
+          background: "rgba(255,255,255,0.80)",
+          backdropFilter: "blur(12px)",
+          border: "1px solid rgba(26,26,24,0.10)",
+          display: "flex", alignItems: "center", justifyContent: "center",
+          cursor: "pointer", zIndex: 10,
+          boxShadow: "0 2px 8px rgba(0,0,0,0.06)",
+        }}
       >
-        <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1A1A18" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">
+          <path d="M15 19l-7-7 7-7" />
         </svg>
       </button>
 
-
-      <div className="w-full max-w-md relative">
-
-
-        <div className="mb-8">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-semibold text-slate-300">
-              Step {step} of {totalSteps}
-            </span>
-            <span className="text-xs text-slate-500">
-              {Math.round((step / totalSteps) * 100)}% Complete
-            </span>
+      <div style={{ width: "100%", maxWidth: 448, position: "relative" }}>
+        {/* Progress */}
+        <div style={{ marginBottom: 28 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
+            <span style={{ fontSize: 13, fontWeight: 600, color: "rgba(26,26,24,0.70)" }}>Step {step} of {totalSteps}</span>
+            <span style={{ fontSize: 12, color: "rgba(26,26,24,0.40)" }}>{Math.round((step / totalSteps) * 100)}% Complete</span>
           </div>
-          <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
-            <div
-              className="h-full bg-gradient-to-r from-primary to-emerald-500 transition-all duration-500 ease-out rounded-full"
-              style={{ width: `${(step / totalSteps) * 100}%` }}
-            ></div>
+          <div style={{ height: 6, background: "rgba(26,26,24,0.08)", borderRadius: 9999, overflow: "hidden" }}>
+            <div style={{
+              width: `${(step / totalSteps) * 100}%`, height: "100%",
+              background: "#CADB00", borderRadius: 9999,
+              transition: "width 0.4s ease-out",
+            }} />
           </div>
         </div>
 
-
-        <div className="text-center mb-6">
-          <div className="w-16 h-16 mx-auto mb-3 rounded-2xl bg-gradient-to-br from-primary/20 to-emerald-500/20 
-                        flex items-center justify-center backdrop-blur-sm border border-primary/20">
-            <span className="text-3xl font-black text-primary">R</span>
+        {/* Logo + title */}
+        <div style={{ textAlign: "center", marginBottom: 24 }}>
+          <div style={{
+            width: 48, height: 48, borderRadius: "50%",
+            background: "#CADB00",
+            display: "flex", alignItems: "center", justifyContent: "center",
+            margin: "0 auto 14px",
+          }}>
+            <svg width="20" height="20" viewBox="0 0 14 14" fill="none">
+              <path d="M7 2v10M2 7h10" stroke="#1A1A18" strokeWidth="1.7" strokeLinecap="round" />
+            </svg>
           </div>
-          <h1 className="text-2xl font-black text-slate-50 mb-1">
-            {step === 1 && "Create your account"}
-            {step === 2 && "Tell us about yourself"}
-            {step === 3 && form.gender === "female" ? "Menstrual health" : "Health & Goals"}
-            {step === 4 && "Health & Goals"}
+          <h1 style={{ fontSize: 24, fontWeight: 700, color: "#1A1A18", marginBottom: 6 }}>
+            {stepTitles[step - 1]}
           </h1>
-          <p className="text-sm text-slate-400">
-            {step === 1 && "Start your fitness journey today"}
-            {step === 2 && "Basic info helps personalize your experience"}
-            {step === 3 && form.gender === "female" ? "Optional but recommended for better insights" : "Set your targets and preferences"}
-            {step === 4 && "Set your targets and preferences"}
+          <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)" }}>
+            {stepSubs[step - 1]}
           </p>
         </div>
 
+        {/* Card */}
+        <div style={{
+          background: "rgba(255,255,255,0.85)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+          border: "1px solid rgba(255,255,255,0.70)",
+          boxShadow: "0 4px 32px rgba(0,0,0,0.08)",
+          borderRadius: 24,
+          padding: 28,
+        }}>
 
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6 shadow-2xl">
-
-          <form onSubmit={step === totalSteps ? handleRegister : (e) => { e.preventDefault(); nextStep(); }}>
+          <form onSubmit={step === totalSteps ? handleRegister : (e) => { e.preventDefault(); nextStep(); }} style={{ display: "flex", flexDirection: "column", gap: 0 }}>
 
 
             {step === 1 && (
-              <div className="space-y-5 animate-fadeIn">
+              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
 
 
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-slate-300">
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: "#1A1A18", display: "block", marginBottom: 6 }}>
                     Email address *
                   </label>
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <svg
-                        className={`w-5 h-5 transition-colors duration-200 ${focusedField === 'email' ? 'text-primary' : 'text-slate-500'
-                          }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M16 12a4 4 0 10-8 0 4 4 0 008 0zm0 0v1.5a2.5 2.5 0 005 0V12a9 9 0 10-9 9m4.5-1.206a8.959 8.959 0 01-4.5 1.207" />
-                      </svg>
-                    </div>
-                    <input
-                      type="email"
-                      required
-                      className={`w-full rounded-2xl bg-slate-950/50 border-2 pl-12 pr-4 py-3.5 text-base text-slate-50
-                                placeholder:text-slate-600 transition-all duration-200
-                                focus:outline-none focus:bg-slate-950
-                                ${focusedField === 'email'
-                          ? 'border-primary shadow-lg shadow-primary/10'
-                          : 'border-slate-700/50 hover:border-slate-600'
-                        }`}
-                      value={form.email}
-                      onChange={(e) => updateField("email", e.target.value)}
-                      onFocus={() => setFocusedField('email')}
-                      onBlur={() => setFocusedField(null)}
-                      placeholder="you@example.com"
-                      autoComplete="email"
-                    />
-                  </div>
+                  <input
+                    type="email"
+                    required
+                    style={{
+                      width: "100%", padding: "12px 16px", borderRadius: 12, boxSizing: "border-box",
+                      border: `2px solid ${focusedField === "email" ? "#CADB00" : "rgba(26,26,24,0.12)"}`,
+                      background: "#FFFFFF", fontSize: 14, color: "#1A1A18", outline: "none",
+                      transition: "border-color 0.15s", fontFamily: "'DM Sans', sans-serif",
+                    }}
+                    value={form.email}
+                    onChange={(e) => updateField("email", e.target.value)}
+                    onFocus={() => setFocusedField("email")}
+                    onBlur={() => setFocusedField(null)}
+                    placeholder="you@example.com"
+                    autoComplete="email"
+                  />
                 </div>
 
 
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-slate-300">
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: "#1A1A18", display: "block", marginBottom: 6 }}>
                     Password *
                   </label>
-                  <div className="relative">
-                    <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                      <svg
-                        className={`w-5 h-5 transition-colors duration-200 ${focusedField === 'password' ? 'text-primary' : 'text-slate-500'
-                          }`}
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                          d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                      </svg>
-                    </div>
+                  <div style={{ position: "relative" }}>
                     <input
                       type={showPassword ? "text" : "password"}
                       required
-                      className={`w-full rounded-2xl bg-slate-950/50 border-2 pl-12 pr-12 py-3.5 text-base text-slate-50
-                                placeholder:text-slate-600 transition-all duration-200
-                                focus:outline-none focus:bg-slate-950
-                                ${focusedField === 'password'
-                          ? 'border-primary shadow-lg shadow-primary/10'
-                          : 'border-slate-700/50 hover:border-slate-600'
-                        }`}
+                      style={{
+                        width: "100%", padding: "12px 44px 12px 16px", borderRadius: 12, boxSizing: "border-box",
+                        border: `2px solid ${focusedField === "password" ? "#CADB00" : "rgba(26,26,24,0.12)"}`,
+                        background: "#FFFFFF", fontSize: 14, color: "#1A1A18", outline: "none",
+                        transition: "border-color 0.15s", fontFamily: "'DM Sans', sans-serif",
+                      }}
                       value={form.password}
                       onChange={(e) => updateField("password", e.target.value)}
-                      onFocus={() => setFocusedField('password')}
+                      onFocus={() => setFocusedField("password")}
                       onBlur={() => setFocusedField(null)}
                       placeholder="Minimum 6 characters"
                       autoComplete="new-password"
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300
-                               active:scale-95 transition-all"
+                    <button type="button" onClick={() => setShowPassword(!showPassword)}
+                      style={{
+                        position: "absolute", right: 14, top: "50%", transform: "translateY(-50%)",
+                        background: "none", border: "none", cursor: "pointer", color: "rgba(26,26,24,0.40)", padding: 0
+                      }}
+                      tabIndex={-1}
                     >
                       {showPassword ? (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                            d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
-                        </svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24M1 1l22 22" /></svg>
                       ) : (
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-                        </svg>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" /><circle cx="12" cy="12" r="3" /></svg>
                       )}
                     </button>
                   </div>
-                  <p className="text-xs text-slate-500 flex items-center gap-1.5 mt-1.5">
-                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    Use a strong password with letters and numbers
-                  </p>
+                  <p style={{ fontSize: 12, color: "rgba(26,26,24,0.45)", marginTop: 6 }}>Use a strong password with letters and numbers</p>
                 </div>
 
               </div>
@@ -350,76 +326,45 @@ export default function RegisterPage() {
 
 
             {step === 2 && (
-              <div className="space-y-4 animate-fadeIn">
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
                 <input
                   type="text"
                   required
                   placeholder="Full Name *"
-                  className="w-full rounded-2xl bg-slate-950/50 border-2 border-slate-700/50 px-4 py-3.5 text-base text-slate-50
-                           placeholder:text-slate-600 hover:border-slate-600 focus:border-primary focus:outline-none
-                           focus:shadow-lg focus:shadow-primary/10 transition-all duration-200"
+                  style={{ width: "100%", padding: "12px 16px", borderRadius: 12, boxSizing: "border-box", border: "2px solid rgba(26,26,24,0.12)", background: "#FFF", fontSize: 14, color: "#1A1A18", outline: "none", fontFamily: "'DM Sans', sans-serif" }}
                   value={form.name}
                   onChange={(e) => updateField("name", e.target.value)}
                 />
 
-                <div className="grid grid-cols-2 gap-3">
-                  <select
-                    required
-                    className="rounded-2xl bg-slate-950/50 border-2 border-slate-700/50 px-4 py-3.5 text-base text-slate-50
-                             hover:border-slate-600 focus:border-primary focus:outline-none transition-all duration-200"
-                    value={form.gender}
-                    onChange={(e) => updateField("gender", e.target.value)}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <select required
+                    style={{ padding: "12px 16px", borderRadius: 12, border: "2px solid rgba(26,26,24,0.12)", background: "#FFF", fontSize: 14, color: "#1A1A18", outline: "none", fontFamily: "'DM Sans', sans-serif" }}
+                    value={form.gender} onChange={(e) => updateField("gender", e.target.value)}
                   >
                     <option value="">Gender *</option>
                     <option value="male">Male</option>
                     <option value="female">Female</option>
                     <option value="other">Other</option>
                   </select>
-
-                  <input
-                    type="number"
-                    required
-                    placeholder="Age *"
-                    min="10"
-                    max="100"
-                    className="rounded-2xl bg-slate-950/50 border-2 border-slate-700/50 px-4 py-3.5 text-base text-slate-50
-                             placeholder:text-slate-600 hover:border-slate-600 focus:border-primary focus:outline-none
-                             transition-all duration-200"
-                    value={form.age}
-                    onChange={(e) => updateField("age", e.target.value)}
+                  <input type="number" required placeholder="Age *" min="10" max="100"
+                    style={{ padding: "12px 16px", borderRadius: 12, border: "2px solid rgba(26,26,24,0.12)", background: "#FFF", fontSize: 14, color: "#1A1A18", outline: "none", fontFamily: "'DM Sans', sans-serif" }}
+                    value={form.age} onChange={(e) => updateField("age", e.target.value)}
                   />
                 </div>
 
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="relative">
-                    <input
-                      type="number"
-                      placeholder="Height"
-                      min="100"
-                      max="250"
-                      className="w-full rounded-2xl bg-slate-950/50 border-2 border-slate-700/50 pl-4 pr-12 py-3.5 text-base text-slate-50
-                               placeholder:text-slate-600 hover:border-slate-600 focus:border-emerald-500 focus:outline-none
-                               transition-all duration-200"
-                      value={form.height}
-                      onChange={(e) => updateField("height", e.target.value)}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                  <div style={{ position: "relative" }}>
+                    <input type="number" placeholder="Height (cm)" min="100" max="250"
+                      style={{ width: "100%", padding: "12px 16px", borderRadius: 12, boxSizing: "border-box", border: "2px solid rgba(26,26,24,0.12)", background: "#FFF", fontSize: 14, color: "#1A1A18", outline: "none", fontFamily: "'DM Sans', sans-serif" }}
+                      value={form.height} onChange={(e) => updateField("height", e.target.value)}
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-500">cm</span>
                   </div>
-
-                  <div className="relative">
-                    <input
-                      type="number"
-                      placeholder="Weight"
-                      min="30"
-                      max="200"
-                      className="w-full rounded-2xl bg-slate-950/50 border-2 border-slate-700/50 pl-4 pr-12 py-3.5 text-base text-slate-50
-                               placeholder:text-slate-600 hover:border-slate-600 focus:border-emerald-500 focus:outline-none
-                               transition-all duration-200"
-                      value={form.weight}
-                      onChange={(e) => updateField("weight", e.target.value)}
+                  <div style={{ position: "relative" }}>
+                    <input type="number" placeholder="Weight (kg)" min="30" max="200"
+                      style={{ width: "100%", padding: "12px 16px", borderRadius: 12, boxSizing: "border-box", border: "2px solid rgba(26,26,24,0.12)", background: "#FFF", fontSize: 14, color: "#1A1A18", outline: "none", fontFamily: "'DM Sans', sans-serif" }}
+                      value={form.weight} onChange={(e) => updateField("weight", e.target.value)}
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-500">kg</span>
                   </div>
                 </div>
 
@@ -428,50 +373,30 @@ export default function RegisterPage() {
 
 
             {step === 3 && form.gender === "female" && (
-              <div className="space-y-4 animate-fadeIn">
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
-                <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 mb-4">
-                  <div className="flex items-start gap-3">
-                    <svg className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                    </svg>
-                    <p className="text-xs text-slate-300 leading-relaxed">
-                      Track your menstrual cycle for personalized health insights and recommendations
-                    </p>
-                  </div>
+                <div style={{ background: "rgba(202,219,0,0.08)", border: "1px solid rgba(202,219,0,0.20)", borderRadius: 12, padding: "12px 14px" }}>
+                  <p style={{ fontSize: 12, color: "rgba(26,26,24,0.60)", lineHeight: 1.6, margin: 0 }}>
+                    Track your menstrual cycle for personalized health insights and recommendations.
+                  </p>
                 </div>
 
-                <input
-                  type="number"
-                  placeholder="Cycle length (days)"
-                  min="21"
-                  max="35"
-                  className="w-full rounded-2xl bg-slate-950/50 border-2 border-slate-700/50 px-4 py-3.5 text-base text-slate-50
-                           placeholder:text-slate-600 hover:border-slate-600 focus:border-primary focus:outline-none
-                           transition-all duration-200"
-                  value={form.cycleLengthDays}
-                  onChange={(e) => updateField("cycleLengthDays", e.target.value)}
+                <input type="number" placeholder="Cycle length (days)" min="21" max="35"
+                  style={{ width: "100%", padding: "12px 16px", borderRadius: 12, boxSizing: "border-box", border: "2px solid rgba(26,26,24,0.12)", background: "#FFF", fontSize: 14, color: "#1A1A18", outline: "none", fontFamily: "'DM Sans', sans-serif" }}
+                  value={form.cycleLengthDays} onChange={(e) => updateField("cycleLengthDays", e.target.value)}
                 />
 
-                <div className="space-y-2">
-                  <label className="block text-sm font-semibold text-slate-300">
-                    Last period start date
-                  </label>
-                  <input
-                    type="date"
-                    max={new Date().toISOString().split('T')[0]}
-                    className="w-full rounded-2xl bg-slate-950/50 border-2 border-slate-700/50 px-4 py-3.5 text-base text-slate-50
-                             hover:border-slate-600 focus:border-primary focus:outline-none transition-all duration-200"
-                    value={form.lastPeriodDate}
-                    onChange={(e) => updateField("lastPeriodDate", e.target.value)}
+                <div>
+                  <label style={{ fontSize: 13, fontWeight: 600, color: "#1A1A18", display: "block", marginBottom: 6 }}>Last period start date</label>
+                  <input type="date" max={new Date().toISOString().split('T')[0]}
+                    style={{ width: "100%", padding: "12px 16px", borderRadius: 12, boxSizing: "border-box", border: "2px solid rgba(26,26,24,0.12)", background: "#FFF", fontSize: 14, color: "#1A1A18", outline: "none", fontFamily: "'DM Sans', sans-serif" }}
+                    value={form.lastPeriodDate} onChange={(e) => updateField("lastPeriodDate", e.target.value)}
                   />
                 </div>
 
                 <select
-                  className="w-full rounded-2xl bg-slate-950/50 border-2 border-slate-700/50 px-4 py-3.5 text-base text-slate-50
-                           hover:border-slate-600 focus:border-primary focus:outline-none transition-all duration-200"
-                  value={form.menstrualPhase}
-                  onChange={(e) => updateField("menstrualPhase", e.target.value)}
+                  style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "2px solid rgba(26,26,24,0.12)", background: "#FFF", fontSize: 14, color: "#1A1A18", outline: "none", fontFamily: "'DM Sans', sans-serif" }}
+                  value={form.menstrualPhase} onChange={(e) => updateField("menstrualPhase", e.target.value)}
                 >
                   <option value="">Current cycle phase</option>
                   <option value="follicular">Follicular (Days 1-13)</option>
@@ -479,10 +404,8 @@ export default function RegisterPage() {
                   <option value="luteal">Luteal (Days 17-28)</option>
                 </select>
 
-                <button
-                  type="button"
-                  onClick={nextStep}
-                  className="w-full text-sm text-slate-400 hover:text-slate-300 py-2 transition-colors"
+                <button type="button" onClick={nextStep}
+                  style={{ fontSize: 13, color: "rgba(26,26,24,0.40)", background: "none", border: "none", cursor: "pointer", padding: "8px 0" }}
                 >
                   Skip for now →
                 </button>
@@ -492,13 +415,11 @@ export default function RegisterPage() {
 
 
             {((step === 3 && form.gender !== "female") || step === 4) && (
-              <div className="space-y-4 animate-fadeIn">
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
 
                 <select
-                  className="w-full rounded-2xl bg-slate-950/50 border-2 border-slate-700/50 px-4 py-3.5 text-base text-slate-50
-                           hover:border-slate-600 focus:border-emerald-500 focus:outline-none transition-all duration-200"
-                  value={form.dietType}
-                  onChange={(e) => updateField("dietType", e.target.value)}
+                  style={{ width: "100%", padding: "12px 16px", borderRadius: 12, border: "2px solid rgba(26,26,24,0.12)", background: "#FFF", fontSize: 14, color: "#1A1A18", outline: "none", fontFamily: "'DM Sans', sans-serif" }}
+                  value={form.dietType} onChange={(e) => updateField("dietType", e.target.value)}
                 >
                   <option value="">Diet Type</option>
                   <option value="vegetarian">🥗 Vegetarian</option>
@@ -506,47 +427,26 @@ export default function RegisterPage() {
                   <option value="non_vegetarian">🍗 Non-Vegetarian</option>
                 </select>
 
-                <input
-                  type="text"
-                  placeholder="Fitness goal (e.g., lose 5kg, build muscle)"
-                  className="w-full rounded-2xl bg-slate-950/50 border-2 border-slate-700/50 px-4 py-3.5 text-base text-slate-50
-                           placeholder:text-slate-600 hover:border-slate-600 focus:border-emerald-500 focus:outline-none
-                           transition-all duration-200"
-                  value={form.goal}
-                  onChange={(e) => updateField("goal", e.target.value)}
+                <input type="text" placeholder="Fitness goal (e.g., lose 5kg, build muscle)"
+                  style={{ width: "100%", padding: "12px 16px", borderRadius: 12, boxSizing: "border-box", border: "2px solid rgba(26,26,24,0.12)", background: "#FFF", fontSize: 14, color: "#1A1A18", outline: "none", fontFamily: "'DM Sans', sans-serif" }}
+                  value={form.goal} onChange={(e) => updateField("goal", e.target.value)}
                 />
 
 
-                <div className="bg-slate-950/50 border-2 border-slate-700/50 rounded-2xl p-4">
-                  <label className="flex items-center justify-between cursor-pointer group">
-                    <div className="flex items-center gap-3">
-                      <div className={`w-11 h-6 rounded-full transition-all duration-300 ${form.hasMedicalCondition ? 'bg-primary' : 'bg-slate-700'
-                        }`}>
-                        <div className={`w-5 h-5 bg-white rounded-full mt-0.5 transition-all duration-300 ${form.hasMedicalCondition ? 'ml-5' : 'ml-0.5'
-                          }`}></div>
-                      </div>
-                      <span className="text-sm font-semibold text-slate-300 group-hover:text-slate-100 transition-colors">
-                        I have a medical condition
-                      </span>
+                <div style={{ background: "rgba(26,26,24,0.04)", border: "1px solid rgba(26,26,24,0.10)", borderRadius: 12, padding: "12px 16px" }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: 10, cursor: "pointer" }}>
+                    <div style={{ width: 40, height: 22, borderRadius: 11, background: form.hasMedicalCondition ? "#CADB00" : "rgba(26,26,24,0.15)", position: "relative", transition: "background 0.2s", flexShrink: 0 }}>
+                      <div style={{ width: 18, height: 18, borderRadius: "50%", background: "#FFF", position: "absolute", top: 2, left: form.hasMedicalCondition ? 20 : 2, transition: "left 0.2s", boxShadow: "0 1px 3px rgba(0,0,0,0.15)" }} />
                     </div>
-                    <input
-                      type="checkbox"
-                      className="sr-only"
-                      checked={form.hasMedicalCondition}
-                      onChange={(e) => updateField("hasMedicalCondition", e.target.checked)}
-                    />
+                    <span style={{ fontSize: 13, fontWeight: 500, color: "#1A1A18" }}>I have a medical condition</span>
+                    <input type="checkbox" style={{ display: "none" }} checked={form.hasMedicalCondition} onChange={(e) => updateField("hasMedicalCondition", e.target.checked)} />
                   </label>
                 </div>
 
                 {form.hasMedicalCondition && (
-                  <textarea
-                    placeholder="List your medical conditions (e.g., diabetes, thyroid)"
-                    rows="3"
-                    className="w-full rounded-2xl bg-slate-950/50 border-2 border-slate-700/50 px-4 py-3.5 text-base text-slate-50
-                             placeholder:text-slate-600 hover:border-slate-600 focus:border-primary focus:outline-none
-                             transition-all duration-200 resize-none"
-                    value={form.medicalConditions}
-                    onChange={(e) => updateField("medicalConditions", e.target.value)}
+                  <textarea placeholder="List your medical conditions (e.g., diabetes, thyroid)" rows="3"
+                    style={{ width: "100%", padding: "12px 16px", borderRadius: 12, boxSizing: "border-box", border: "2px solid rgba(26,26,24,0.12)", background: "#FFF", fontSize: 14, color: "#1A1A18", outline: "none", fontFamily: "'DM Sans', sans-serif", resize: "none" }}
+                    value={form.medicalConditions} onChange={(e) => updateField("medicalConditions", e.target.value)}
                   />
                 )}
 
@@ -555,115 +455,45 @@ export default function RegisterPage() {
 
 
             {error && (
-              <div className="flex items-start gap-3 text-sm text-red-400 bg-red-500/10 rounded-2xl px-4 py-3 border border-red-500/20 animate-shake mt-4">
-                <svg className="w-5 h-5 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                </svg>
-                <span className="leading-relaxed">{error}</span>
+              <div style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.20)", borderRadius: 10, padding: "10px 14px", fontSize: 13, color: "#EF4444", marginTop: 16 }}>
+                {error}
               </div>
             )}
 
 
-            <div className="flex gap-3 mt-6">
+            <div style={{ display: "flex", gap: 10, marginTop: 20 }}>
               {step > 1 && (
-                <button
-                  type="button"
-                  onClick={prevStep}
-                  className="flex-1 py-3.5 px-6 rounded-2xl bg-slate-800/50 border-2 border-slate-700
-                           text-slate-300 font-semibold hover:bg-slate-800 hover:border-slate-600
-                           active:scale-[0.98] transition-all duration-200"
+                <button type="button" onClick={prevStep}
+                  style={{ flex: 1, padding: "13px 20px", borderRadius: 12, border: "1.5px solid rgba(26,26,24,0.15)", background: "rgba(26,26,24,0.05)", fontSize: 14, fontWeight: 600, color: "rgba(26,26,24,0.70)", cursor: "pointer", fontFamily: "'DM Sans', sans-serif" }}
                 >
                   Back
                 </button>
               )}
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="flex-1 relative py-3.5 px-6 rounded-2xl bg-gradient-to-r from-primary to-emerald-500 
-                         text-slate-950 font-bold overflow-hidden shadow-lg shadow-primary/25
-                         hover:shadow-xl hover:shadow-primary/30 disabled:opacity-60 disabled:cursor-not-allowed
-                         active:scale-[0.98] transition-all duration-200 group"
+              <button type="submit" disabled={loading}
+                style={{ flex: 1, padding: "13px 20px", borderRadius: 12, border: "none", background: loading ? "rgba(26,26,24,0.08)" : "#1A1A18", fontSize: 14, fontWeight: 700, color: loading ? "rgba(26,26,24,0.40)" : "#FFF", cursor: loading ? "not-allowed" : "pointer", fontFamily: "'DM Sans', sans-serif", transition: "all 0.15s" }}
               >
-                {!loading && (
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent 
-                                 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-1000"></span>
-                )}
-
-                <span className="relative flex items-center justify-center gap-2">
-                  {loading ? (
-                    <>
-                      <svg className="animate-spin h-5 w-5" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                      </svg>
-                      Creating...
-                    </>
-                  ) : step === totalSteps ? (
-                    "Create Account"
-                  ) : (
-                    <>
-                      Continue
-                      <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M13 7l5 5m0 0l-5 5m5-5H6" />
-                      </svg>
-                    </>
-                  )}
-                </span>
+                {loading ? "Creating…" : step === totalSteps ? "Create Account" : "Continue →"}
               </button>
             </div>
 
           </form>
 
 
-          <p className="mt-6 text-sm text-slate-400 text-center">
+          <p style={{ textAlign: "center", fontSize: 13, color: "rgba(26,26,24,0.55)", marginTop: 20 }}>
             Already have an account?{" "}
-            <Link
-              to="/login"
-              className="text-primary font-semibold hover:text-emerald-400 hover:underline transition-colors"
-            >
-              Login
-            </Link>
+            <Link to="/login" style={{ color: "#1A1A18", fontWeight: 600, textDecoration: "none" }}>Sign in →</Link>
           </p>
 
         </div>
 
 
-        <div className="flex justify-center gap-2 mt-6">
-          {[...Array(totalSteps)].map((_, index) => (
-            <div
-              key={index}
-              className={`h-2 rounded-full transition-all duration-300 ${index + 1 <= step
-                ? 'w-8 bg-primary'
-                : 'w-2 bg-slate-700'
-                }`}
-            ></div>
+        <div style={{ display: "flex", justifyContent: "center", gap: 6, marginTop: 20 }}>
+          {[...Array(totalSteps)].map((_, i) => (
+            <div key={i} style={{ height: 6, borderRadius: 9999, transition: "all 0.3s", width: i + 1 <= step ? 24 : 6, background: i + 1 <= step ? "#CADB00" : "rgba(26,26,24,0.15)" }} />
           ))}
         </div>
 
       </div>
-
-
-      <style>{`
-        @keyframes shake {
-          0%, 100% { transform: translateX(0); }
-          25% { transform: translateX(-8px); }
-          75% { transform: translateX(8px); }
-        }
-        
-        @keyframes fadeIn {
-          from { opacity: 0; transform: translateY(10px); }
-          to { opacity: 1; transform: translateY(0); }
-        }
-        
-        .animate-shake {
-          animation: shake 0.4s ease-in-out;
-        }
-
-        .animate-fadeIn {
-          animation: fadeIn 0.4s ease-out;
-        }
-      `}</style>
     </div>
   );
 }

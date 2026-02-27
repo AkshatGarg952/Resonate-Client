@@ -11,9 +11,7 @@ const WorkoutHistoryPage = () => {
     const [completionData, setCompletionData] = useState({ rpe: 7, energyLevel: 7, notes: '' });
     const [isSubmitting, setIsSubmitting] = useState(false);
 
-    useEffect(() => {
-        loadHistory();
-    }, []);
+    useEffect(() => { loadHistory(); }, []);
 
     const loadHistory = async () => {
         try {
@@ -40,7 +38,6 @@ const WorkoutHistoryPage = () => {
                 workoutId: selectedWorkout._id,
                 ...completionData
             });
-
             setWorkouts(prev => prev.map(w =>
                 w._id === selectedWorkout._id ? { ...w, status: 'completed' } : w
             ));
@@ -55,74 +52,98 @@ const WorkoutHistoryPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-50 p-6 pb-24 gradient-bg relative">
-            <div className="fixed top-[-10%] left-[-10%] w-96 h-96 bg-purple-500/20 rounded-full blur-[100px] pointer-events-none" />
+        <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            {/* Header */}
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 24, flexWrap: "wrap", gap: 12 }}>
+                <div>
+                    <h1 style={{ fontSize: 28, fontWeight: 700, color: "#1A1A18", margin: "0 0 4px" }}>Workout History</h1>
+                    <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)", margin: 0 }}>Review and log your workout completions.</p>
+                </div>
+                <button
+                    onClick={() => navigate('/workout-generator')}
+                    style={{ padding: "10px 18px", borderRadius: 12, border: "none", background: "#1A1A18", color: "#FFF", fontSize: 13, fontWeight: 700, cursor: "pointer" }}
+                >
+                    + New Workout
+                </button>
+            </div>
 
-            <div className="max-w-4xl mx-auto z-10 relative">
-                <div className="flex justify-between items-center mb-8">
-                    <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent">
-                        Workout History
-                    </h1>
+            {/* Content */}
+            {loading ? (
+                <div style={{ display: "flex", justifyContent: "center", padding: "80px 0" }}>
+                    <div style={{ width: 36, height: 36, borderRadius: "50%", border: "3px solid rgba(202,219,0,0.20)", borderTopColor: "#CADB00", animation: "spin 0.8s linear infinite" }} />
+                </div>
+            ) : workouts.length === 0 ? (
+                <div style={{ textAlign: "center", padding: "64px 20px", background: "rgba(255,255,255,0.65)", backdropFilter: "blur(12px)", border: "1.5px dashed rgba(26,26,24,0.15)", borderRadius: 24 }}>
+                    <div style={{ fontSize: 48, marginBottom: 16 }}>🏋️</div>
+                    <p style={{ fontSize: 15, color: "rgba(26,26,24,0.55)", marginBottom: 20 }}>No workouts generated yet.</p>
                     <button
                         onClick={() => navigate('/workout-generator')}
-                        className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg text-sm font-semibold transition-colors border border-slate-700"
+                        style={{ padding: "12px 28px", borderRadius: 12, border: "none", background: "#1A1A18", color: "#FFF", fontSize: 14, fontWeight: 700, cursor: "pointer" }}
                     >
-                        + New Workout
+                        Generate Your First Plan
                     </button>
                 </div>
-
-                {loading ? (
-                    <div className="flex justify-center py-20">
-                        <div className="w-10 h-10 border-4 border-purple-500 border-t-transparent rounded-full animate-spin" />
-                    </div>
-                ) : workouts.length === 0 ? (
-                    <div className="text-center py-20 bg-slate-900/50 rounded-3xl border border-white/5">
-                        <p className="text-slate-400 mb-4">No workouts generated yet.</p>
-                        <button
-                            onClick={() => navigate('/workout-generator')}
-                            className="px-6 py-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl font-bold"
+            ) : (
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: 14 }}>
+                    {workouts.map(workout => (
+                        <div
+                            key={workout._id}
+                            onClick={() => setSelectedWorkout(workout)}
+                            className="glass-card"
+                            style={{
+                                borderRadius: 20, padding: 20, cursor: "pointer",
+                                borderTop: `3px solid ${workout.status === 'completed' ? '#34C759' : '#CADB00'}`,
+                                transition: "transform 0.15s, box-shadow 0.15s",
+                            }}
+                            onMouseEnter={e => { e.currentTarget.style.transform = "translateY(-2px)"; }}
+                            onMouseLeave={e => { e.currentTarget.style.transform = "translateY(0)"; }}
                         >
-                            Generate Your First Plan
-                        </button>
-                    </div>
-                ) : (
-                    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                        {workouts.map(workout => (
-                            <div
-                                key={workout._id}
-                                onClick={() => setSelectedWorkout(workout)}
-                                className="bg-slate-900/60 backdrop-blur-md border border-white/5 p-5 rounded-2xl cursor-pointer hover:border-purple-500/50 hover:bg-slate-800/80 transition-all group"
-                            >
-                                <div className="flex justify-between items-start mb-3">
-                                    <span className="text-xs font-mono text-slate-500">{formatDate(workout.createdAt)}</span>
-                                    <span className="text-xs bg-slate-800 px-2 py-1 rounded text-purple-300">
+                            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 10 }}>
+                                <span style={{ fontSize: 11, color: "rgba(26,26,24,0.40)", fontVariantNumeric: "tabular-nums" }}>
+                                    {formatDate(workout.createdAt)}
+                                </span>
+                                <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                                    {workout.status === 'completed' && (
+                                        <span style={{ fontSize: 11, fontWeight: 700, padding: "2px 8px", borderRadius: 9999, background: "rgba(52,199,89,0.10)", color: "#14532D", border: "1px solid rgba(52,199,89,0.25)" }}>
+                                            ✓ Done
+                                        </span>
+                                    )}
+                                    <span style={{ fontSize: 11, fontWeight: 600, padding: "2px 8px", borderRadius: 9999, background: "rgba(124,111,205,0.10)", color: "#4A3D6B" }}>
                                         {workout.inputs?.fitnessLevel || 'Custom'}
                                     </span>
                                 </div>
-                                <h3 className="font-bold text-lg mb-1 group-hover:text-purple-400 transition-colors line-clamp-1">
-                                    {workout.plan.title || "Workout Plan"}
-                                </h3>
-                                <div className="flex gap-4 text-sm text-slate-400 mb-4">
-                                    <span>⏱ {workout.plan.duration}</span>
-                                    <span className="truncate">🎯 {workout.plan.focus}</span>
-                                </div>
-                                <div className="text-xs text-slate-500">
-                                    {workout.plan.exercises?.length || 0} exercises
-                                </div>
                             </div>
-                        ))}
-                    </div>
-                )}
-            </div>
+                            <h3 style={{ fontSize: 15, fontWeight: 700, color: "#1A1A18", marginBottom: 8 }}>
+                                {workout.plan.title || "Workout Plan"}
+                            </h3>
+                            <div style={{ display: "flex", gap: 14, fontSize: 12, color: "rgba(26,26,24,0.50)", marginBottom: 10 }}>
+                                <span>⏱ {workout.plan.duration}</span>
+                                <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>🎯 {workout.plan.focus}</span>
+                            </div>
+                            <div style={{ fontSize: 12, color: "rgba(26,26,24,0.40)" }}>
+                                {workout.plan.exercises?.length || 0} exercises
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
 
-
+            {/* Workout detail modal */}
             {selectedWorkout && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-                    <div className="bg-slate-900 w-full max-w-2xl max-h-[90vh] rounded-3xl overflow-hidden flex flex-col border border-white/10 shadow-2xl animate-in zoom-in-95 duration-200">
-                        <div className="p-6 border-b border-white/10 flex justify-between items-start bg-slate-800/50">
+                <div style={{ position: "fixed", inset: 0, zIndex: 50, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "rgba(0,0,0,0.40)", backdropFilter: "blur(8px)" }}>
+                    <div style={{
+                        background: "rgba(255,255,255,0.95)", backdropFilter: "blur(20px)",
+                        borderRadius: 24, border: "1px solid rgba(255,255,255,0.80)",
+                        boxShadow: "0 24px 64px rgba(0,0,0,0.15)",
+                        width: "100%", maxWidth: 600, maxHeight: "90vh",
+                        display: "flex", flexDirection: "column", overflow: "hidden",
+                        fontFamily: "'DM Sans', sans-serif",
+                    }}>
+                        {/* Modal header */}
+                        <div style={{ padding: "20px 24px", borderBottom: "1px solid rgba(26,26,24,0.08)", display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                             <div>
-                                <h2 className="text-2xl font-bold text-white mb-1">{selectedWorkout.plan.title}</h2>
-                                <div className="flex gap-3 text-sm text-slate-400">
+                                <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1A1A18", margin: "0 0 4px" }}>{selectedWorkout.plan.title}</h2>
+                                <div style={{ fontSize: 12, color: "rgba(26,26,24,0.45)", display: "flex", gap: 12 }}>
                                     <span>{formatDate(selectedWorkout.createdAt)}</span>
                                     <span>•</span>
                                     <span>{selectedWorkout.plan.duration}</span>
@@ -130,71 +151,68 @@ const WorkoutHistoryPage = () => {
                             </div>
                             <button
                                 onClick={() => setSelectedWorkout(null)}
-                                className="p-2 hover:bg-white/10 rounded-full transition-colors"
+                                style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(26,26,24,0.06)", border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "#1A1A18" }}
                             >
                                 ✕
                             </button>
                         </div>
 
-                        <div className="p-6 overflow-y-auto custom-scrollbar space-y-6">
-
-                            <div className="bg-white/5 p-4 rounded-xl">
-                                <h3 className="text-green-400 font-semibold mb-3 uppercase tracking-wider text-xs">Warmup</h3>
-                                <ul className="space-y-2">
+                        {/* Modal body */}
+                        <div style={{ padding: "20px 24px", overflowY: "auto", display: "flex", flexDirection: "column", gap: 16 }}>
+                            {/* Warmup */}
+                            <div style={{ background: "rgba(52,199,89,0.06)", border: "1px solid rgba(52,199,89,0.15)", borderRadius: 14, padding: "14px 16px" }}>
+                                <h3 style={{ fontSize: 11, fontWeight: 700, color: "#14532D", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Warmup</h3>
+                                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
                                     {selectedWorkout.plan.warmup?.map((ex, i) => (
-                                        <li key={i} className="flex justify-between text-sm">
+                                        <li key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#1A1A18" }}>
                                             <span>{ex.name}</span>
-                                            <span className="text-slate-400">{ex.duration || ex.reps}</span>
+                                            <span style={{ color: "rgba(26,26,24,0.45)" }}>{ex.duration || ex.reps}</span>
                                         </li>
                                     ))}
                                 </ul>
                             </div>
 
-
-                            <div className="space-y-3">
-                                <h3 className="text-blue-400 font-semibold uppercase tracking-wider text-xs">Main Circuit</h3>
-                                {selectedWorkout.plan.exercises?.map((ex, i) => (
-                                    <div key={i} className="flex justify-between items-center bg-white/5 p-3 rounded-xl">
-                                        <div>
-                                            <div className="font-medium">{ex.name}</div>
-                                            <div className="text-slate-400 text-xs mt-1">
-                                                {ex.sets && `${ex.sets} sets`}
-                                                {ex.sets && ex.reps && ' × '}
-                                                {ex.reps && `${ex.reps}`}
-                                                {ex.duration && `${ex.duration}`}
+                            {/* Main circuit */}
+                            <div>
+                                <h3 style={{ fontSize: 11, fontWeight: 700, color: "#3D4000", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Main Circuit</h3>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                                    {selectedWorkout.plan.exercises?.map((ex, i) => (
+                                        <div key={i} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", background: "rgba(202,219,0,0.07)", border: "1px solid rgba(202,219,0,0.18)", borderRadius: 12, padding: "10px 14px" }}>
+                                            <div>
+                                                <div style={{ fontSize: 13, fontWeight: 600, color: "#1A1A18" }}>{ex.name}</div>
+                                                <div style={{ fontSize: 12, color: "rgba(26,26,24,0.45)", marginTop: 2 }}>
+                                                    {ex.sets && `${ex.sets} sets`}{ex.sets && ex.reps && ' × '}{ex.reps && `${ex.reps}`}{ex.duration && `${ex.duration}`}
+                                                </div>
+                                                {ex.notes && <div style={{ fontSize: 11, color: "#E07A3A", marginTop: 2, fontStyle: "italic" }}>{ex.notes}</div>}
                                             </div>
-                                            {ex.notes && <div className="text-orange-400/80 text-xs mt-1 italic">{ex.notes}</div>}
                                         </div>
-                                    </div>
-                                ))}
+                                    ))}
+                                </div>
                             </div>
 
-
-                            <div className="bg-white/5 p-4 rounded-xl">
-                                <h3 className="text-indigo-400 font-semibold mb-3 uppercase tracking-wider text-xs">Cooldown</h3>
-                                <ul className="space-y-2">
+                            {/* Cooldown */}
+                            <div style={{ background: "rgba(124,111,205,0.06)", border: "1px solid rgba(124,111,205,0.15)", borderRadius: 14, padding: "14px 16px" }}>
+                                <h3 style={{ fontSize: 11, fontWeight: 700, color: "#4A3D6B", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 10 }}>Cooldown</h3>
+                                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 6 }}>
                                     {selectedWorkout.plan.cooldown?.map((ex, i) => (
-                                        <li key={i} className="flex justify-between text-sm">
+                                        <li key={i} style={{ display: "flex", justifyContent: "space-between", fontSize: 13, color: "#1A1A18" }}>
                                             <span>{ex.name}</span>
-                                            <span className="text-slate-400">{ex.duration || ex.reps}</span>
+                                            <span style={{ color: "rgba(26,26,24,0.45)" }}>{ex.duration || ex.reps}</span>
                                         </li>
                                     ))}
                                 </ul>
                             </div>
 
-
-                            {selectedWorkout.status !== 'completed' && (
-                                <div className="pt-4 border-t border-white/10">
-                                    <button
-                                        onClick={() => setShowCompleteModal(true)}
-                                        className="w-full py-3 bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-400 hover:to-emerald-500 rounded-xl font-bold text-white shadow-lg shadow-green-500/20 transition-all"
-                                    >
-                                        Log as Completed
-                                    </button>
-                                </div>
-                            )}
-                            {selectedWorkout.status === 'completed' && (
-                                <div className="pt-4 border-t border-white/10 text-center text-green-400 font-semibold">
+                            {/* Actions */}
+                            {selectedWorkout.status !== 'completed' ? (
+                                <button
+                                    onClick={() => setShowCompleteModal(true)}
+                                    style={{ width: "100%", padding: "13px", borderRadius: 12, border: "none", background: "#1A1A18", color: "#FFF", fontSize: 14, fontWeight: 700, cursor: "pointer", transition: "all 0.15s" }}
+                                >
+                                    Log as Completed
+                                </button>
+                            ) : (
+                                <div style={{ textAlign: "center", padding: "12px", fontSize: 14, fontWeight: 700, color: "#14532D", background: "rgba(52,199,89,0.08)", borderRadius: 12, border: "1px solid rgba(52,199,89,0.20)" }}>
                                     ✓ Workout Completed
                                 </div>
                             )}
@@ -203,76 +221,77 @@ const WorkoutHistoryPage = () => {
                 </div>
             )}
 
-
+            {/* Completion modal */}
             {showCompleteModal && (
-                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md">
-                    <div className="bg-slate-900 w-full max-w-md rounded-3xl border border-green-500/20 shadow-2xl p-6 animate-in zoom-in-95 duration-200">
-                        <h2 className="text-2xl font-bold text-white mb-6">Log Completion</h2>
+                <div style={{ position: "fixed", inset: 0, zIndex: 60, display: "flex", alignItems: "center", justifyContent: "center", padding: 16, background: "rgba(0,0,0,0.50)", backdropFilter: "blur(12px)" }}>
+                    <div style={{ background: "rgba(255,255,255,0.97)", borderRadius: 24, border: "1px solid rgba(255,255,255,0.80)", boxShadow: "0 24px 64px rgba(0,0,0,0.15)", width: "100%", maxWidth: 440, padding: 28, fontFamily: "'DM Sans', sans-serif" }}>
+                        <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1A1A18", marginBottom: 24 }}>Log Completion</h2>
 
-                        <div className="space-y-6">
+                        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
                             <div>
-                                <label className="block text-slate-400 text-sm mb-2">Rate of Perceived Exertion (RPE)</label>
+                                <label style={{ fontSize: 13, fontWeight: 600, color: "rgba(26,26,24,0.60)", display: "block", marginBottom: 8 }}>Rate of Perceived Exertion (RPE)</label>
                                 <input
                                     type="range" min="1" max="10"
                                     value={completionData.rpe}
                                     onChange={(e) => setCompletionData({ ...completionData, rpe: parseInt(e.target.value) })}
-                                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-green-500"
+                                    style={{ width: "100%", accentColor: "#CADB00" }}
                                 />
-                                <div className="flex justify-between text-xs text-slate-500 mt-1">
+                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "rgba(26,26,24,0.40)", marginTop: 4 }}>
                                     <span>Easy</span>
-                                    <span className="text-green-400 font-bold text-lg">{completionData.rpe}</span>
+                                    <span style={{ fontFamily: "'DM Serif Display',serif", fontSize: 18, color: "#1A1A18" }}>{completionData.rpe}</span>
                                     <span>Max Effort</span>
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-slate-400 text-sm mb-2">Energy Level</label>
+                                <label style={{ fontSize: 13, fontWeight: 600, color: "rgba(26,26,24,0.60)", display: "block", marginBottom: 8 }}>Energy Level</label>
                                 <input
                                     type="range" min="1" max="10"
                                     value={completionData.energyLevel}
                                     onChange={(e) => setCompletionData({ ...completionData, energyLevel: parseInt(e.target.value) })}
-                                    className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer accent-blue-500"
+                                    style={{ width: "100%", accentColor: "#7C6FCD" }}
                                 />
-                                <div className="flex justify-between text-xs text-slate-500 mt-1">
+                                <div style={{ display: "flex", justifyContent: "space-between", fontSize: 12, color: "rgba(26,26,24,0.40)", marginTop: 4 }}>
                                     <span>Exhausted</span>
-                                    <span className="text-blue-400 font-bold text-lg">{completionData.energyLevel}</span>
+                                    <span style={{ fontFamily: "'DM Serif Display',serif", fontSize: 18, color: "#1A1A18" }}>{completionData.energyLevel}</span>
                                     <span>Energized</span>
                                 </div>
                             </div>
 
                             <div>
-                                <label className="block text-slate-400 text-sm mb-2">Notes (Optional)</label>
+                                <label style={{ fontSize: 13, fontWeight: 600, color: "rgba(26,26,24,0.60)", display: "block", marginBottom: 8 }}>Notes (Optional)</label>
                                 <textarea
                                     value={completionData.notes}
                                     onChange={(e) => setCompletionData({ ...completionData, notes: e.target.value })}
-                                    className="w-full bg-slate-800 border border-white/10 rounded-xl p-3 text-sm focus:outline-none focus:border-green-500 transition-colors"
+                                    style={{ width: "100%", padding: "10px 14px", borderRadius: 12, border: "2px solid rgba(26,26,24,0.12)", fontSize: 13, color: "#1A1A18", resize: "none", outline: "none", fontFamily: "'DM Sans',sans-serif", boxSizing: "border-box" }}
                                     rows="3"
                                     placeholder="How did it feel?"
                                 />
                             </div>
 
-                            <div className="flex gap-3 pt-2">
+                            <div style={{ display: "flex", gap: 10 }}>
                                 <button
                                     onClick={() => setShowCompleteModal(false)}
-                                    className="flex-1 py-3 bg-slate-800 hover:bg-slate-700 rounded-xl font-semibold transition-colors"
+                                    style={{ flex: 1, padding: "12px", borderRadius: 12, border: "1.5px solid rgba(26,26,24,0.15)", background: "rgba(26,26,24,0.05)", fontSize: 14, fontWeight: 600, color: "rgba(26,26,24,0.70)", cursor: "pointer" }}
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     onClick={handleComplete}
                                     disabled={isSubmitting}
-                                    className="flex-1 py-3 bg-green-600 hover:bg-green-500 rounded-xl font-bold text-white shadow-lg transition-colors disabled:opacity-50"
+                                    style={{ flex: 1, padding: "12px", borderRadius: 12, border: "none", background: isSubmitting ? "rgba(26,26,24,0.08)" : "#1A1A18", color: isSubmitting ? "rgba(26,26,24,0.40)" : "#FFF", fontSize: 14, fontWeight: 700, cursor: isSubmitting ? "not-allowed" : "pointer", transition: "all 0.15s" }}
                                 >
-                                    {isSubmitting ? 'Saving...' : 'Confirm Log'}
+                                    {isSubmitting ? "Saving…" : "Confirm Log"}
                                 </button>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
+
+            <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
         </div>
     );
 };
 
 export default WorkoutHistoryPage;
-

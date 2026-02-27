@@ -1,0 +1,199 @@
+import React, { useContext } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { signOut } from "firebase/auth";
+import { auth } from "../../firebase";
+import { AuthContext } from "../../App";
+import {
+    LayoutDashboard, Activity, Utensils, FlaskConical,
+    Beaker, Brain, Sparkles, Settings, LogOut, Bell
+} from "lucide-react";
+
+const NAV_ITEMS = [
+    { path: "/dashboard", icon: LayoutDashboard, label: "Dashboard" },
+    { path: "/fitness", icon: Activity, label: "Fitness" },
+    { path: "/nutrition", icon: Utensils, label: "Nutrition" },
+    { path: "/diagnostics", icon: FlaskConical, label: "Diagnostics" },
+    { path: "/interventions", icon: Beaker, label: "Experiments" },
+    { path: "/memories", icon: Brain, label: "Memories" },
+    { path: "/insights", icon: Sparkles, label: "Insights" },
+];
+
+export default function Sidebar() {
+    const { user } = useContext(AuthContext);
+    const location = useLocation();
+
+    const isActive = (path) =>
+        path === "/diagnostics"
+            ? location.pathname.startsWith("/biomarkers") || location.pathname === "/diagnostics"
+            : location.pathname === path ||
+            (path !== "/dashboard" && location.pathname.startsWith(path));
+
+    const handleLogout = async () => {
+        await signOut(auth);
+        sessionStorage.removeItem("verifiedUser");
+    };
+
+    const firstName =
+        user?.displayName?.split(" ")[0] ||
+        user?.email?.split("@")[0] ||
+        "User";
+    const avatarChar = firstName[0]?.toUpperCase() || "U";
+
+    return (
+        <aside
+            className="sidebar-glass fixed left-0 top-0 h-screen w-60 z-50 flex flex-col"
+            style={{ fontFamily: "'DM Sans', sans-serif" }}
+        >
+            {/* ── Logo ── */}
+            <div
+                className="flex items-center px-5"
+                style={{ height: 64, borderBottom: "1px solid rgba(26,26,24,0.08)" }}
+            >
+                {/* Logo mark */}
+                <div
+                    className="flex items-center justify-center flex-shrink-0 rounded-full"
+                    style={{ width: 28, height: 28, background: "#CADB00" }}
+                >
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+                        <path d="M7 2v10M2 7h10" stroke="#1A1A18" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                </div>
+                {/* Brand name */}
+                <span
+                    style={{
+                        marginLeft: 10,
+                        fontSize: 16,
+                        fontWeight: 600,
+                        color: "#1A1A18",
+                        fontFamily: "'DM Sans', sans-serif",
+                    }}
+                >
+                    Resonate
+                </span>
+            </div>
+
+            {/* ── Nav Items ── */}
+            <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
+                {/* Section label */}
+                <div className="overline-label px-5 py-2">MAIN</div>
+
+                <ul className="px-3 space-y-0.5">
+                    {NAV_ITEMS.map(({ path, icon: Icon, label }) => {
+                        const active = isActive(path);
+                        return (
+                            <li key={path}>
+                                <Link
+                                    to={path}
+                                    className="flex items-center gap-3 py-2.5 rounded-r-xl transition-all duration-150"
+                                    style={{
+                                        paddingLeft: active ? 29 : 16,
+                                        paddingRight: 16,
+                                        borderLeft: active
+                                            ? "3px solid #CADB00"
+                                            : "3px solid transparent",
+                                        background: active ? "rgba(202,219,0,0.12)" : "transparent",
+                                        color: active ? "#5A6000" : "rgba(26,26,24,0.45)",
+                                        textDecoration: "none",
+                                    }}
+                                    onMouseEnter={(e) => {
+                                        if (!active) {
+                                            e.currentTarget.style.color = "rgba(26,26,24,0.80)";
+                                            e.currentTarget.style.background = "rgba(26,26,24,0.05)";
+                                        }
+                                    }}
+                                    onMouseLeave={(e) => {
+                                        if (!active) {
+                                            e.currentTarget.style.color = "rgba(26,26,24,0.45)";
+                                            e.currentTarget.style.background = "transparent";
+                                        }
+                                    }}
+                                >
+                                    <Icon
+                                        size={18}
+                                        strokeWidth={1.7}
+                                        style={{ flexShrink: 0 }}
+                                    />
+                                    <span style={{ fontSize: 14, fontWeight: 500 }}>{label}</span>
+                                </Link>
+                            </li>
+                        );
+                    })}
+                </ul>
+
+                {/* Divider */}
+                <div
+                    className="my-4 mx-5"
+                    style={{ borderTop: "1px solid rgba(26,26,24,0.08)" }}
+                />
+            </nav>
+
+            {/* ── Bottom: User + Logout ── */}
+            <div
+                className="p-5"
+                style={{ borderTop: "1px solid rgba(26,26,24,0.08)" }}
+            >
+                {/* User row */}
+                <div className="flex items-center gap-2.5 mb-3">
+                    {/* Avatar */}
+                    <div
+                        className="rounded-full flex items-center justify-center flex-shrink-0"
+                        style={{
+                            width: 32,
+                            height: 32,
+                            background: "#CADB00",
+                            color: "#1A1A18",
+                            fontSize: 13,
+                            fontWeight: 700,
+                        }}
+                    >
+                        {avatarChar}
+                    </div>
+
+                    <div className="flex-1 min-w-0">
+                        <p
+                            style={{
+                                fontSize: 12,
+                                fontWeight: 500,
+                                color: "#1A1A18",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                            }}
+                        >
+                            {firstName}
+                        </p>
+                        <p
+                            style={{
+                                fontSize: 11,
+                                color: "rgba(26,26,24,0.45)",
+                                whiteSpace: "nowrap",
+                                overflow: "hidden",
+                                textOverflow: "ellipsis",
+                            }}
+                        >
+                            {user?.email}
+                        </p>
+                    </div>
+
+                    <Settings
+                        size={16}
+                        strokeWidth={1.7}
+                        style={{ color: "rgba(26,26,24,0.40)", flexShrink: 0 }}
+                    />
+                </div>
+
+                {/* Logout */}
+                <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-3 text-xs transition-colors duration-150"
+                    style={{ color: "rgba(26,26,24,0.40)", background: "none", border: "none", cursor: "pointer", padding: 0 }}
+                    onMouseEnter={(e) => { e.currentTarget.style.color = "rgba(26,26,24,0.65)"; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.color = "rgba(26,26,24,0.40)"; }}
+                >
+                    <LogOut size={14} strokeWidth={1.7} />
+                    Sign out
+                </button>
+            </div>
+        </aside>
+    );
+}

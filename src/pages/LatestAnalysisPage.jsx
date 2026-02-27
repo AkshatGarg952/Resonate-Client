@@ -17,10 +17,8 @@ export default function LatestAnalysisPage() {
 
   const fetchLatest = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
-
     try {
       const latest = await getWithCookie("/api/diagnostics/latest");
-
       if (!latest || latest.status !== "completed") {
         setError("No completed analysis found yet.");
         setBiomarkers([]);
@@ -28,30 +26,21 @@ export default function LatestAnalysisPage() {
         return;
       }
 
-
       const biomarkersData = latest.biomarkersByCategory || {};
-
-
-      const biomarkersArr = Object.entries(latest.biomarkers || {}).map(
-        ([name, info]) => ({
-          name,
-          value: info?.value,
-          status: info?.status,
-          unit: info?.unit || "",
-          category: info?.category || null,
-          categoryLabel: info?.categoryLabel || null,
-          reason: info?.reason || null,
-          isAvailable: info?.isAvailable !== false,
-        })
-      );
+      const biomarkersArr = Object.entries(latest.biomarkers || {}).map(([name, info]) => ({
+        name,
+        value: info?.value,
+        status: info?.status,
+        unit: info?.unit || "",
+        category: info?.category || null,
+        categoryLabel: info?.categoryLabel || null,
+        reason: info?.reason || null,
+        isAvailable: info?.isAvailable !== false,
+      }));
 
       setBiomarkers(biomarkersArr);
       setBiomarkersByCategory(biomarkersData);
-      setMeta({
-        updatedAt: latest.updatedAt,
-        pdfUrl: latest.pdfUrl,
-        overallScore: latest.overallScore,
-      });
+      setMeta({ updatedAt: latest.updatedAt, pdfUrl: latest.pdfUrl, overallScore: latest.overallScore });
       setError("");
     } catch (err) {
       console.error(err);
@@ -64,10 +53,7 @@ export default function LatestAnalysisPage() {
     }
   };
 
-  useEffect(() => {
-    fetchLatest();
-  }, []);
-
+  useEffect(() => { fetchLatest(); }, []);
 
   useEffect(() => {
     if (Object.keys(biomarkersByCategory).length > 0 && !selectedCategory) {
@@ -78,68 +64,35 @@ export default function LatestAnalysisPage() {
   const getOverallScore = () => {
     if (meta?.overallScore) return meta.overallScore;
     if (biomarkers.length === 0) return null;
-
-
-    const availableBiomarkers = biomarkers.filter(b => b.isAvailable !== false);
-    if (availableBiomarkers.length === 0) return null;
-
-    const goodCount = availableBiomarkers.filter(
-      b => b.status?.toLowerCase() === 'good'
-    ).length;
-    return Math.round((goodCount / availableBiomarkers.length) * 100);
+    const available = biomarkers.filter(b => b.isAvailable !== false);
+    if (available.length === 0) return null;
+    const good = available.filter(b => b.status?.toLowerCase() === "good").length;
+    return Math.round((good / available.length) * 100);
   };
 
   const getHealthInsights = () => {
-
     const total = biomarkers.length;
-
-    const goodCount = biomarkers.filter(
-      b => b.status?.toLowerCase() === 'good'
-    ).length;
-    const badCount = biomarkers.filter(
-      b => b.status?.toLowerCase() === 'bad'
-    ).length;
-
+    const goodCount = biomarkers.filter(b => b.status?.toLowerCase() === "good").length;
+    const badCount = biomarkers.filter(b => b.status?.toLowerCase() === "bad").length;
     return { goodCount, badCount, total };
   };
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const now = new Date();
-    const diffTime = Math.abs(now - date);
-    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
-
-    if (diffDays === 0) return 'Today';
-    if (diffDays === 1) return 'Yesterday';
+    const diffDays = Math.floor(Math.abs(now - date) / (1000 * 60 * 60 * 24));
+    if (diffDays === 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
     if (diffDays < 7) return `${diffDays} days ago`;
-
-    return date.toLocaleDateString('en-IN', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    });
+    return date.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
   };
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-5">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-emerald-500/20 
-                      flex items-center justify-center mb-4 animate-pulse">
-          <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-          </svg>
-        </div>
-        <p className="text-slate-400 text-sm">Loading latest analysis...</p>
-        <div className="mt-4 flex gap-1">
-          {[...Array(3)].map((_, i) => (
-            <div
-              key={i}
-              className="w-2 h-2 rounded-full bg-primary animate-bounce"
-              style={{ animationDelay: `${i * 0.15}s` }}
-            ></div>
-          ))}
-        </div>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
+        <div style={{ width: 40, height: 40, borderRadius: "50%", border: "3px solid rgba(202,219,0,0.20)", borderTopColor: "#CADB00", animation: "spin 0.8s linear infinite" }} />
+        <p style={{ fontSize: 13, color: "rgba(26,26,24,0.45)", marginTop: 12, fontFamily: "'DM Sans',sans-serif" }}>Loading latest analysis…</p>
+        <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
       </div>
     );
   }
@@ -147,385 +100,289 @@ export default function LatestAnalysisPage() {
   const overallScore = getOverallScore();
   const insights = getHealthInsights();
 
+  const scoreColor = overallScore >= 70 ? "#34C759" : overallScore >= 40 ? "#FF9F0A" : "#FF3B30";
+  const scoreLabel = overallScore >= 70 ? "Excellent Health" : overallScore >= 40 ? "Needs Attention" : "Consult Doctor";
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-24">
-
-
+    <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
+      {/* Refresh toast */}
       {refreshing && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-slate-800/90 backdrop-blur-sm 
-                      border border-slate-700 rounded-full px-4 py-2 flex items-center gap-2 shadow-lg">
-          <svg className="animate-spin h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24">
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <span className="text-sm font-medium text-slate-300">Refreshing...</span>
+        <div style={{ position: "fixed", top: 80, left: "50%", transform: "translateX(-50%)", zIndex: 50, background: "rgba(255,255,255,0.92)", backdropFilter: "blur(12px)", border: "1px solid rgba(26,26,24,0.10)", borderRadius: 9999, padding: "8px 16px", display: "flex", alignItems: "center", gap: 8, boxShadow: "0 4px 16px rgba(0,0,0,0.10)" }}>
+          <div style={{ width: 14, height: 14, borderRadius: "50%", border: "2px solid rgba(202,219,0,0.30)", borderTopColor: "#CADB00", animation: "spin 0.8s linear infinite" }} />
+          <span style={{ fontSize: 13, fontWeight: 500, color: "#1A1A18" }}>Refreshing…</span>
         </div>
       )}
 
+      {/* Header */}
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 24 }}>
+        <div>
+          <h1 style={{ fontSize: 28, fontWeight: 700, color: "#1A1A18", margin: "0 0 4px" }}>Latest Analysis</h1>
+          <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)", margin: "0 0 4px" }}>Your most recent blood report results</p>
+          {meta?.updatedAt && (
+            <span style={{ fontSize: 12, color: "rgba(26,26,24,0.40)" }}>Analyzed {formatDate(meta.updatedAt)}</span>
+          )}
+        </div>
 
-      <section className="px-5 pt-6 pb-4">
-        <div className="flex items-start justify-between mb-6">
-          <div className="flex-1">
-            <h1 className="text-3xl font-black text-slate-50 mb-1">
-              Latest Analysis
-            </h1>
-            <p className="text-sm text-slate-400">
-              Your most recent blood report results
-            </p>
-            {meta?.updatedAt && (
-              <p className="text-xs text-slate-500 mt-2 flex items-center gap-1.5">
-                <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+        <button
+          onClick={() => fetchLatest(true)}
+          disabled={refreshing}
+          style={{ width: 40, height: 40, borderRadius: "50%", background: "rgba(255,255,255,0.80)", backdropFilter: "blur(12px)", border: "1px solid rgba(26,26,24,0.10)", display: "flex", alignItems: "center", justifyContent: "center", cursor: refreshing ? "not-allowed" : "pointer", boxShadow: "0 2px 8px rgba(0,0,0,0.06)", flexShrink: 0 }}
+        >
+          <svg width="18" height="18" fill="none" stroke="#1A1A18" strokeWidth="1.7" viewBox="0 0 24 24" style={{ animation: refreshing ? "spin 1s linear infinite" : "none" }}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+          </svg>
+        </button>
+      </div>
+
+      {/* No data state */}
+      {error && !loading && (
+        <div className="glass-card" style={{ borderRadius: 24, padding: "40px 24px", textAlign: "center" }}>
+          <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(26,26,24,0.06)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 16px" }}>
+            <svg width="24" height="24" fill="none" stroke="rgba(26,26,24,0.30)" strokeWidth="1.7" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+          </div>
+          <h3 style={{ fontSize: 17, fontWeight: 700, color: "#1A1A18", marginBottom: 8 }}>No Analysis Found</h3>
+          <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)", maxWidth: 320, margin: "0 auto 24px" }}>{error}</p>
+          <button
+            onClick={() => navigate('/biomarkers/upload')}
+            style={{ padding: "12px 28px", borderRadius: 12, border: "none", background: "#1A1A18", color: "#FFF", fontSize: 14, fontWeight: 700, cursor: "pointer" }}
+          >
+            Upload Blood Report
+          </button>
+        </div>
+      )}
+
+      {/* Data sections */}
+      {!error && biomarkers.length > 0 && (
+        <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+
+          {/* Score card */}
+          {overallScore !== null && (
+            <div className="glass-card" style={{ borderRadius: 24, padding: 24, borderTop: `3px solid ${scoreColor}` }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                <div>
+                  <span style={{ fontSize: 11, fontWeight: 700, color: "rgba(26,26,24,0.45)", textTransform: "uppercase", letterSpacing: "0.10em" }}>Overall Health Score</span>
+                  <div style={{ display: "flex", alignItems: "baseline", gap: 6, margin: "6px 0 4px" }}>
+                    <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: 52, color: "#1A1A18", lineHeight: 1 }}>{overallScore}</span>
+                    <span style={{ fontSize: 16, color: "rgba(26,26,24,0.35)" }}>/100</span>
+                  </div>
+                  <span style={{ fontSize: 13, fontWeight: 600, color: scoreColor }}>{scoreLabel}</span>
+                </div>
+
+                {/* Score ring */}
+                <div style={{ width: 88, height: 88, position: "relative", flexShrink: 0 }}>
+                  <svg width="88" height="88" style={{ transform: "rotate(-90deg)", filter: `drop-shadow(0 0 6px ${scoreColor}66)` }}>
+                    <circle cx="44" cy="44" r="36" fill="none" stroke={`${scoreColor}22`} strokeWidth="8" />
+                    <circle cx="44" cy="44" r="36" fill="none" stroke={scoreColor} strokeWidth="8"
+                      strokeDasharray={`${2 * Math.PI * 36}`}
+                      strokeDashoffset={`${2 * Math.PI * 36 * (1 - overallScore / 100)}`}
+                      strokeLinecap="round"
+                      style={{ transition: "stroke-dashoffset 1s ease-out" }}
+                    />
+                  </svg>
+                  <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <span style={{ fontFamily: "'DM Serif Display', serif", fontSize: 16, color: "#1A1A18" }}>{overallScore}%</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Stats row */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginTop: 20 }}>
+                <div style={{ textAlign: "center", background: "rgba(26,26,24,0.04)", borderRadius: 12, padding: "10px 8px" }}>
+                  <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 22, color: "#1A1A18" }}>{insights.total}</div>
+                  <div style={{ fontSize: 11, color: "rgba(26,26,24,0.45)", marginTop: 2 }}>Total</div>
+                </div>
+                <div style={{ textAlign: "center", background: "rgba(52,199,89,0.08)", border: "1px solid rgba(52,199,89,0.20)", borderRadius: 12, padding: "10px 8px" }}>
+                  <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 22, color: "#14532D" }}>{insights.goodCount}</div>
+                  <div style={{ fontSize: 11, color: "#14532D", marginTop: 2 }}>Normal</div>
+                </div>
+                <div style={{ textAlign: "center", background: "rgba(239,68,68,0.06)", border: "1px solid rgba(239,68,68,0.18)", borderRadius: 12, padding: "10px 8px" }}>
+                  <div style={{ fontFamily: "'DM Serif Display',serif", fontSize: 22, color: "#DC2626" }}>{insights.badCount}</div>
+                  <div style={{ fontSize: 11, color: "#DC2626", marginTop: 2 }}>Alert</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Alert banner */}
+          {insights.badCount > 0 && (
+            <div style={{ background: "rgba(255,159,10,0.08)", border: "1px solid rgba(255,159,10,0.25)", borderRadius: 14, padding: "12px 16px", display: "flex", alignItems: "flex-start", gap: 12 }}>
+              <div style={{ width: 32, height: 32, borderRadius: 8, background: "rgba(255,159,10,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <svg width="16" height="16" fill="none" stroke="#FF9F0A" strokeWidth="2" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
                 </svg>
-                Analyzed {formatDate(meta.updatedAt)}
-              </p>
+              </div>
+              <div>
+                <p style={{ fontSize: 13, fontWeight: 600, color: "#92400E", margin: "0 0 2px" }}>
+                  {insights.badCount} {insights.badCount === 1 ? "biomarker needs" : "biomarkers need"} attention
+                </p>
+                <p style={{ fontSize: 12, color: "rgba(146,64,14,0.70)", lineHeight: 1.5, margin: 0 }}>
+                  Consider consulting with your healthcare provider for personalized advice.
+                </p>
+              </div>
+            </div>
+          )}
+
+          {/* Biomarkers section */}
+          <div className="glass-card" style={{ borderRadius: 24, padding: 24 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
+              <h3 style={{ fontSize: 17, fontWeight: 700, color: "#1A1A18", margin: 0 }}>Your Biomarkers</h3>
+              <div style={{ display: "flex", alignItems: "center", gap: 12, fontSize: 11 }}>
+                <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#34C759", display: "inline-block" }} />
+                  <span style={{ color: "rgba(26,26,24,0.50)" }}>Good</span>
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#FF3B30", display: "inline-block" }} />
+                  <span style={{ color: "rgba(26,26,24,0.50)" }}>Alert</span>
+                </span>
+                <span style={{ display: "flex", alignItems: "center", gap: 4 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: "50%", background: "rgba(26,26,24,0.20)", display: "inline-block" }} />
+                  <span style={{ color: "rgba(26,26,24,0.50)" }}>N/A</span>
+                </span>
+              </div>
+            </div>
+
+            {Object.keys(biomarkersByCategory).length > 0 ? (
+              <div style={{ display: "grid", gridTemplateColumns: "auto 1fr", gap: 16 }}>
+                {/* Category sidebar */}
+                <div style={{ display: "flex", flexDirection: "column", gap: 6, width: 160, flexShrink: 0 }}>
+                  {Object.keys(biomarkersByCategory).map((cat) => {
+                    const count = Object.keys(biomarkersByCategory[cat] || {}).length;
+                    const isSelected = selectedCategory === cat;
+                    return (
+                      <button
+                        key={cat}
+                        onClick={() => setSelectedCategory(cat)}
+                        style={{
+                          width: "100%", textAlign: "left", padding: "10px 14px", borderRadius: 12, fontSize: 13, fontWeight: 600, cursor: "pointer", transition: "all 0.15s",
+                          background: isSelected ? "#1A1A18" : "rgba(26,26,24,0.05)",
+                          color: isSelected ? "#FFF" : "rgba(26,26,24,0.60)",
+                          border: isSelected ? "none" : "1.5px solid rgba(26,26,24,0.10)",
+                          display: "flex", justifyContent: "space-between", alignItems: "center",
+                        }}
+                      >
+                        <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{cat || "Other"}</span>
+                        <span style={{ marginLeft: 6, fontSize: 11, padding: "1px 6px", borderRadius: 9999, background: isSelected ? "rgba(255,255,255,0.20)" : "rgba(26,26,24,0.10)", flexShrink: 0 }}>{count}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+
+                {/* Biomarker grid */}
+                <div>
+                  {selectedCategory && biomarkersByCategory[selectedCategory] ? (
+                    <>
+                      <div style={{ marginBottom: 12 }}>
+                        <h4 style={{ fontSize: 15, fontWeight: 700, color: "#1A1A18", margin: "0 0 2px" }}>{selectedCategory}</h4>
+                        <p style={{ fontSize: 12, color: "rgba(26,26,24,0.45)", margin: 0 }}>
+                          {Object.keys(biomarkersByCategory[selectedCategory] || {}).length} biomarkers
+                        </p>
+                      </div>
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 12 }}>
+                        {Object.entries(biomarkersByCategory[selectedCategory] || {}).map(([name, info]) => (
+                          <BiomarkerRing
+                            key={name}
+                            name={name}
+                            value={info?.value}
+                            status={info?.status}
+                            unit={info?.unit || ""}
+                            normalRange={info?.normalRange || ""}
+                            reason={info?.reason || ""}
+                            isAvailable={info?.isAvailable !== false}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  ) : (
+                    <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: "48px 0", textAlign: "center" }}>
+                      <p style={{ fontSize: 13, color: "rgba(26,26,24,0.40)" }}>Select a category to view biomarkers</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(140px, 1fr))", gap: 12 }}>
+                {biomarkers.map((b, idx) => (
+                  <BiomarkerRing key={idx} name={b.name} value={b.value} status={b.status} unit={b.unit} normalRange={b.normalRange} reason={b.reason} isAvailable={b.isAvailable} />
+                ))}
+              </div>
             )}
           </div>
 
-
-          <button
-            onClick={() => fetchLatest(true)}
-            disabled={refreshing}
-            className="w-10 h-10 rounded-full bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 
-                     flex items-center justify-center hover:bg-slate-800 active:scale-95 
-                     disabled:opacity-50 transition-all duration-200"
-          >
-            <svg
-              className={`w-5 h-5 text-slate-300 ${refreshing ? 'animate-spin' : ''}`}
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-            </svg>
-          </button>
-        </div>
-      </section>
-
-
-      {error && !loading && (
-        <section className="px-5">
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-8 text-center">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-slate-800/50 flex items-center justify-center">
-              <svg className="w-10 h-10 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-bold text-slate-50 mb-2">No Analysis Found</h3>
-            <p className="text-sm text-slate-400 mb-6 max-w-sm mx-auto">
-              {error}
-            </p>
-            <button
-              onClick={() => navigate('/biomarkers/upload')}
-              className="px-6 py-3 rounded-2xl bg-gradient-to-r from-primary to-emerald-500 
-                       text-slate-950 font-bold shadow-lg shadow-primary/25
-                       hover:shadow-xl hover:shadow-primary/30 active:scale-95 transition-all duration-200"
-            >
-              Upload Blood Report
-            </button>
-          </div>
-        </section>
-      )}
-
-
-      {!error && biomarkers.length > 0 && (
-        <>
-
-          {overallScore !== null && (
-            <section className="px-5 mb-6">
-              <div className="bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-sm 
-                            border border-slate-700/50 rounded-3xl p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex-1">
-                    <p className="text-sm font-semibold text-slate-400 mb-2">Overall Health Score</p>
-                    <h2 className="text-5xl font-black text-slate-50 mb-1">
-                      {overallScore}
-                      <span className="text-xl font-normal text-slate-500 ml-2">/100</span>
-                    </h2>
-                    <p className={`text-sm font-semibold ${overallScore >= 70 ? 'text-emerald-400' :
-                      overallScore >= 40 ? 'text-amber-400' : 'text-red-400'
-                      }`}>
-                      {overallScore >= 70 ? 'Excellent Health' :
-                        overallScore >= 40 ? 'Needs Attention' : 'Consult Doctor'}
-                    </p>
-                  </div>
-
-
-                  <div className="relative w-28 h-28">
-                    <svg className="w-28 h-28 transform -rotate-90">
-                      <circle cx="56" cy="56" r="48" strokeWidth="8" fill="transparent" className="stroke-slate-800" />
-                      <circle
-                        cx="56" cy="56" r="48"
-                        strokeWidth="8"
-                        fill="transparent"
-                        strokeDasharray={`${2 * Math.PI * 48}`}
-                        strokeDashoffset={`${2 * Math.PI * 48 * (1 - overallScore / 100)}`}
-                        className={`transition-all duration-1000 ${overallScore >= 70 ? 'stroke-emerald-400' :
-                          overallScore >= 40 ? 'stroke-amber-400' : 'stroke-red-400'
-                          }`}
-                        strokeLinecap="round"
-                      />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-2xl font-black text-slate-50">{overallScore}%</span>
-                    </div>
-                  </div>
-                </div>
-
-
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="bg-slate-950/30 rounded-2xl p-3 text-center">
-                    <p className="text-2xl font-black text-slate-50">{insights.total}</p>
-                    <p className="text-xs text-slate-500 mt-1">Total</p>
-                  </div>
-                  <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-3 text-center">
-                    <p className="text-2xl font-black text-emerald-400">{insights.goodCount}</p>
-                    <p className="text-xs text-slate-500 mt-1">Normal</p>
-                  </div>
-                  <div className="bg-red-500/5 border border-red-500/20 rounded-2xl p-3 text-center">
-                    <p className="text-2xl font-black text-red-400">{insights.badCount}</p>
-                    <p className="text-xs text-slate-500 mt-1">Alert</p>
-                  </div>
-                </div>
-              </div>
-            </section>
-          )}
-
-
-          {insights.badCount > 0 && (
-            <section className="px-5 mb-6">
-              <div className="bg-gradient-to-r from-amber-500/10 to-red-500/10 border border-amber-500/20 
-                            rounded-2xl p-4 flex items-start gap-3">
-                <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-5 h-5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                  </svg>
-                </div>
-                <div className="flex-1">
-                  <p className="text-sm font-bold text-amber-400 mb-1">
-                    {insights.badCount} {insights.badCount === 1 ? 'biomarker needs' : 'biomarkers need'} attention
-                  </p>
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    Consider consulting with your healthcare provider for personalized advice on improving these markers.
-                  </p>
-                </div>
-              </div>
-            </section>
-          )}
-
-
-          <section className="px-5 mb-6">
-            <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6">
-              <div className="flex items-center justify-between mb-5">
-                <div>
-                  <h3 className="text-lg font-bold text-slate-50">Your Biomarkers</h3>
-                  <p className="text-xs text-slate-500 mt-1">
-                    <span className="inline-flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                      Good
-                    </span>
-                    <span className="mx-2">•</span>
-                    <span className="inline-flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-red-400"></span>
-                      Needs attention
-                    </span>
-                    <span className="mx-2">•</span>
-                    <span className="inline-flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-slate-500"></span>
-                      Unavailable
-                    </span>
-                  </p>
-                </div>
-              </div>
-
-
-              {Object.keys(biomarkersByCategory).length > 0 ? (
-                <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-
-                  <div className="lg:col-span-1">
-                    <div className="bg-slate-950/50 rounded-2xl p-4 border border-slate-800/50">
-                      <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">
-                        Categories
-                      </h4>
-                      <div className="space-y-2">
-                        {Object.keys(biomarkersByCategory).map((categoryLabel) => {
-                          const categoryBiomarkers = biomarkersByCategory[categoryLabel] || {};
-                          const categoryCount = Object.keys(categoryBiomarkers).length;
-                          const isSelected = selectedCategory === categoryLabel;
-
-                          return (
-                            <button
-                              key={categoryLabel}
-                              onClick={() => setSelectedCategory(categoryLabel)}
-                              className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${isSelected
-                                ? "bg-gradient-to-r from-primary to-emerald-500 text-slate-950 shadow-lg shadow-primary/25"
-                                : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-slate-300 hover:bg-slate-800"
-                                }`}
-                            >
-                              <div className="flex items-center justify-between">
-                                <span className="truncate">{categoryLabel || 'Other'}</span>
-                                <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0 ${isSelected
-                                  ? "bg-slate-950/30 text-slate-950"
-                                  : "bg-slate-700/50 text-slate-500"
-                                  }`}>
-                                  {categoryCount}
-                                </span>
-                              </div>
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-                  </div>
-
-
-                  <div className="lg:col-span-3">
-                    {selectedCategory && biomarkersByCategory[selectedCategory] ? (
-                      <>
-                        <div className="mb-4">
-                          <h4 className="text-xl font-bold text-slate-50 mb-1">
-                            {selectedCategory || 'Other'}
-                          </h4>
-                          <p className="text-sm text-slate-400">
-                            {Object.keys(biomarkersByCategory[selectedCategory] || {}).length} biomarkers
-                          </p>
-                        </div>
-                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                          {Object.entries(biomarkersByCategory[selectedCategory] || {}).map(([name, info]) => (
-                            <BiomarkerRing
-                              key={name}
-                              name={name}
-                              value={info?.value}
-                              status={info?.status}
-                              unit={info?.unit || ""}
-                              normalRange={info?.normalRange || ""}
-                              reason={info?.reason || ""}
-                              isAvailable={info?.isAvailable !== false}
-                            />
-                          ))}
-                        </div>
-                      </>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center py-12 text-center">
-                        <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-4">
-                          <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                          </svg>
-                        </div>
-                        <p className="text-sm text-slate-400">Select a category to view biomarkers</p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ) : (
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                  {biomarkers.map((b, idx) => (
-                    <BiomarkerRing
-                      key={idx}
-                      name={b.name}
-                      value={b.value}
-                      status={b.status}
-                      unit={b.unit}
-                      normalRange={b.normalRange}
-                      reason={b.reason}
-                      isAvailable={b.isAvailable}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </section>
-
-
-          <section className="px-5 space-y-3">
-
+          {/* Action links */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
             {meta?.pdfUrl && (
               <a
                 href={meta.pdfUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="flex items-center justify-between p-4 bg-slate-900/60 backdrop-blur-sm 
-                         border border-slate-800/50 rounded-2xl hover:border-primary/30 
-                         active:scale-[0.98] transition-all duration-200 group"
+                className="glass-card"
+                style={{ borderRadius: 16, padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", textDecoration: "none", transition: "transform 0.15s" }}
               >
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-                    <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                        d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(202,219,0,0.12)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <svg width="16" height="16" fill="none" stroke="#3D4000" strokeWidth="1.7" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-50">View Original PDF</p>
-                    <p className="text-xs text-slate-500">Open in new tab</p>
+                    <p style={{ fontSize: 14, fontWeight: 600, color: "#1A1A18", margin: 0 }}>View Original PDF</p>
+                    <p style={{ fontSize: 12, color: "rgba(26,26,24,0.45)", margin: 0 }}>Open in new tab</p>
                   </div>
                 </div>
-                <svg className="w-5 h-5 text-slate-500 group-hover:text-primary group-hover:translate-x-1 transition-all"
-                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <svg width="16" height="16" fill="none" stroke="rgba(26,26,24,0.35)" strokeWidth="1.7" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                 </svg>
               </a>
             )}
 
-
             <button
               onClick={() => navigate('/biomarkers/history')}
-              className="w-full flex items-center justify-between p-4 bg-slate-900/60 backdrop-blur-sm 
-                       border border-slate-800/50 rounded-2xl hover:border-emerald-500/30 
-                       active:scale-[0.98] transition-all duration-200 group"
+              className="glass-card"
+              style={{ borderRadius: 16, padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", border: "1px solid rgba(26,26,24,0.10)", cursor: "pointer", background: "transparent", width: "100%" }}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(124,111,205,0.10)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="16" height="16" fill="none" stroke="#7C6FCD" strokeWidth="1.7" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
-                <div className="text-left">
-                  <p className="text-sm font-semibold text-slate-50">View All Reports</p>
-                  <p className="text-xs text-slate-500">See your history & trends</p>
+                <div style={{ textAlign: "left" }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#1A1A18", margin: 0 }}>View All Reports</p>
+                  <p style={{ fontSize: 12, color: "rgba(26,26,24,0.45)", margin: 0 }}>See your history &amp; trends</p>
                 </div>
               </div>
-              <svg className="w-5 h-5 text-slate-500 group-hover:text-emerald-400 group-hover:translate-x-1 transition-all"
-                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg width="16" height="16" fill="none" stroke="rgba(26,26,24,0.35)" strokeWidth="1.7" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </button>
-
 
             <button
               onClick={() => navigate('/biomarkers/upload')}
-              className="w-full flex items-center justify-between p-4 bg-gradient-to-r from-primary/10 to-emerald-500/10 
-                       border border-primary/20 rounded-2xl hover:border-primary/40 
-                       active:scale-[0.98] transition-all duration-200 group"
+              style={{ borderRadius: 16, padding: "14px 18px", display: "flex", alignItems: "center", justifyContent: "space-between", border: "none", cursor: "pointer", background: "#1A1A18", width: "100%" }}
             >
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(202,219,0,0.15)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <svg width="16" height="16" fill="none" stroke="#CADB00" strokeWidth="2" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
                   </svg>
                 </div>
-                <div className="text-left">
-                  <p className="text-sm font-semibold text-slate-50">Upload New Report</p>
-                  <p className="text-xs text-slate-500">Analyze latest blood test</p>
+                <div style={{ textAlign: "left" }}>
+                  <p style={{ fontSize: 14, fontWeight: 600, color: "#FFF", margin: 0 }}>Upload New Report</p>
+                  <p style={{ fontSize: 12, color: "rgba(255,255,255,0.50)", margin: 0 }}>Analyze latest blood test</p>
                 </div>
               </div>
-              <svg className="w-5 h-5 text-slate-500 group-hover:text-primary group-hover:translate-x-1 transition-all"
-                fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              <svg width="16" height="16" fill="none" stroke="rgba(255,255,255,0.40)" strokeWidth="1.7" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
               </svg>
             </button>
-          </section>
-        </>
+          </div>
+        </div>
       )}
 
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }
-
-

@@ -2,6 +2,20 @@ import React, { useEffect, useState } from "react";
 import { getWithCookie, postWithCookie } from "../api";
 import { useNavigate } from "react-router-dom";
 
+const MEAL_COLORS = {
+    breakfast: { border: "#CADB00", accent: "#3D4000", bg: "rgba(202,219,0,0.07)" },
+    lunch: { border: "#34C759", accent: "#14532D", bg: "rgba(52,199,89,0.07)" },
+    dinner: { border: "#7C6FCD", accent: "#4A3D6B", bg: "rgba(124,111,205,0.07)" },
+    snack: { border: "#E07A3A", accent: "#92400E", bg: "rgba(224,122,58,0.07)" },
+};
+
+const MEAL_ICONS = {
+    breakfast: "🍳",
+    lunch: "🍛",
+    dinner: "🥘",
+    snack: "🥨",
+};
+
 export default function NutritionPage() {
     const navigate = useNavigate();
     const [loading, setLoading] = useState(true);
@@ -9,35 +23,24 @@ export default function NutritionPage() {
     const [error, setError] = useState("");
     const [suggestions, setSuggestions] = useState(null);
 
-    useEffect(() => {
-        fetchSuggestions();
-    }, []);
+    useEffect(() => { fetchSuggestions(); }, []);
 
     const fetchSuggestions = async () => {
         try {
             setLoading(true);
             setError("");
-
             const data = await getWithCookie("/api/nutrition/daily-suggestions");
-
             if (data.status === "success" && data.plan) {
-                const normalizedPlan = {};
-                Object.keys(data.plan).forEach(key => {
-                    normalizedPlan[key.toLowerCase()] = data.plan[key];
-                });
-                setSuggestions(normalizedPlan);
+                const norm = {};
+                Object.keys(data.plan).forEach(k => { norm[k.toLowerCase()] = data.plan[k]; });
+                setSuggestions(norm);
             } else if (data.status === "no_plan") {
                 setSuggestions(null);
-            } else {
-                if (data.breakfast || data.Breakfast) {
-                    const normalizedPlan = {};
-                    Object.keys(data).forEach(key => {
-                        normalizedPlan[key.toLowerCase()] = data[key];
-                    });
-                    setSuggestions(normalizedPlan);
-                }
+            } else if (data.breakfast || data.Breakfast) {
+                const norm = {};
+                Object.keys(data).forEach(k => { norm[k.toLowerCase()] = data[k]; });
+                setSuggestions(norm);
             }
-
         } catch (err) {
             console.error(err);
             setError("Failed to fetch suggestions.");
@@ -50,18 +53,12 @@ export default function NutritionPage() {
         try {
             setRegenerating(true);
             setError("");
-
-            // If we are generating from scratch (not regenerating), show loading state differently
             if (!suggestions) setLoading(true);
-
             const data = await postWithCookie("/api/nutrition/daily-suggestions", {});
-
             if (data.status === "success" && data.plan) {
-                const normalizedPlan = {};
-                Object.keys(data.plan).forEach(key => {
-                    normalizedPlan[key.toLowerCase()] = data.plan[key];
-                });
-                setSuggestions(normalizedPlan);
+                const norm = {};
+                Object.keys(data.plan).forEach(k => { norm[k.toLowerCase()] = data.plan[k]; });
+                setSuggestions(norm);
             } else {
                 setError("Failed to generate new plan.");
             }
@@ -76,161 +73,140 @@ export default function NutritionPage() {
 
     if (loading && !suggestions) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-slate-950 text-slate-50">
-                <div className="w-16 h-16 border-4 border-orange-500 border-t-transparent rounded-full animate-spin mb-4" />
-                <p className="text-slate-400 text-sm animate-pulse">Chef AI is preparing your menu...</p>
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minHeight: "60vh" }}>
+                <div style={{ width: 40, height: 40, borderRadius: "50%", border: "3px solid rgba(202,219,0,0.20)", borderTopColor: "#CADB00", animation: "spin 0.8s linear infinite" }} />
+                <p style={{ fontSize: 13, color: "rgba(26,26,24,0.45)", marginTop: 12, fontFamily: "'DM Sans',sans-serif" }}>Chef AI is preparing your menu…</p>
+                <style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style>
             </div>
         );
     }
 
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-50 pb-24 relative overflow-hidden">
-            {/* Background Effects */}
-            <div className="fixed top-[-10%] right-[-10%] w-96 h-96 bg-orange-500/10 rounded-full blur-[100px] pointer-events-none" />
-            <div className="fixed bottom-[-10%] left-[-10%] w-96 h-96 bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
-
-            <section className="px-6 pt-8 pb-4 max-w-4xl mx-auto relative z-10">
-                <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-                    <div>
-                        <h1 className="text-3xl font-black bg-gradient-to-r from-orange-400 to-amber-200 bg-clip-text text-transparent mb-1">
-                            Daily Nutrition
-                        </h1>
-                        <p className="text-sm text-slate-400">Fuel your body with AI-curated meals.</p>
-                    </div>
-
-                    <div className="flex gap-3">
-                        <button
-                            onClick={() => navigate('/meal-history')}
-                            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-semibold transition-colors border border-slate-700"
-                        >
-                            History
-                        </button>
-
-                        {suggestions && (
-                            <button
-                                onClick={generateSuggestions}
-                                disabled={regenerating}
-                                className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl font-semibold transition-colors border border-slate-700 disabled:opacity-50"
-                            >
-                                {regenerating ? 'Regenerating...' : 'Regenerate'}
-                            </button>
-                        )}
-                    </div>
+        <div style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            {/* Header */}
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 12, marginBottom: 24 }}>
+                <div>
+                    <h1 style={{ fontSize: 28, fontWeight: 700, color: "#1A1A18", margin: "0 0 4px" }}>Daily Nutrition</h1>
+                    <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)", margin: 0 }}>Fuel your body with AI-curated meals.</p>
                 </div>
-
-                {!suggestions && !loading && (
-                    <div className="flex flex-col items-center justify-center py-20 bg-slate-900/50 rounded-3xl border border-white/5 backdrop-blur-sm">
-                        <div className="text-6xl mb-4">🥗</div>
-                        <h2 className="text-2xl font-bold text-white mb-2">No Meal Plan for Today</h2>
-                        <p className="text-slate-400 text-center max-w-md mb-8">
-                            Ready to eat right? Generate your personalized meal plan for the day based on your goals.
-                        </p>
+                <div style={{ display: "flex", gap: 10 }}>
+                    <button
+                        onClick={() => navigate('/meal-history')}
+                        style={{ padding: "10px 18px", borderRadius: 12, border: "1.5px solid rgba(26,26,24,0.15)", background: "rgba(255,255,255,0.70)", fontSize: 13, fontWeight: 600, color: "rgba(26,26,24,0.70)", cursor: "pointer", transition: "all 0.15s" }}
+                    >
+                        History
+                    </button>
+                    {suggestions && (
                         <button
                             onClick={generateSuggestions}
                             disabled={regenerating}
-                            className="px-8 py-3 bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-400 hover:to-amber-500 rounded-xl font-bold text-lg text-white shadow-lg shadow-orange-500/20 transition-all hover:scale-105"
+                            style={{ padding: "10px 18px", borderRadius: 12, border: "none", background: regenerating ? "rgba(26,26,24,0.08)" : "#1A1A18", fontSize: 13, fontWeight: 700, color: regenerating ? "rgba(26,26,24,0.40)" : "#FFF", cursor: regenerating ? "not-allowed" : "pointer", transition: "all 0.15s" }}
                         >
-                            {regenerating ? 'Generating...' : 'Generate Daily Plan'}
+                            {regenerating ? "Regenerating…" : "Regenerate"}
                         </button>
-                    </div>
-                )}
-
-                {error && (
-                    <div className="bg-red-500/10 border border-red-500/20 text-red-200 p-4 rounded-xl mb-6 text-center">
-                        {error}
-                        <button onClick={fetchSuggestions} className="underline ml-2">Retry</button>
-                    </div>
-                )}
-
-                {suggestions && (
-                    <div className={`space-y-6 transition-opacity duration-300 ${regenerating ? 'opacity-50' : 'opacity-100'}`}>
-                        {/* Macro Summary */}
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                            <MacroCard title="Calories" value={suggestions.total_calories} unit="kcal" color="white" />
-                            <MacroCard title="Protein" value={suggestions.total_protein} unit="" color="emerald" />
-                            <MacroCard title="Carbs" value={suggestions.total_carbs || "--"} unit="" color="blue" />
-                            <MacroCard title="Fats" value={suggestions.total_fats || "--"} unit="" color="amber" />
-                        </div>
-
-                        <div className="space-y-4">
-                            <MealCard title="Breakfast" data={suggestions.breakfast} icon="🍳" color="orange" />
-                            <MealCard title="Lunch" data={suggestions.lunch} icon="🍛" color="emerald" />
-                            <MealCard title="Dinner" data={suggestions.dinner} icon="🥘" color="indigo" />
-
-                            {suggestions.snacks && suggestions.snacks.length > 0 && (
-                                <div className="pt-4">
-                                    <h3 className="text-lg font-bold text-slate-300 mb-3 px-1">Snacks</h3>
-                                    <div className="space-y-4">
-                                        {suggestions.snacks.map((snack, idx) => (
-                                            <MealCard key={idx} title={`Snack ${idx + 1}`} data={snack} icon="🥨" color="pink" />
-                                        ))}
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
-                )}
-            </section>
-        </div>
-    );
-}
-
-function MacroCard({ title, value, unit, color }) {
-    const colors = {
-        white: "text-slate-100",
-        emerald: "text-emerald-400",
-        blue: "text-blue-400",
-        amber: "text-amber-400"
-    };
-
-    return (
-        <div className="bg-slate-900/60 backdrop-blur-md border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center text-center">
-            <span className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">{title}</span>
-            <div className={`text-2xl font-black ${colors[color] || colors.white}`}>
-                {value} <span className="text-xs font-normal text-slate-500 ml-0.5">{unit}</span>
+                    )}
+                </div>
             </div>
-        </div>
-    );
-}
 
-function MealCard({ title, data, icon, color }) {
-    if (!data) return null;
+            {/* Error */}
+            {error && (
+                <div style={{ background: "rgba(239,68,68,0.08)", border: "1px solid rgba(239,68,68,0.20)", borderRadius: 12, padding: "12px 16px", fontSize: 13, color: "#EF4444", marginBottom: 20, display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                    <span>{error}</span>
+                    <button onClick={fetchSuggestions} style={{ fontSize: 12, fontWeight: 700, color: "#EF4444", background: "none", border: "none", cursor: "pointer", textDecoration: "underline" }}>Retry</button>
+                </div>
+            )}
 
-    const colors = {
-        orange: "from-orange-500/10 to-amber-500/5 border-orange-500/20 text-orange-400",
-        emerald: "from-emerald-500/10 to-teal-500/5 border-emerald-500/20 text-emerald-400",
-        indigo: "from-indigo-500/10 to-blue-500/5 border-indigo-500/20 text-indigo-400",
-        pink: "from-pink-500/10 to-rose-500/5 border-pink-500/20 text-pink-400"
-    };
+            {/* Empty state */}
+            {!suggestions && !loading && (
+                <div style={{ textAlign: "center", padding: "64px 20px", background: "rgba(255,255,255,0.65)", backdropFilter: "blur(12px)", border: "1px solid rgba(255,255,255,0.70)", borderRadius: 24, boxShadow: "0 4px 24px rgba(0,0,0,0.06)" }}>
+                    <div style={{ fontSize: 52, marginBottom: 16 }}>🥗</div>
+                    <h2 style={{ fontSize: 20, fontWeight: 700, color: "#1A1A18", marginBottom: 8 }}>No Meal Plan for Today</h2>
+                    <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)", maxWidth: 400, margin: "0 auto 24px" }}>
+                        Ready to eat right? Generate your personalized meal plan for the day based on your goals.
+                    </p>
+                    <button
+                        onClick={generateSuggestions}
+                        disabled={regenerating}
+                        style={{ padding: "14px 32px", borderRadius: 14, border: "none", background: "#1A1A18", color: "#FFF", fontSize: 15, fontWeight: 700, cursor: regenerating ? "not-allowed" : "pointer", opacity: regenerating ? 0.6 : 1, transition: "all 0.15s" }}
+                    >
+                        {regenerating ? "Generating…" : "Generate Daily Plan"}
+                    </button>
+                </div>
+            )}
 
-    const styleClass = colors[color] || colors.orange;
-    const accentColor = styleClass.split(' ').pop();
-
-    return (
-        <div className={`bg-gradient-to-r ${styleClass} border rounded-3xl p-6 relative overflow-hidden group hover:border-opacity-40 transition-all`}>
-            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 relative z-10">
-                <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-3">
-                        <span className="text-2xl bg-white/5 p-2 rounded-xl">{icon}</span>
-                        <div>
-                            <h3 className={`font-bold text-sm uppercase tracking-wider opacity-80 ${accentColor}`}>{title}</h3>
-                            <h4 className="text-xl font-bold text-slate-50 group-hover:text-white transition-colors">{data.name}</h4>
-                        </div>
+            {/* Meal plan */}
+            {suggestions && (
+                <div style={{ opacity: regenerating ? 0.5 : 1, transition: "opacity 0.3s", display: "flex", flexDirection: "column", gap: 20 }}>
+                    {/* Macro summary */}
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(130px, 1fr))", gap: 12 }}>
+                        <MacroCard title="Calories" value={suggestions.total_calories} unit="kcal" accent="#1A1A18" />
+                        <MacroCard title="Protein" value={suggestions.total_protein} unit="g" accent="#34C759" />
+                        <MacroCard title="Carbs" value={suggestions.total_carbs || "--"} unit="g" accent="#7C6FCD" />
+                        <MacroCard title="Fats" value={suggestions.total_fats || "--"} unit="g" accent="#CADB00" />
                     </div>
 
-                    <p className="text-sm text-slate-400 leading-relaxed mb-4 md:max-w-xl">{data.description}</p>
-
-                    <div className="flex flex-wrap gap-3">
-                        <NutrientBadge label="Protein" value={data.protein} />
-                        <NutrientBadge label="Carbs" value={data.carbs} />
-                        <NutrientBadge label="Fats" value={data.fats} />
+                    {/* Meal cards */}
+                    <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                        <MealCard title="Breakfast" data={suggestions.breakfast} colorKey="breakfast" />
+                        <MealCard title="Lunch" data={suggestions.lunch} colorKey="lunch" />
+                        <MealCard title="Dinner" data={suggestions.dinner} colorKey="dinner" />
+                        {suggestions.snacks && suggestions.snacks.length > 0 && (
+                            <div>
+                                <h3 style={{ fontSize: 14, fontWeight: 600, color: "rgba(26,26,24,0.55)", marginBottom: 10, textTransform: "uppercase", letterSpacing: "0.08em" }}>Snacks</h3>
+                                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                                    {suggestions.snacks.map((snack, idx) => (
+                                        <MealCard key={idx} title={`Snack ${idx + 1}`} data={snack} colorKey="snack" />
+                                    ))}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
+            )}
+        </div>
+    );
+}
 
-                <div className="flex flex-col items-end justify-center min-w-[80px]">
-                    <div className="text-xs text-slate-500 uppercase tracking-wider font-semibold mb-1">Energy</div>
-                    <div className="text-2xl font-black text-slate-200">{data.calories}</div>
-                    <div className="text-xs text-slate-500">kcal</div>
+function MacroCard({ title, value, unit, accent }) {
+    return (
+        <div className="glass-card" style={{ borderRadius: 18, padding: 16, textAlign: "center", borderTop: `3px solid ${accent}` }}>
+            <span style={{ fontSize: 10, fontWeight: 700, color: "rgba(26,26,24,0.45)", textTransform: "uppercase", letterSpacing: "0.10em" }}>{title}</span>
+            <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 26, color: "#1A1A18", margin: "4px 0 2px" }}>
+                {value}
+            </div>
+            <span style={{ fontSize: 11, color: "rgba(26,26,24,0.40)" }}>{unit}</span>
+        </div>
+    );
+}
+
+function MealCard({ title, data, colorKey }) {
+    if (!data) return null;
+    const { border, accent, bg } = MEAL_COLORS[colorKey] || MEAL_COLORS.snack;
+    const icon = MEAL_ICONS[colorKey] || "🍽";
+    return (
+        <div className="glass-card" style={{ borderRadius: 20, borderLeft: `4px solid ${border}`, padding: "18px 20px", background: bg }}>
+            <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+                <div style={{ flex: 1 }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: 10, marginBottom: 6 }}>
+                        <span style={{ fontSize: 22 }}>{icon}</span>
+                        <div>
+                            <div style={{ fontSize: 10, fontWeight: 700, color: accent, textTransform: "uppercase", letterSpacing: "0.08em" }}>{title}</div>
+                            <div style={{ fontSize: 16, fontWeight: 700, color: "#1A1A18" }}>{data.name}</div>
+                        </div>
+                    </div>
+                    {data.description && (
+                        <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)", lineHeight: 1.6, margin: "0 0 10px" }}>{data.description}</p>
+                    )}
+                    <div style={{ display: "flex", flexWrap: "wrap", gap: 8 }}>
+                        {data.protein && <NutrientBadge label="Protein" value={data.protein} />}
+                        {data.carbs && <NutrientBadge label="Carbs" value={data.carbs} />}
+                        {data.fats && <NutrientBadge label="Fats" value={data.fats} />}
+                    </div>
+                </div>
+                <div style={{ textAlign: "right", minWidth: 64 }}>
+                    <div style={{ fontSize: 10, fontWeight: 600, color: "rgba(26,26,24,0.40)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: 2 }}>Energy</div>
+                    <div style={{ fontFamily: "'DM Serif Display', serif", fontSize: 24, color: "#1A1A18", lineHeight: 1 }}>{data.calories}</div>
+                    <div style={{ fontSize: 11, color: "rgba(26,26,24,0.40)" }}>kcal</div>
                 </div>
             </div>
         </div>
@@ -240,9 +216,8 @@ function MealCard({ title, data, icon, color }) {
 function NutrientBadge({ label, value }) {
     if (!value) return null;
     return (
-        <span className="inline-flex items-center px-2.5 py-1 rounded-lg bg-slate-950/30 border border-white/5 text-xs font-medium text-slate-300">
-            <span className="text-slate-500 mr-1.5">{label}:</span> {value}
+        <span style={{ fontSize: 12, padding: "4px 10px", borderRadius: 9999, background: "rgba(26,26,24,0.06)", border: "1px solid rgba(26,26,24,0.08)", color: "rgba(26,26,24,0.60)" }}>
+            <span style={{ color: "rgba(26,26,24,0.40)", marginRight: 4 }}>{label}:</span>{value}
         </span>
     );
 }
-
