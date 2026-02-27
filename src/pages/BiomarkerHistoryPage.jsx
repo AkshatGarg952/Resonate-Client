@@ -138,21 +138,20 @@ export default function BiomarkerHistoryPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-5">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-emerald-500/20 
-                      flex items-center justify-center mb-4">
-          <svg className="w-8 h-8 text-primary animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="flex flex-col items-center justify-center min-h-screen px-5" style={{ background: "linear-gradient(135deg, #EEF5E0 0%, #EAF0F8 45%, #F3EEF5 100%)" }}>
+        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: "rgba(202,219,0,0.15)" }}>
+          <svg className="w-8 h-8 animate-pulse" style={{ color: "#5A6000" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
           </svg>
         </div>
-        <p className="text-slate-400 text-sm">Loading your reports...</p>
+        <p className="text-sm" style={{ color: "rgba(26,26,24,0.50)" }}>Loading your reports...</p>
         <div className="mt-4 flex gap-1">
           {[...Array(3)].map((_, i) => (
             <div
               key={i}
-              className="w-2 h-2 rounded-full bg-primary animate-bounce"
-              style={{ animationDelay: `${i * 0.15}s` }}
+              className="w-2 h-2 rounded-full animate-bounce"
+              style={{ background: "#CADB00", animationDelay: `${i * 0.15}s` }}
             ></div>
           ))}
         </div>
@@ -165,28 +164,30 @@ export default function BiomarkerHistoryPage() {
       ref={scrollRef}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
-      className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-24"
+      className="min-h-screen pb-24"
+      style={{ background: "linear-gradient(135deg, #EEF5E0 0%, #EAF0F8 45%, #F3EEF5 100%)" }}
     >
 
 
       {refreshing && (
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 bg-slate-800/90 backdrop-blur-sm 
-                      border border-slate-700 rounded-full px-4 py-2 flex items-center gap-2 shadow-lg">
-          <svg className="animate-spin h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 z-50 backdrop-blur-sm
+                      rounded-full px-4 py-2 flex items-center gap-2 shadow-lg"
+          style={{ background: "rgba(255,255,255,0.85)", border: "1px solid rgba(26,26,24,0.10)" }}>
+          <svg className="animate-spin h-4 w-4" style={{ color: "#CADB00" }} fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
           </svg>
-          <span className="text-sm font-medium text-slate-300">Refreshing...</span>
+          <span className="text-sm font-medium" style={{ color: "#1A1A18" }}>Refreshing...</span>
         </div>
       )}
 
 
       <section className="px-5 pt-6 pb-4">
         <div className="mb-6">
-          <h1 className="text-3xl font-black text-slate-50 mb-1">
+          <h1 className="text-3xl font-black mb-1" style={{ color: "#1A1A18" }}>
             Blood Reports
           </h1>
-          <p className="text-sm text-slate-400">
+          <p className="text-sm" style={{ color: "rgba(26,26,24,0.50)" }}>
             Track your biomarker analysis history
           </p>
         </div>
@@ -194,21 +195,21 @@ export default function BiomarkerHistoryPage() {
 
         {!error && history.length > 0 && (
           <div className="grid grid-cols-3 gap-3 mb-6">
-            <div className="bg-slate-900/60 backdrop-blur-sm border border-slate-800/50 rounded-2xl p-4 text-center">
-              <p className="text-2xl font-black text-slate-50">{history.length}</p>
-              <p className="text-xs text-slate-500 mt-1">Total</p>
+            <div className="glass-card rounded-2xl p-4 text-center">
+              <p className="text-2xl font-black" style={{ color: "#1A1A18" }}>{history.length}</p>
+              <p className="text-xs mt-1" style={{ color: "rgba(26,26,24,0.45)" }}>Total</p>
             </div>
-            <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-4 text-center">
-              <p className="text-2xl font-black text-emerald-400">
+            <div className="glass-card rounded-2xl p-4 text-center" style={{ border: "1px solid rgba(202,219,0,0.25)" }}>
+              <p className="text-2xl font-black" style={{ color: "#5A6000" }}>
                 {history.filter(h => h.status === 'completed' || h.status === 'analyzed').length}
               </p>
-              <p className="text-xs text-slate-500 mt-1">Completed</p>
+              <p className="text-xs mt-1" style={{ color: "rgba(26,26,24,0.45)" }}>Completed</p>
             </div>
-            <div className="bg-amber-500/5 border border-amber-500/20 rounded-2xl p-4 text-center">
-              <p className="text-2xl font-black text-amber-400">
+            <div className="glass-card rounded-2xl p-4 text-center" style={{ border: "1px solid rgba(245,165,36,0.25)" }}>
+              <p className="text-2xl font-black" style={{ color: "#B45309" }}>
                 {history.filter(h => h.status === 'pending' || h.status === 'processing').length}
               </p>
-              <p className="text-xs text-slate-500 mt-1">Pending</p>
+              <p className="text-xs mt-1" style={{ color: "rgba(26,26,24,0.45)" }}>Pending</p>
             </div>
           </div>
         )}
@@ -218,10 +219,11 @@ export default function BiomarkerHistoryPage() {
             <button
               key={cat}
               onClick={() => setCategoryFilter(cat)}
-              className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border ${categoryFilter === cat
-                ? "bg-slate-50 text-slate-950 border-slate-50 shadow-lg shadow-white/10"
-                : "bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600 hover:text-slate-300"
-                }`}
+              className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border"
+              style={categoryFilter === cat
+                ? { background: "#CADB00", color: "#1A1A18", borderColor: "#CADB00", boxShadow: "0 2px 8px rgba(202,219,0,0.25)" }
+                : { background: "rgba(26,26,24,0.05)", color: "rgba(26,26,24,0.50)", borderColor: "rgba(26,26,24,0.10)" }
+              }
             >
               {cat === 'all' ? 'All Categories' : cat.charAt(0).toUpperCase() + cat.slice(1)}
             </button>
@@ -235,31 +237,31 @@ export default function BiomarkerHistoryPage() {
             <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
               <button
                 onClick={() => setFilter('all')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200
-                         ${filter === 'all'
-                    ? 'bg-primary text-slate-950 shadow-lg shadow-primary/25'
-                    : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600'
-                  }`}
+                className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200"
+                style={filter === 'all'
+                  ? { background: "#CADB00", color: "#1A1A18", boxShadow: "0 2px 8px rgba(202,219,0,0.25)" }
+                  : { background: "rgba(26,26,24,0.05)", color: "rgba(26,26,24,0.50)", border: "1px solid rgba(26,26,24,0.10)" }
+                }
               >
                 All Reports
               </button>
               <button
                 onClick={() => setFilter('completed')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200
-                         ${filter === 'completed'
-                    ? 'bg-emerald-500 text-slate-950 shadow-lg shadow-emerald-500/25'
-                    : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600'
-                  }`}
+                className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200"
+                style={filter === 'completed'
+                  ? { background: "#CADB00", color: "#1A1A18", boxShadow: "0 2px 8px rgba(202,219,0,0.25)" }
+                  : { background: "rgba(26,26,24,0.05)", color: "rgba(26,26,24,0.50)", border: "1px solid rgba(26,26,24,0.10)" }
+                }
               >
                 Completed
               </button>
               <button
                 onClick={() => setFilter('pending')}
-                className={`flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200
-                         ${filter === 'pending'
-                    ? 'bg-amber-500 text-slate-950 shadow-lg shadow-amber-500/25'
-                    : 'bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600'
-                  }`}
+                className="flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200"
+                style={filter === 'pending'
+                  ? { background: "#F5A524", color: "#1A1A18", boxShadow: "0 2px 8px rgba(245,165,36,0.25)" }
+                  : { background: "rgba(26,26,24,0.05)", color: "rgba(26,26,24,0.50)", border: "1px solid rgba(26,26,24,0.10)" }
+                }
               >
                 Pending
               </button>
@@ -267,14 +269,13 @@ export default function BiomarkerHistoryPage() {
 
 
             <div className="flex items-center justify-between">
-              <p className="text-xs font-medium text-slate-500">
+              <p className="text-xs font-medium" style={{ color: "rgba(26,26,24,0.45)" }}>
                 {filteredHistory.length} {filteredHistory.length === 1 ? 'report' : 'reports'}
               </p>
               <button
                 onClick={() => setSortBy(sortBy === 'newest' ? 'oldest' : 'newest')}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-800/50 
-                         border border-slate-700/50 text-slate-400 text-xs font-semibold
-                         hover:bg-slate-800 hover:text-slate-300 active:scale-95 transition-all"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold active:scale-95 transition-all"
+                style={{ background: "rgba(26,26,24,0.06)", color: "rgba(26,26,24,0.55)", border: "1px solid rgba(26,26,24,0.10)" }}
               >
                 <svg className={`w-3.5 h-3.5 transition-transform ${sortBy === 'oldest' ? 'rotate-180' : ''}`}
                   fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -291,19 +292,19 @@ export default function BiomarkerHistoryPage() {
 
       {error && (
         <section className="px-5">
-          <div className="bg-red-500/5 border border-red-500/20 rounded-3xl p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center">
-              <svg className="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="glass-card rounded-3xl p-8 text-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{ background: "rgba(239,68,68,0.08)" }}>
+              <svg className="w-8 h-8 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
-            <h3 className="text-lg font-bold text-slate-50 mb-2">Failed to Load Reports</h3>
-            <p className="text-sm text-slate-400 mb-6">{error}</p>
+            <h3 className="text-lg font-bold mb-2" style={{ color: "#1A1A18" }}>Failed to Load Reports</h3>
+            <p className="text-sm mb-6" style={{ color: "rgba(26,26,24,0.50)" }}>{error}</p>
             <button
               onClick={() => fetchHistory(true)}
-              className="px-6 py-3 rounded-2xl bg-slate-800 border border-slate-700 
-                       text-slate-300 font-semibold hover:bg-slate-700 active:scale-95 transition-all"
+              className="px-6 py-3 rounded-2xl font-semibold active:scale-95 transition-all"
+              style={{ background: "rgba(26,26,24,0.06)", color: "rgba(26,26,24,0.70)", border: "1px solid rgba(26,26,24,0.10)" }}
             >
               Try Again
             </button>
@@ -314,22 +315,21 @@ export default function BiomarkerHistoryPage() {
 
       {!error && history.length === 0 && (
         <section className="px-5">
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-8 text-center">
-            <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-slate-800/50 flex items-center justify-center">
-              <svg className="w-10 h-10 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="glass-card rounded-3xl p-8 text-center">
+            <div className="w-20 h-20 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{ background: "rgba(26,26,24,0.05)" }}>
+              <svg className="w-10 h-10" style={{ color: "rgba(26,26,24,0.20)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
               </svg>
             </div>
-            <h3 className="text-xl font-bold text-slate-50 mb-2">No Reports Yet</h3>
-            <p className="text-sm text-slate-400 mb-6 max-w-sm mx-auto">
+            <h3 className="text-xl font-bold mb-2" style={{ color: "#1A1A18" }}>No Reports Yet</h3>
+            <p className="text-sm mb-6 max-w-sm mx-auto" style={{ color: "rgba(26,26,24,0.50)" }}>
               Upload your first blood report to get AI-powered health insights and biomarker analysis.
             </p>
             <button
               onClick={() => navigate('/biomarkers/upload')}
-              className="px-6 py-3 rounded-2xl bg-gradient-to-r from-primary to-emerald-500 
-                       text-slate-950 font-bold shadow-lg shadow-primary/25
-                       hover:shadow-xl hover:shadow-primary/30 active:scale-95 transition-all duration-200"
+              className="px-6 py-3 rounded-2xl font-bold active:scale-95 transition-all duration-200"
+              style={{ background: "linear-gradient(135deg, #CADB00 0%, #B8C900 100%)", color: "#1A1A18", boxShadow: "0 4px 16px rgba(202,219,0,0.25)" }}
             >
               Upload Blood Report
             </button>
@@ -347,17 +347,14 @@ export default function BiomarkerHistoryPage() {
               return (
                 <div
                   key={item._id}
-                  className={`bg-gradient-to-br ${statusConfig.gradient} backdrop-blur-sm
-                            border border-slate-700/50 rounded-2xl p-5 
-                            hover:border-${statusConfig.color}-500/30 active:scale-[0.98]
-                            transition-all duration-200 animate-fadeIn`}
+                  className="glass-card rounded-2xl p-5 cursor-pointer hover:shadow-md active:scale-[0.98] transition-all duration-200 animate-fadeIn"
                   style={{ animationDelay: `${index * 0.05}s` }}
                   onClick={() => openAnalysis(item)}
                 >
                   <div className="flex items-start gap-4">
 
-                    <div className={`w-12 h-12 rounded-xl bg-${statusConfig.color}-500/10 
-                                   flex items-center justify-center flex-shrink-0 border border-${statusConfig.color}-500/20`}>
+                    <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                      style={{ background: item.status === 'completed' || item.status === 'analyzed' ? 'rgba(202,219,0,0.12)' : item.status === 'error' ? 'rgba(239,68,68,0.08)' : 'rgba(245,165,36,0.10)', border: item.status === 'completed' || item.status === 'analyzed' ? '1px solid rgba(202,219,0,0.25)' : '1px solid rgba(245,165,36,0.20)' }}>
                       <span className="text-xl">{statusConfig.icon}</span>
                     </div>
 
@@ -365,18 +362,22 @@ export default function BiomarkerHistoryPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-2">
                         <div className="flex-1">
-                          <h3 className="text-base font-bold text-slate-50 mb-1">
+                          <h3 className="text-base font-bold mb-1" style={{ color: "#1A1A18" }}>
                             Blood Report Analysis
                           </h3>
-                          <p className="text-sm text-slate-400">
+                          <p className="text-sm" style={{ color: "rgba(26,26,24,0.50)" }}>
                             {formatDate(item.updatedAt)}
                           </p>
                         </div>
 
 
-                        <span className={`flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold 
-                                       bg-${statusConfig.color}-500/15 text-${statusConfig.color}-400 
-                                       border border-${statusConfig.color}-500/20`}>
+                        <span className="flex-shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold"
+                          style={item.status === 'completed' || item.status === 'analyzed'
+                            ? { background: "rgba(202,219,0,0.15)", color: "#5A6000", border: "1px solid rgba(202,219,0,0.25)" }
+                            : item.status === 'error'
+                              ? { background: "rgba(239,68,68,0.08)", color: "#DC2626", border: "1px solid rgba(239,68,68,0.20)" }
+                              : { background: "rgba(245,165,36,0.10)", color: "#B45309", border: "1px solid rgba(245,165,36,0.20)" }
+                          }>
                           {statusConfig.label}
                         </span>
                       </div>
@@ -415,8 +416,8 @@ export default function BiomarkerHistoryPage() {
 
 
                       <button
-                        className="flex items-center gap-1.5 text-sm font-semibold text-primary 
-                                 hover:text-emerald-400 transition-colors group"
+                        className="flex items-center gap-1.5 text-sm font-semibold transition-colors group"
+                        style={{ color: "#CADB00" }}
                       >
                         View Full Analysis
                         <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform"
@@ -436,9 +437,8 @@ export default function BiomarkerHistoryPage() {
 
       <button
         onClick={() => navigate('/biomarkers/upload')}
-        className="fixed bottom-20 right-5 w-14 h-14 rounded-full bg-gradient-to-r from-primary to-emerald-500 
-                 text-slate-950 shadow-2xl shadow-primary/30 flex items-center justify-center
-                 hover:scale-110 active:scale-95 transition-all duration-200 z-40"
+        className="fixed bottom-20 right-5 w-14 h-14 rounded-full flex items-center justify-center hover:scale-110 active:scale-95 transition-all duration-200 z-40"
+        style={{ background: "linear-gradient(135deg, #CADB00 0%, #B8C900 100%)", color: "#1A1A18", boxShadow: "0 4px 24px rgba(202,219,0,0.35)" }}
       >
         <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 4v16m8-8H4" />

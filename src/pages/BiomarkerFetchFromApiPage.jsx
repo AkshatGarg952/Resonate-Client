@@ -113,28 +113,27 @@ export default function BiomarkerFetchFromApiPage() {
 
   if (checkingConnection) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 px-5">
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary/20 to-emerald-500/20 
-                      flex items-center justify-center mb-4 animate-pulse">
-          <svg className="w-8 h-8 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="flex flex-col items-center justify-center min-h-screen px-5" style={{ background: "linear-gradient(135deg, #EEF5E0 0%, #EAF0F8 45%, #F3EEF5 100%)" }}>
+        <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4 animate-pulse" style={{ background: "rgba(202,219,0,0.15)" }}>
+          <svg className="w-8 h-8" style={{ color: "#5A6000" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
               d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
         </div>
-        <p className="text-slate-400 text-sm">Checking lab connections...</p>
+        <p className="text-sm" style={{ color: "rgba(26,26,24,0.50)" }}>Checking lab connections...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-24">
+    <div className="min-h-screen pb-24" style={{ background: "linear-gradient(135deg, #EEF5E0 0%, #EAF0F8 45%, #F3EEF5 100%)" }}>
 
 
       <section className="px-5 pt-6 pb-4">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-slate-400 hover:text-slate-300 mb-4 
-                   active:scale-95 transition-all"
+          className="flex items-center gap-2 mb-4 active:scale-95 transition-all"
+          style={{ color: "rgba(26,26,24,0.45)" }}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -142,10 +141,10 @@ export default function BiomarkerFetchFromApiPage() {
           <span className="text-sm font-medium">Back</span>
         </button>
 
-        <h1 className="text-3xl font-black text-slate-50 mb-1">
+        <h1 className="text-3xl font-black mb-1" style={{ color: "#1A1A18" }}>
           Lab Integration
         </h1>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm" style={{ color: "rgba(26,26,24,0.50)" }}>
           Fetch blood reports directly from diagnostic labs
         </p>
       </section>
@@ -184,41 +183,38 @@ export default function BiomarkerFetchFromApiPage() {
                   key={lab.id}
                   onClick={() => setSelectedLab(lab.id)}
                   disabled={!isConnected}
-                  className={`w-full p-4 rounded-2xl border-2 text-left transition-all duration-200
-                           active:scale-[0.98] ${isSelected
-                      ? 'border-primary bg-primary/10'
-                      : isConnected
-                        ? 'border-slate-700/50 hover:border-slate-600 bg-slate-950/30'
-                        : 'border-slate-800/30 bg-slate-950/20 opacity-50 cursor-not-allowed'
-                    }`}
+                  className="w-full p-4 rounded-2xl border-2 text-left transition-all duration-200 active:scale-[0.98]"
+                  style={isSelected
+                    ? { borderColor: "#CADB00", background: "rgba(202,219,0,0.06)" }
+                    : isConnected
+                      ? { borderColor: "rgba(26,26,24,0.12)", background: "rgba(255,255,255,0.60)" }
+                      : { borderColor: "rgba(26,26,24,0.06)", background: "rgba(26,26,24,0.03)", opacity: 0.5, cursor: "not-allowed" }
+                  }
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex items-start gap-3 flex-1">
 
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0 ${isSelected ? 'bg-primary/20' : 'bg-slate-800/50'
-                        }`}>
+                      <div className="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+                        style={isSelected ? { background: "rgba(202,219,0,0.15)" } : { background: "rgba(26,26,24,0.05)" }}>
                         {lab.logo}
                       </div>
 
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
-                          <h3 className="text-base font-bold text-slate-50">{lab.name}</h3>
+                          <h3 className="text-base font-bold" style={{ color: "#1A1A18" }}>{lab.name}</h3>
                           {isConnected && (
-                            <span className="px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 
-                                         text-xs font-semibold border border-emerald-500/20">
+                            <span className="px-2 py-0.5 rounded-full text-xs font-semibold"
+                              style={{ background: "rgba(202,219,0,0.15)", color: "#5A6000", border: "1px solid rgba(202,219,0,0.25)" }}>
                               Connected
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-slate-400 mb-2">{lab.description}</p>
+                        <p className="text-xs mb-2" style={{ color: "rgba(26,26,24,0.50)" }}>{lab.description}</p>
                         <div className="flex flex-wrap gap-2">
                           {lab.features.map((feature, idx) => (
-                            <span
-                              key={idx}
-                              className="text-xs text-slate-500 flex items-center gap-1"
-                            >
-                              <svg className="w-3 h-3 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <span key={idx} className="text-xs flex items-center gap-1" style={{ color: "rgba(26,26,24,0.50)" }}>
+                              <svg className="w-3 h-3" style={{ color: "#CADB00" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                               </svg>
                               {feature}
@@ -229,12 +225,13 @@ export default function BiomarkerFetchFromApiPage() {
                     </div>
 
 
-                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${isSelected
-                      ? 'border-primary bg-primary'
-                      : 'border-slate-600'
-                      }`}>
+                    <div className="w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0"
+                      style={isSelected
+                        ? { borderColor: "#CADB00", background: "#CADB00" }
+                        : { borderColor: "rgba(26,26,24,0.20)" }
+                      }>
                       {isSelected && (
-                        <svg className="w-4 h-4 text-slate-950" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-4 h-4" style={{ color: "#1A1A18" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
                         </svg>
                       )}
@@ -247,9 +244,8 @@ export default function BiomarkerFetchFromApiPage() {
                         e.stopPropagation();
                         alert(`Connect to ${lab.name} - Coming soon!`);
                       }}
-                      className="mt-3 w-full px-4 py-2 rounded-xl bg-slate-800 border border-slate-700 
-                               text-slate-300 text-sm font-semibold hover:bg-slate-700 
-                               active:scale-95 transition-all"
+                      className="mt-3 w-full px-4 py-2 rounded-xl text-sm font-semibold active:scale-95 transition-all"
+                      style={{ background: "rgba(26,26,24,0.06)", color: "rgba(26,26,24,0.60)", border: "1px solid rgba(26,26,24,0.10)" }}
                     >
                       Connect Lab Account
                     </button>
@@ -274,10 +270,8 @@ export default function BiomarkerFetchFromApiPage() {
           <button
             onClick={handleFetch}
             disabled={loading || !selectedLab}
-            className="w-full relative py-4 px-6 rounded-2xl bg-gradient-to-r from-primary to-emerald-500 
-                     text-slate-950 font-bold overflow-hidden shadow-lg shadow-primary/25
-                     hover:shadow-xl hover:shadow-primary/30 disabled:opacity-60 disabled:cursor-not-allowed
-                     active:scale-[0.98] transition-all duration-200 group"
+            className="w-full relative py-4 px-6 rounded-2xl font-bold overflow-hidden disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] transition-all duration-200 group"
+            style={{ background: "linear-gradient(135deg, #CADB00 0%, #B8C900 100%)", color: "#1A1A18", boxShadow: "0 4px 20px rgba(202,219,0,0.30)" }}
           >
             {!loading && (
               <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent 
@@ -308,8 +302,8 @@ export default function BiomarkerFetchFromApiPage() {
 
           {loading && (
             <div className="mt-4 space-y-2">
-              <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
-                <svg className="w-4 h-4 text-primary animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex items-center justify-center gap-2 text-xs" style={{ color: "rgba(26,26,24,0.45)" }}>
+                <svg className="w-4 h-4 animate-pulse" style={{ color: "#CADB00" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                 </svg>
@@ -325,27 +319,24 @@ export default function BiomarkerFetchFromApiPage() {
         <>
 
           <section id="results-section" className="px-5 mb-6">
-            <div className="bg-gradient-to-r from-emerald-500/10 to-primary/10 border border-emerald-500/20 
-                          rounded-3xl p-6 animate-fadeIn">
+            <div className="glass-card rounded-3xl p-6 animate-fadeIn">
               <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                  <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "rgba(202,219,0,0.15)" }}>
+                  <svg className="w-6 h-6" style={{ color: "#5A6000" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <div className="flex-1">
-                  <h3 className="text-xl font-black text-slate-50 mb-1">Results Fetched Successfully!</h3>
-                  <p className="text-sm text-slate-400">
+                  <h3 className="text-xl font-black mb-1" style={{ color: "#1A1A18" }}>Results Fetched Successfully!</h3>
+                  <p className="text-sm" style={{ color: "rgba(26,26,24,0.55)" }}>
                     We've analyzed {biomarkers.length} biomarkers from your latest report
                   </p>
                   {overallScore !== null && (
-                    <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full 
-                                  bg-slate-950/30 border border-slate-700">
-                      <span className="text-xs font-medium text-slate-400">Health Score:</span>
-                      <span className={`text-base font-black ${overallScore >= 70 ? 'text-emerald-400' :
-                        overallScore >= 40 ? 'text-amber-400' : 'text-red-400'
-                        }`}>
+                    <div className="mt-3 inline-flex items-center gap-2 px-3 py-1.5 rounded-full"
+                      style={{ background: "rgba(202,219,0,0.10)", border: "1px solid rgba(202,219,0,0.22)" }}>
+                      <span className="text-xs font-medium" style={{ color: "rgba(26,26,24,0.55)" }}>Health Score:</span>
+                      <span className="text-base font-black" style={{ color: overallScore >= 70 ? '#5A6000' : overallScore >= 40 ? '#B45309' : '#DC2626' }}>
                         {overallScore}/100
                       </span>
                     </div>
@@ -357,13 +348,13 @@ export default function BiomarkerFetchFromApiPage() {
 
 
           <section className="px-5 mb-6">
-            <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6">
+            <div className="glass-card rounded-3xl p-6">
               <div className="flex items-center justify-between mb-5">
                 <div>
-                  <h3 className="text-lg font-bold text-slate-50">Your Biomarkers</h3>
-                  <p className="text-xs text-slate-500 mt-1">
+                  <h3 className="text-lg font-bold" style={{ color: "#1A1A18" }}>Your Biomarkers</h3>
+                  <p className="text-xs mt-1" style={{ color: "rgba(26,26,24,0.45)" }}>
                     <span className="inline-flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                      <span className="w-2 h-2 rounded-full" style={{ background: "#CADB00" }}></span>
                       Normal
                     </span>
                     <span className="mx-2">•</span>
@@ -395,9 +386,8 @@ export default function BiomarkerFetchFromApiPage() {
             <div className="grid grid-cols-2 gap-3">
               <button
                 onClick={() => navigate('/biomarkers/history')}
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl 
-                         bg-slate-800/50 border-2 border-slate-700/50 text-slate-300 font-semibold
-                         hover:bg-slate-800 hover:border-slate-600 active:scale-[0.98] transition-all"
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl font-semibold active:scale-[0.98] transition-all"
+                style={{ background: "rgba(26,26,24,0.06)", color: "rgba(26,26,24,0.70)", border: "2px solid rgba(26,26,24,0.10)" }}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -411,9 +401,8 @@ export default function BiomarkerFetchFromApiPage() {
                   setError("");
                   window.scrollTo({ top: 0, behavior: 'smooth' });
                 }}
-                className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl 
-                         bg-primary/10 border-2 border-primary/20 text-primary font-semibold
-                         hover:bg-primary/20 active:scale-[0.98] transition-all"
+                className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl font-semibold active:scale-[0.98] transition-all"
+                style={{ background: "rgba(202,219,0,0.12)", color: "#5A6000", border: "2px solid rgba(202,219,0,0.25)" }}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}

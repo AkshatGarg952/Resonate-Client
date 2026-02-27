@@ -4,6 +4,7 @@ import MetricCard from "../components/MetricCard";
 import BarChart from "../components/BarChart";
 import QuickAddWidget from "../components/QuickAddWidget";
 import WaterTracker from "../components/WaterTracker";
+import LineChart from "../components/LineChart";
 import { normalizeFitnessData } from "../utils/fitnessNormalizer";
 import { getWithCookie, postWithCookie } from "../api";
 
@@ -16,6 +17,39 @@ export default function FitnessDashboardPage() {
   const [stepGoal, setStepGoal] = useState(0);
   const [newStepGoal, setNewStepGoal] = useState(0);
   const [isEditingStepGoal, setIsEditingStepGoal] = useState(false);
+  const [waterData, setWaterData] = useState({ amountMl: 0, goalMl: 2500 });
+  const [waterLoading, setWaterLoading] = useState(true);
+
+  const loadWater = async () => {
+    try {
+      const res = await getWithCookie('/api/water');
+      if (res && res.today) {
+        setWaterData({
+          amountMl: res.today.amountMl || 0,
+          goalMl: res.today.goalMl || 2500
+        });
+      }
+    } catch (error) {
+      console.error("Failed to fetch water data", error);
+    } finally {
+      setWaterLoading(false);
+    }
+  };
+
+  const logWater = async (amount) => {
+    try {
+      const res = await postWithCookie('/api/water/log', { amountMl: amount });
+      if (res) {
+        setWaterData({
+          amountMl: res.amountMl || 0,
+          goalMl: res.goalMl || 2500
+        });
+      }
+    } catch (error) {
+      console.error("Failed to log water", error);
+    }
+  };
+
   const scrollRef = useRef(null);
   const touchStartY = useRef(0);
 
@@ -43,6 +77,7 @@ export default function FitnessDashboardPage() {
 
   useEffect(() => {
     loadFitness();
+    loadWater();
   }, []);
 
 
@@ -124,47 +159,29 @@ export default function FitnessDashboardPage() {
       )}
 
       {/* Header row */}
-      <div style={{ marginBottom: 24 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
-          <div>
-            <h1 style={{ fontSize: 28, fontWeight: 700, color: "#1A1A18", margin: "0 0 4px" }}>Fitness</h1>
-            <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)", margin: 0 }}>Track your daily activity &amp; recovery</p>
-          </div>
-
-          {/* Sync badge */}
-          <span style={{
-            display: "inline-flex", alignItems: "center", gap: 6,
-            padding: "6px 12px", borderRadius: 9999, fontSize: 12, fontWeight: 600,
-            background: syncStatus === "synced" ? "rgba(52,199,89,0.10)" : syncStatus === "syncing" ? "rgba(202,219,0,0.10)" : "rgba(239,68,68,0.10)",
-            color: syncStatus === "synced" ? "#14532D" : syncStatus === "syncing" ? "#3D4000" : "#EF4444",
-            border: syncStatus === "synced" ? "1px solid rgba(52,199,89,0.20)" : syncStatus === "syncing" ? "1px solid rgba(202,219,0,0.20)" : "1px solid rgba(239,68,68,0.20)",
-          }}>
-            {syncStatus === "synced" && <span>✓</span>}
-            {syncStatus === "syncing" && <div style={{ width: 10, height: 10, borderRadius: "50%", border: "2px solid rgba(202,219,0,0.30)", borderTopColor: "#CADB00", animation: "spin 0.8s linear infinite" }} />}
-            {syncStatus === "error" && <span>!</span>}
-            {syncStatus === "synced" ? "Synced" : syncStatus === "syncing" ? "Syncing" : "Error"}
-          </span>
+      <div className="flex items-start justify-between mb-8">
+        <div>
+          <h1 className="text-[32px] font-bold text-[#1A1A18] mb-1">Fitness</h1>
+          <p className="text-[15px] text-[#1A1A18]/60 m-0">
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
+          </p>
         </div>
 
-        {/* Sync button */}
-        <button
-          onClick={() => loadFitness(true)}
-          disabled={refreshing}
-          style={{
-            width: "100%", padding: "13px", borderRadius: 14, border: "none",
-            background: refreshing ? "rgba(26,26,24,0.08)" : "#1A1A18",
-            color: refreshing ? "rgba(26,26,24,0.40)" : "#FFFFFF",
-            fontSize: 14, fontWeight: 700, cursor: refreshing ? "not-allowed" : "pointer",
-            display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
-            transition: "all 0.15s",
-          }}
-        >
-          <svg style={{ width: 16, height: 16, animation: refreshing ? "spin 1s linear infinite" : "none" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5}
-              d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-          </svg>
-          {refreshing ? "Syncing…" : "Sync Now"}
-        </button>
+        {fitness ? (
+          <div className="flex items-center gap-3">
+            <span className="text-[14px] font-medium text-[#1A1A18]/60 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-[#CADB00]"></span>
+              Google Fit Connected
+            </span>
+          </div>
+        ) : (
+          <button
+            onClick={() => window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/fit/google`}
+            className="border border-[#CADB00] text-[#8C9800] px-5 py-2.5 rounded-2xl font-medium flex items-center gap-2 hover:bg-[#CADB00]/10 transition-colors"
+          >
+            Connect Google Fit
+          </button>
+        )}
       </div>
 
       {/* No data state */}
@@ -179,138 +196,168 @@ export default function FitnessDashboardPage() {
           <p style={{ fontSize: 13, color: "rgba(26,26,24,0.55)", marginBottom: 24, maxWidth: 320, margin: "0 auto 24px" }}>
             Connect your fitness device to see your activity, sleep, and workout data here.
           </p>
-          <div style={{ display: "flex", flexDirection: "column", gap: 10, maxWidth: 320, margin: "0 auto" }}>
-            <button
-              onClick={() => window.location.href = `${import.meta.env.VITE_API_BASE_URL}/api/fit/google`}
-              style={{ padding: "12px 20px", borderRadius: 12, background: "#1A1A18", color: "#FFF", fontSize: 14, fontWeight: 700, border: "none", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
-            >
-              <span style={{ fontSize: 16 }}>🏃</span> Connect Google Fit
-            </button>
-            <button disabled style={{ padding: "12px 20px", borderRadius: 12, background: "rgba(26,26,24,0.05)", color: "rgba(26,26,24,0.35)", fontSize: 14, fontWeight: 700, border: "1px solid rgba(26,26,24,0.10)", cursor: "not-allowed", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <span style={{ fontSize: 16 }}>🍎</span> Apple Health
-              <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: "rgba(26,26,24,0.06)", marginLeft: 4 }}>iOS Only</span>
-            </button>
-          </div>
         </div>
       ) : (
         <>
-          {/* Row 1: Steps + Mini stat cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" style={{ marginBottom: 20 }}>
+          {/* Row 1: 4 Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
 
-            {/* Steps card */}
-            <div className="glass-card" style={{ borderRadius: 24, padding: 24, borderTop: "3px solid #CADB00" }}>
-              <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 16 }}>
+            {/* Steps Card */}
+            <div className="bg-white/40 border border-[#1A1A18]/10 rounded-[28px] p-6 flex flex-col justify-between">
+              <div className="flex justify-between items-start mb-6">
                 <div>
-                  <span className="overline-label">Steps Today</span>
-                  <div style={{ display: "flex", alignItems: "baseline", gap: 6, margin: "6px 0 4px" }}>
-                    <span style={{ fontFamily: "'DM Serif Display',serif", fontSize: 42, color: "#1A1A18", lineHeight: 1 }}>{fitness.todaySteps?.toLocaleString() || "0"}</span>
-                  </div>
+                  <p className="text-[15px] font-medium text-[#1A1A18]/70 mb-2">Steps Today</p>
+                  <h2 className="text-[40px] font-bold text-[#1A1A18] leading-none mb-1">
+                    {fitness.todaySteps?.toLocaleString() || "0"}
+                  </h2>
+                  <p className="text-[13px] text-[#1A1A18]/50 flex items-center gap-1">
+                    of {stepGoal.toLocaleString()} goal
+                    <button onClick={() => { setNewStepGoal(stepGoal); setIsEditingStepGoal(true); }}
+                      className="text-[#1A1A18]/40 hover:text-[#CADB00] transition-colors p-1"
+                    >
+                      <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                      </svg>
+                    </button>
+                  </p>
 
-                  {isEditingStepGoal ? (
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 6 }}>
-                      <input type="number" value={newStepGoal} onChange={(e) => setNewStepGoal(e.target.value)}
-                        style={{ width: 100, padding: "6px 10px", borderRadius: 8, border: "2px solid #CADB00", fontSize: 13, fontFamily: "'DM Sans',sans-serif", outline: "none", color: "#1A1A18" }}
-                        autoFocus />
+                  {isEditingStepGoal && (
+                    <div className="flex items-center gap-2 mt-2 bg-white/50 p-1.5 rounded-lg border border-[#1A1A18]/10">
+                      <input
+                        type="number"
+                        value={newStepGoal}
+                        onChange={(e) => setNewStepGoal(e.target.value)}
+                        className="w-20 px-2 py-1 rounded-md border border-[#CADB00] text-[13px] outline-none text-[#1A1A18] bg-transparent"
+                        autoFocus
+                      />
                       <button onClick={() => updateStepGoal(newStepGoal)}
-                        style={{ padding: "6px 12px", borderRadius: 8, background: "#1A1A18", color: "#FFF", fontSize: 12, fontWeight: 700, border: "none", cursor: "pointer" }}>Save</button>
+                        className="text-[#CADB00] font-bold text-[12px] px-2 py-1 rounded-md hover:bg-[#CADB00]/10 transition-colors"
+                      >
+                        Save
+                      </button>
                       <button onClick={() => setIsEditingStepGoal(false)}
-                        style={{ background: "none", border: "none", cursor: "pointer", fontSize: 14, color: "rgba(26,26,24,0.40)" }}>✕</button>
-                    </div>
-                  ) : (
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginTop: 4 }}>
-                      <span style={{ fontSize: 12, color: "rgba(26,26,24,0.45)" }}>Goal: {stepGoal.toLocaleString()} steps</span>
-                      <button onClick={() => { setNewStepGoal(stepGoal); setIsEditingStepGoal(true); }}
-                        style={{ background: "none", border: "none", cursor: "pointer", padding: 4, color: "rgba(26,26,24,0.35)" }}>
-                        <svg width="12" height="12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                        </svg>
+                        className="text-[#1A1A18]/40 hover:text-[#1A1A18]/70 text-[12px] p-1"
+                      >
+                        ✕
                       </button>
                     </div>
                   )}
                 </div>
-
-                {/* Ring */}
-                <div style={{ width: 88, height: 88, position: "relative", flexShrink: 0 }}>
-                  <svg width="88" height="88" style={{ transform: "rotate(-90deg)", filter: "drop-shadow(0 0 6px rgba(202,219,0,0.30))" }}>
-                    <circle cx="44" cy="44" r="36" fill="none" stroke="rgba(202,219,0,0.12)" strokeWidth="8" />
-                    <circle cx="44" cy="44" r="36" fill="none" stroke="#CADB00" strokeWidth="8"
-                      strokeDasharray={`${2 * Math.PI * 36}`}
-                      strokeDashoffset={`${2 * Math.PI * 36 * (1 - stepsProgress / 100)}`}
-                      strokeLinecap="round"
-                      style={{ transition: "stroke-dashoffset 1s ease-out" }}
-                    />
+                <div className="text-[#CADB00]">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M10 9a2 2 0 100-4 2 2 0 000 4z" />
+                    <path d="M14 19a2 2 0 100-4 2 2 0 000 4z" />
+                    <path d="M10 13c-1.5 0-3-1-3-2.5S8.5 8 10 8" />
+                    <path d="M14 15c1.5 0 3 1 3 2.5s-1.5 2.5-3 2.5" />
                   </svg>
-                  <div style={{ position: "absolute", inset: 0, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <span style={{ fontFamily: "'DM Serif Display',serif", fontSize: 16, color: "#1A1A18" }}>{Math.round(stepsProgress)}%</span>
-                  </div>
                 </div>
               </div>
-
-              {/* Progress bar */}
-              <div className="progress-track">
-                <div className="progress-fill-lime" style={{ width: `${stepsProgress}%`, height: "100%", borderRadius: 9999, transition: "width 1s ease-out" }} />
+              <div>
+                <div className="h-3 w-full bg-[#1A1A18]/5 rounded-full mb-3">
+                  <div className="h-full bg-[#CADB00] rounded-full" style={{ width: `${Math.min(stepsProgress, 100)}%` }}></div>
+                </div>
+                <p className="text-[13px] font-medium text-[#8C9800]">
+                  {Math.round(stepsProgress)}% of daily goal
+                </p>
               </div>
             </div>
 
-            {/* Right col: Sleep + Workouts + Water */}
-            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-              <div className="grid grid-cols-2 gap-3">
-                {/* Sleep */}
-                <div className="glass-card" style={{ borderRadius: 20, padding: 18, borderTop: "3px solid #7C6FCD" }}>
-                  <span className="overline-label">Last Night</span>
-                  <div style={{ margin: "6px 0 4px" }}>
-                    <span style={{ fontFamily: "'DM Serif Display',serif", fontSize: 28, color: "#1A1A18" }}>{fitness.sleepHours || "–"}</span>
-                    {fitness.sleepHours && <span style={{ fontSize: 12, color: "rgba(26,26,24,0.45)", marginLeft: 4 }}>hrs</span>}
-                  </div>
-                  <span style={{
-                    fontSize: 11, fontWeight: 600, padding: "3px 8px", borderRadius: 9999,
-                    background: sleepQuality.color === "emerald" || sleepQuality.color === "primary" ? "rgba(52,199,89,0.10)" : sleepQuality.color === "amber" ? "rgba(245,165,36,0.10)" : "rgba(26,26,24,0.06)",
-                    color: sleepQuality.color === "emerald" || sleepQuality.color === "primary" ? "#14532D" : sleepQuality.color === "amber" ? "#92400E" : "rgba(26,26,24,0.45)",
-                  }}>{sleepQuality.emoji} {sleepQuality.label}</span>
-                </div>
-
-                {/* Workouts */}
-                <div className="glass-card" style={{ borderRadius: 20, padding: 18, borderTop: "3px solid #E07A3A" }}>
-                  <span className="overline-label">Workouts</span>
-                  <div style={{ margin: "6px 0 4px" }}>
-                    <span style={{ fontFamily: "'DM Serif Display',serif", fontSize: 28, color: "#1A1A18" }}>{fitness.workoutCount || "0"}</span>
-                  </div>
-                  <span className="badge-neutral">Today</span>
+            {/* Sleep Card */}
+            <div className="bg-white/40 border border-[#1A1A18]/10 rounded-[28px] p-6 flex flex-col justify-between">
+              <div>
+                <p className="text-[15px] font-medium text-[#1A1A18]/70 mb-2">Sleep Duration</p>
+                <h2 className="text-[40px] font-bold text-[#1A1A18] leading-none mb-4">
+                  {fitness.sleepHours || "0"}<span className="text-[24px]">h</span>
+                </h2>
+                <div className="flex gap-1 mb-6">
+                  <div className="h-2.5 w-1/3 bg-[#1A1A18] rounded-full"></div>
+                  <div className="h-2.5 w-2/3 bg-[#1A1A18]/60 rounded-full"></div>
                 </div>
               </div>
+              <p className="text-[14px] text-[#1A1A18]/70 font-medium">
+                Quality: {sleepQuality.label}
+              </p>
+            </div>
 
-              <WaterTracker />
+            {/* Workouts Card */}
+            <div className="bg-white/40 border border-[#1A1A18]/10 rounded-[28px] p-6 flex flex-col justify-between">
+              <div>
+                <p className="text-[15px] font-medium text-[#1A1A18]/70 mb-2">Workouts Today</p>
+                <h2 className="text-[40px] font-bold text-[#CADB00] leading-none mb-6">
+                  {fitness.workoutCount || "0"}
+                </h2>
+                {fitness.workoutCount > 0 && (
+                  <div className="bg-[#CADB00]/10 border-l-4 border-[#CADB00] rounded-r-lg px-3 py-2 mb-4">
+                    <p className="text-[13px] text-[#1A1A18] font-medium">Morning Run · 5km · 32min</p>
+                  </div>
+                )}
+              </div>
+              <p className="text-[14px] text-[#1A1A18]/70 font-medium">
+                Cardio Load: 32
+              </p>
+            </div>
+
+            {/* Hydration Card View */}
+            <div className="bg-white/40 border border-[#1A1A18]/10 rounded-[28px] p-6 flex flex-col justify-between">
+              <div className="flex justify-between items-start mb-6">
+                <div>
+                  <p className="text-[15px] font-medium text-[#1A1A18]/70 mb-2">Hydration</p>
+                  <h2 className="text-[40px] font-bold text-[#1A1A18] leading-none mb-1">
+                    {waterData.amountMl}<span className="text-[24px]">ml</span>
+                  </h2>
+                  <p className="text-[13px] text-[#1A1A18]/50">of {waterData.goalMl}ml goal</p>
+                </div>
+                <div className="text-[#1A1A18]">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M12 22a7 7 0 0 0 7-7c0-2-1-3.9-3-5.5s-3.5-4-4-6.5c-.5 2.5-2 4.9-4 6.5C6 11.1 5 13 5 15a7 7 0 0 0 7 7z" />
+                  </svg>
+                </div>
+              </div>
+              <div className="flex gap-4">
+                <button onClick={() => logWater(200)} className="text-[14px] font-medium text-[#1A1A18]/70 hover:text-[#1A1A18]">
+                  +200ml
+                </button>
+                <button onClick={() => logWater(500)} className="text-[14px] font-medium text-[#1A1A18]/70 hover:text-[#1A1A18]">
+                  +500ml
+                </button>
+              </div>
             </div>
           </div>
 
           {/* Row 2: Chart cards */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4" style={{ marginBottom: 20 }}>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 mb-8">
             {/* Steps chart */}
-            <div className="glass-card" style={{ borderRadius: 20, padding: 24 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-                <div>
-                  <h3 style={{ fontSize: 15, fontWeight: 600, color: "#1A1A18", margin: "0 0 2px" }}>Steps</h3>
-                  <p style={{ fontSize: 12, color: "rgba(26,26,24,0.45)", margin: 0 }}>Last 7 days</p>
-                </div>
-                <span className="badge-lime">
-                  Avg: {Math.round(fitness.weeklySteps?.reduce((a, b) => a + b, 0) / 7) || 0}
+            <div className="bg-white/40 border border-[#1A1A18]/10 rounded-[28px] p-6 pb-2">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-[18px] font-bold text-[#1A1A18]">Weekly Steps</h3>
+                <span className="text-[13px] text-[#1A1A18]/70 font-medium">
+                  Avg: {Math.round(fitness.weeklySteps?.reduce((a, b) => a + b, 0) / 7)?.toLocaleString() || 0}
                 </span>
               </div>
-              <BarChart data={fitness.weeklySteps} labels={fitness.labels} unit="" color="primary" />
+              <BarChart
+                data={fitness.weeklySteps}
+                labels={fitness.labels}
+                unit=""
+                color="lime"
+                average={Math.round(fitness.weeklySteps?.reduce((a, b) => a + b, 0) / 7) || 0}
+              />
             </div>
 
             {/* Sleep chart */}
-            <div className="glass-card" style={{ borderRadius: 20, padding: 24 }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 16 }}>
-                <div>
-                  <h3 style={{ fontSize: 15, fontWeight: 600, color: "#1A1A18", margin: "0 0 2px" }}>Sleep</h3>
-                  <p style={{ fontSize: 12, color: "rgba(26,26,24,0.45)", margin: 0 }}>Last 7 nights</p>
-                </div>
-                <span style={{ fontSize: 12, fontWeight: 600, padding: "4px 10px", borderRadius: 9999, background: "rgba(124,111,205,0.10)", color: "#4A3D6B" }}>
-                  Avg: {(fitness.weeklySleep?.reduce((a, b) => a + b, 0) / 7).toFixed(1) || 0}h
+            <div className="bg-white/40 border border-[#1A1A18]/10 rounded-[28px] p-6 pb-2">
+              <div className="flex items-center justify-between mb-2">
+                <h3 className="text-[18px] font-bold text-[#1A1A18]">Sleep This Week</h3>
+                <span className="text-[13px] text-[#1A1A18]/70 font-medium">
+                  Avg: {(fitness.weeklySleep?.reduce((a, b) => a + b, 0) / 7)?.toFixed(1) || 0}h
                 </span>
               </div>
-              <BarChart data={fitness.weeklySleep} labels={fitness.labels} unit="h" color="purple" />
+              <LineChart
+                data={fitness.weeklySleep}
+                labels={fitness.labels}
+                unit="h"
+                color="purple"
+                average={(fitness.weeklySleep?.reduce((a, b) => a + b, 0) / 7)?.toFixed(1) || 0}
+              />
             </div>
           </div>
 
@@ -344,6 +391,11 @@ export default function FitnessDashboardPage() {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* Row 3: Hydration Log Integration */}
+          <div className="mb-8">
+            <WaterTracker externalData={waterData} setExternalData={setWaterData} />
           </div>
 
           {/* Footer: Last synced */}

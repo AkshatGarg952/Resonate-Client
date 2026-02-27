@@ -94,7 +94,7 @@ export default function BiomarkerUploadPage() {
     }, 200);
 
     try {
-      const data = await uploadPdfWithCookie("/diagnostics/upload", file, selectedCategory || 'blood');
+      const data = await uploadPdfWithCookie("/api/diagnostics/upload", file, selectedCategory || 'blood');
 
       clearInterval(progressInterval);
       setUploadProgress(100);
@@ -168,14 +168,14 @@ export default function BiomarkerUploadPage() {
   const overallScore = getOverallScore();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-24">
+    <div className="min-h-screen pb-24" style={{ background: "linear-gradient(135deg, #EEF5E0 0%, #EAF0F8 45%, #F3EEF5 100%)" }}>
 
 
       <section className="px-5 pt-6 pb-4">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-2 text-slate-400 hover:text-slate-300 mb-4 
-                   active:scale-95 transition-all"
+          className="flex items-center gap-2 mb-4 active:scale-95 transition-all"
+          style={{ color: "rgba(26,26,24,0.45)" }}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -183,29 +183,30 @@ export default function BiomarkerUploadPage() {
           <span className="text-sm font-medium">Back</span>
         </button>
 
-        <h1 className="text-3xl font-black text-slate-50 mb-1">
+        <h1 className="text-3xl font-black mb-1" style={{ color: "#1A1A18" }}>
           Blood Report Analysis
         </h1>
-        <p className="text-sm text-slate-400">
+        <p className="text-sm" style={{ color: "#CADB00", fontWeight: 600 }}>
           Upload your PDF report for instant AI-powered biomarker insights
         </p>
       </section>
 
 
       <section className="px-5 mb-6">
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6">
+        <div className="glass-card rounded-3xl p-6">
 
           <div className="mb-6">
-            <label className="block text-sm font-semibold text-slate-400 mb-3">Report Category</label>
+            <label className="block text-sm font-semibold mb-3" style={{ color: "rgba(26,26,24,0.55)" }}>Report Category</label>
             <div className="flex flex-wrap gap-2">
               {['blood', 'urine', 'bca', 'cgm', 'other'].map(cat => (
                 <button
                   key={cat}
                   onClick={() => setSelectedCategory(cat)}
-                  className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border ${selectedCategory === cat
-                    ? "bg-emerald-500 text-slate-950 border-emerald-500 hover:bg-emerald-400"
-                    : "bg-slate-800/50 text-slate-400 border-slate-700/50 hover:border-slate-600 hover:text-slate-300"
-                    }`}
+                  className="px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border"
+                  style={selectedCategory === cat
+                    ? { background: "#CADB00", color: "#1A1A18", borderColor: "#CADB00" }
+                    : { background: "rgba(26,26,24,0.05)", color: "rgba(26,26,24,0.50)", borderColor: "rgba(26,26,24,0.10)" }
+                  }
                 >
                   {cat.charAt(0).toUpperCase() + cat.slice(1)}
                 </button>
@@ -213,15 +214,15 @@ export default function BiomarkerUploadPage() {
             </div>
           </div>
 
-          <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 mb-6">
+          <div className="rounded-2xl p-4 mb-6" style={{ background: "rgba(202,219,0,0.08)", border: "1px solid rgba(202,219,0,0.22)" }}>
             <div className="flex items-start gap-3">
-              <svg className="w-5 h-5 text-primary flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 flex-shrink-0 mt-0.5" style={{ color: "#5A6000" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
               <div className="flex-1">
-                <p className="text-xs font-semibold text-primary mb-1">What we analyze</p>
-                <p className="text-xs text-slate-400 leading-relaxed">
+                <p className="text-xs font-semibold mb-1" style={{ color: "#5A6000" }}>What we analyze</p>
+                <p className="text-xs leading-relaxed" style={{ color: "rgba(26,26,24,0.55)" }}>
                   We extract 9 key biomarkers including glucose, cholesterol, hemoglobin, and more.
                   Results are categorized as normal or needs attention.
                 </p>
@@ -238,13 +239,13 @@ export default function BiomarkerUploadPage() {
               onDragLeave={handleDragLeave}
               onDrop={handleDrop}
               onClick={() => fileInputRef.current?.click()}
-              className={`relative border-2 border-dashed rounded-3xl p-8 text-center cursor-pointer
-                       transition-all duration-300 ${isDragging
-                  ? 'border-primary bg-primary/5 scale-[1.02]'
-                  : file
-                    ? 'border-emerald-500/30 bg-emerald-500/5'
-                    : 'border-slate-700/50 hover:border-slate-600 hover:bg-slate-800/30'
-                }`}
+              className="relative border-2 border-dashed rounded-3xl p-8 text-center cursor-pointer transition-all duration-300"
+              style={isDragging
+                ? { borderColor: "#CADB00", background: "rgba(202,219,0,0.06)", transform: "scale(1.02)" }
+                : file
+                  ? { borderColor: "rgba(202,219,0,0.40)", background: "rgba(202,219,0,0.04)" }
+                  : { borderColor: "rgba(26,26,24,0.15)", background: "rgba(26,26,24,0.02)" }
+              }
             >
               <input
                 ref={fileInputRef}
@@ -256,33 +257,31 @@ export default function BiomarkerUploadPage() {
 
               {!file ? (
                 <>
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-800/50 
-                                flex items-center justify-center">
-                    <svg className="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{ background: "rgba(26,26,24,0.06)" }}>
+                    <svg className="w-8 h-8" style={{ color: "rgba(26,26,24,0.35)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                         d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
                   </div>
-                  <p className="text-base font-semibold text-slate-50 mb-2">
+                  <p className="text-base font-semibold mb-2" style={{ color: "#1A1A18" }}>
                     {isDragging ? 'Drop your PDF here' : 'Tap to upload or drag & drop'}
                   </p>
-                  <p className="text-xs text-slate-500">
+                  <p className="text-xs" style={{ color: "rgba(26,26,24,0.40)" }}>
                     PDF files only • Max 10MB
                   </p>
                 </>
               ) : (
                 <>
-                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-emerald-500/10 
-                                flex items-center justify-center border border-emerald-500/20">
-                    <svg className="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{ background: "rgba(202,219,0,0.12)", border: "1px solid rgba(202,219,0,0.30)" }}>
+                    <svg className="w-8 h-8" style={{ color: "#5A6000" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                   </div>
-                  <p className="text-base font-semibold text-slate-50 mb-1 truncate px-4">
+                  <p className="text-base font-semibold mb-1 truncate px-4" style={{ color: "#1A1A18" }}>
                     {file.name}
                   </p>
-                  <p className="text-xs text-slate-500 mb-3">
+                  <p className="text-xs mb-3" style={{ color: "rgba(26,26,24,0.45)" }}>
                     {(file.size / 1024 / 1024).toFixed(2)} MB
                   </p>
                   <button
@@ -291,9 +290,8 @@ export default function BiomarkerUploadPage() {
                       e.stopPropagation();
                       removeFile();
                     }}
-                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full 
-                             bg-red-500/10 text-red-400 text-xs font-semibold
-                             hover:bg-red-500/20 active:scale-95 transition-all"
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold active:scale-95 transition-all"
+                    style={{ background: "rgba(239,68,68,0.08)", color: "#DC2626" }}
                   >
                     <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -319,17 +317,17 @@ export default function BiomarkerUploadPage() {
             {loading && (
               <div className="space-y-3">
                 <div className="flex items-center justify-between text-sm">
-                  <span className="text-slate-300 font-medium">Analyzing your report...</span>
-                  <span className="text-primary font-bold">{uploadProgress}%</span>
+                  <span className="font-medium" style={{ color: "#1A1A18" }}>Analyzing your report...</span>
+                  <span className="font-bold" style={{ color: "#5A6000" }}>{uploadProgress}%</span>
                 </div>
-                <div className="h-2 bg-slate-800 rounded-full overflow-hidden">
+                <div className="h-2 rounded-full overflow-hidden" style={{ background: "rgba(26,26,24,0.06)" }}>
                   <div
-                    className="h-full bg-gradient-to-r from-primary to-emerald-400 rounded-full transition-all duration-300"
-                    style={{ width: `${uploadProgress}%` }}
+                    className="h-full rounded-full transition-all duration-300"
+                    style={{ width: `${uploadProgress}%`, background: "#CADB00" }}
                   ></div>
                 </div>
-                <div className="flex items-center justify-center gap-2 text-xs text-slate-500">
-                  <svg className="animate-spin h-4 w-4 text-primary" fill="none" viewBox="0 0 24 24">
+                <div className="flex items-center justify-center gap-2 text-xs" style={{ color: "rgba(26,26,24,0.45)" }}>
+                  <svg className="animate-spin h-4 w-4" style={{ color: "#CADB00" }} fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -342,10 +340,10 @@ export default function BiomarkerUploadPage() {
             <button
               type="submit"
               disabled={loading || !file}
-              className="w-full relative py-4 px-6 rounded-2xl bg-gradient-to-r from-primary to-emerald-500 
-                       text-slate-950 font-bold overflow-hidden shadow-lg shadow-primary/25
-                       hover:shadow-xl hover:shadow-primary/30 disabled:opacity-60 disabled:cursor-not-allowed
+              className="w-full relative py-4 px-6 rounded-2xl font-bold overflow-hidden
+                       disabled:opacity-60 disabled:cursor-not-allowed
                        active:scale-[0.98] transition-all duration-200 group"
+              style={{ background: "linear-gradient(135deg, #CADB00 0%, #B8C900 100%)", color: "#1A1A18", boxShadow: "0 4px 20px rgba(202,219,0,0.30)" }}
             >
               {!loading && (
                 <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent 
@@ -382,18 +380,17 @@ export default function BiomarkerUploadPage() {
         <section id="results-section" className="px-5 space-y-4">
 
 
-          <div className="bg-gradient-to-r from-emerald-500/10 to-primary/10 border border-emerald-500/20 
-                        rounded-3xl p-6 animate-fadeIn">
+          <div className="glass-card rounded-3xl p-6 animate-fadeIn">
             <div className="flex items-start gap-4 mb-4">
-              <div className="w-12 h-12 rounded-xl bg-emerald-500/20 flex items-center justify-center flex-shrink-0">
-                <svg className="w-6 h-6 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "rgba(202,219,0,0.15)", border: "1px solid rgba(202,219,0,0.25)" }}>
+                <svg className="w-6 h-6" style={{ color: "#5A6000" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                     d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
               <div className="flex-1">
-                <h3 className="text-xl font-black text-slate-50 mb-1">Analysis Complete!</h3>
-                <p className="text-sm text-slate-400">
+                <h3 className="text-xl font-black mb-1" style={{ color: "#1A1A18" }}>Analysis Complete!</h3>
+                <p className="text-sm" style={{ color: "rgba(26,26,24,0.55)" }}>
                   We've analyzed {biomarkers.length} biomarkers from your report
                 </p>
               </div>
@@ -401,30 +398,30 @@ export default function BiomarkerUploadPage() {
 
 
             {overallScore !== null && (
-              <div className="bg-slate-950/30 rounded-2xl p-4 flex items-center justify-between">
+              <div className="rounded-2xl p-4 flex items-center justify-between" style={{ background: "rgba(26,26,24,0.04)" }}>
                 <div>
-                  <p className="text-xs font-medium text-slate-400 mb-1">Overall Health Score</p>
-                  <p className="text-3xl font-black text-slate-50">
+                  <p className="text-xs font-medium mb-1" style={{ color: "rgba(26,26,24,0.45)" }}>Overall Health Score</p>
+                  <p className="text-3xl font-black" style={{ color: "#1A1A18" }}>
                     {overallScore}
-                    <span className="text-base font-normal text-slate-500 ml-1">/100</span>
+                    <span className="text-base font-normal ml-1" style={{ color: "rgba(26,26,24,0.35)" }}>/100</span>
                   </p>
                 </div>
                 <div className="relative w-20 h-20">
                   <svg className="w-20 h-20 transform -rotate-90">
-                    <circle cx="40" cy="40" r="32" stroke="currentColor" strokeWidth="6" fill="transparent" className="text-slate-800" />
+                    <circle cx="40" cy="40" r="32" stroke="rgba(26,26,24,0.08)" strokeWidth="6" fill="transparent" />
                     <circle
                       cx="40" cy="40" r="32"
-                      stroke="currentColor"
                       strokeWidth="6"
                       fill="transparent"
                       strokeDasharray={`${2 * Math.PI * 32}`}
                       strokeDashoffset={`${2 * Math.PI * 32 * (1 - overallScore / 100)}`}
-                      className={`${overallScore >= 70 ? 'text-emerald-400' : overallScore >= 40 ? 'text-amber-400' : 'text-red-400'} transition-all duration-1000`}
+                      stroke={overallScore >= 70 ? '#CADB00' : overallScore >= 40 ? '#F5A524' : '#EF4444'}
+                      className="transition-all duration-1000"
                       strokeLinecap="round"
                     />
                   </svg>
                   <div className="absolute inset-0 flex items-center justify-center">
-                    <span className="text-lg font-black text-slate-50">{overallScore}%</span>
+                    <span className="text-lg font-black" style={{ color: "#1A1A18" }}>{overallScore}%</span>
                   </div>
                 </div>
               </div>
@@ -432,13 +429,13 @@ export default function BiomarkerUploadPage() {
           </div>
 
 
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6">
+          <div className="glass-card rounded-3xl p-6">
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h3 className="text-lg font-bold text-slate-50">Your Biomarkers</h3>
-                <p className="text-xs text-slate-500 mt-1">
+                <h3 className="text-lg font-bold" style={{ color: "#1A1A18" }}>Your Biomarkers</h3>
+                <p className="text-xs mt-1" style={{ color: "rgba(26,26,24,0.45)" }}>
                   <span className="inline-flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                    <span className="w-2 h-2 rounded-full" style={{ background: "#CADB00" }}></span>
                     Good
                   </span>
                   <span className="mx-2">•</span>
@@ -448,7 +445,7 @@ export default function BiomarkerUploadPage() {
                   </span>
                   <span className="mx-2">•</span>
                   <span className="inline-flex items-center gap-1">
-                    <span className="w-2 h-2 rounded-full bg-slate-500"></span>
+                    <span className="w-2 h-2 rounded-full" style={{ background: "rgba(26,26,24,0.20)" }}></span>
                     Unavailable
                   </span>
                 </p>
@@ -460,8 +457,8 @@ export default function BiomarkerUploadPage() {
               <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
 
                 <div className="lg:col-span-1">
-                  <div className="bg-slate-950/50 rounded-2xl p-4 border border-slate-800/50">
-                    <h4 className="text-sm font-bold text-slate-400 uppercase tracking-wider mb-3 px-2">
+                  <div className="rounded-2xl p-4" style={{ background: "rgba(26,26,24,0.03)", border: "1px solid rgba(26,26,24,0.06)" }}>
+                    <h4 className="text-sm font-bold uppercase tracking-wider mb-3 px-2" style={{ color: "rgba(26,26,24,0.35)" }}>
                       Categories
                     </h4>
                     <div className="space-y-2">
@@ -474,17 +471,16 @@ export default function BiomarkerUploadPage() {
                           <button
                             key={categoryLabel}
                             onClick={() => setSelectedCategory(categoryLabel)}
-                            className={`w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200 ${isSelected
-                              ? "bg-gradient-to-r from-primary to-emerald-500 text-slate-950 shadow-lg shadow-primary/25"
-                              : "bg-slate-800/50 text-slate-400 border border-slate-700/50 hover:border-slate-600 hover:text-slate-300 hover:bg-slate-800"
-                              }`}
+                            className="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold transition-all duration-200"
+                            style={isSelected
+                              ? { background: "#CADB00", color: "#1A1A18", boxShadow: "0 2px 8px rgba(202,219,0,0.25)" }
+                              : { background: "rgba(26,26,24,0.04)", color: "rgba(26,26,24,0.50)", border: "1px solid rgba(26,26,24,0.08)" }
+                            }
                           >
                             <div className="flex items-center justify-between">
                               <span className="truncate">{categoryLabel || 'Other'}</span>
-                              <span className={`ml-2 px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0 ${isSelected
-                                ? "bg-slate-950/30 text-slate-950"
-                                : "bg-slate-700/50 text-slate-500"
-                                }`}>
+                              <span className="ml-2 px-2 py-0.5 rounded-full text-xs font-bold flex-shrink-0"
+                                style={isSelected ? { background: "rgba(26,26,24,0.15)", color: "#1A1A18" } : { background: "rgba(26,26,24,0.08)", color: "rgba(26,26,24,0.45)" }}>
                                 {categoryCount}
                               </span>
                             </div>
@@ -500,10 +496,10 @@ export default function BiomarkerUploadPage() {
                   {selectedCategory && biomarkersByCategory[selectedCategory] ? (
                     <>
                       <div className="mb-4">
-                        <h4 className="text-xl font-bold text-slate-50 mb-1">
+                        <h4 className="text-xl font-bold mb-1" style={{ color: "#1A1A18" }}>
                           {selectedCategory || 'Other'}
                         </h4>
-                        <p className="text-sm text-slate-400">
+                        <p className="text-sm" style={{ color: "rgba(26,26,24,0.45)" }}>
                           {Object.keys(biomarkersByCategory[selectedCategory] || {}).length} biomarkers
                         </p>
                       </div>
@@ -524,13 +520,13 @@ export default function BiomarkerUploadPage() {
                     </>
                   ) : (
                     <div className="flex flex-col items-center justify-center py-12 text-center">
-                      <div className="w-16 h-16 rounded-2xl bg-slate-800/50 flex items-center justify-center mb-4">
-                        <svg className="w-8 h-8 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <div className="w-16 h-16 rounded-2xl flex items-center justify-center mb-4" style={{ background: "rgba(26,26,24,0.05)" }}>
+                        <svg className="w-8 h-8" style={{ color: "rgba(26,26,24,0.25)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                         </svg>
                       </div>
-                      <p className="text-sm text-slate-400">Select a category to view biomarkers</p>
+                      <p className="text-sm" style={{ color: "rgba(26,26,24,0.45)" }}>Select a category to view biomarkers</p>
                     </div>
                   )}
                 </div>
@@ -557,9 +553,8 @@ export default function BiomarkerUploadPage() {
           <div className="grid grid-cols-2 gap-3">
             <button
               onClick={() => navigate('/biomarkers/history')}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl 
-                       bg-slate-800/50 border-2 border-slate-700/50 text-slate-300 font-semibold
-                       hover:bg-slate-800 hover:border-slate-600 active:scale-[0.98] transition-all"
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl font-semibold active:scale-[0.98] transition-all"
+              style={{ background: "rgba(26,26,24,0.06)", color: "rgba(26,26,24,0.70)", border: "2px solid rgba(26,26,24,0.10)" }}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
@@ -572,9 +567,8 @@ export default function BiomarkerUploadPage() {
                 removeFile();
                 window.scrollTo({ top: 0, behavior: 'smooth' });
               }}
-              className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl 
-                       bg-primary/10 border-2 border-primary/20 text-primary font-semibold
-                       hover:bg-primary/20 active:scale-[0.98] transition-all"
+              className="flex items-center justify-center gap-2 px-4 py-3 rounded-2xl font-semibold active:scale-[0.98] transition-all"
+              style={{ background: "rgba(202,219,0,0.12)", color: "#5A6000", border: "2px solid rgba(202,219,0,0.25)" }}
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />

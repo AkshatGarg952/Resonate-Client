@@ -1,27 +1,35 @@
 import React, { useState, useEffect } from 'react';
 import { getWithCookie, postWithCookie } from '../api';
 
-export default function WaterTracker() {
-    const [data, setData] = useState({ amountMl: 0, goalMl: 0 });
+export default function WaterTracker({ externalData, setExternalData }) {
+    const [localData, setLocalData] = useState({ amountMl: 0, goalMl: 2500 });
     const [loading, setLoading] = useState(true);
-    const [adding, setAdding] = useState(false);
     const [isEditingGoal, setIsEditingGoal] = useState(false);
     const [newGoal, setNewGoal] = useState(0);
 
-
-    const [isAddingCustom, setIsAddingCustom] = useState(false);
-    const [customAmount, setCustomAmount] = useState("");
+    const isControlled = !!externalData;
+    const data = isControlled ? externalData : localData;
+    const updateData = isControlled ? setExternalData : setLocalData;
 
     useEffect(() => {
-        fetchWaterData();
-    }, []);
+        if (!isControlled) {
+            fetchWaterData();
+        } else {
+            setNewGoal(externalData.goalMl || 2500);
+            setLoading(false);
+        }
+    }, [externalData, isControlled]);
 
     const fetchWaterData = async () => {
         try {
             const res = await getWithCookie('/api/water');
             if (res && res.today) {
-                setData(res.today);
-                setNewGoal(res.today.goalMl);
+                const fetchedData = {
+                    amountMl: res.today.amountMl || 0,
+                    goalMl: res.today.goalMl || 2500
+                };
+                updateData(fetchedData);
+                setNewGoal(fetchedData.goalMl);
             }
         } catch (error) {
             console.error("Failed to fetch water data", error);
@@ -30,150 +38,121 @@ export default function WaterTracker() {
         }
     };
 
-    const logWater = async (amount) => {
-        setAdding(true);
-        try {
-            const res = await postWithCookie('/api/water/log', { amountMl: amount });
-            setData(res);
-            setIsAddingCustom(false);
-            setCustomAmount("");
-        } catch (error) {
-            console.error("Failed to log water", error);
-        } finally {
-            setAdding(false);
-        }
-    };
-
     const updateGoal = async () => {
         try {
             const res = await postWithCookie('/api/water/goal', { goalMl: parseInt(newGoal) });
-            setData(res);
+            if (res) {
+                updateData({ ...data, goalMl: res.goalMl || parseInt(newGoal) });
+            }
             setIsEditingGoal(false);
         } catch (error) {
             console.error("Failed to set goal", error);
         }
     };
 
-    const progress = Math.min((data.amountMl / data.goalMl) * 100, 100);
+    const progress = data.goalMl ? Math.min((data.amountMl / data.goalMl) * 100, 100) : 0;
+    const remaining = Math.max((data.goalMl || 0) - (data.amountMl || 0), 0);
+
+    // Mock data for the last 7 days chart
+    const last7Days = [60, 45, 75, 70, 90, 100, 55];
 
     if (loading) return null;
 
     return (
-        <div className="bg-gradient-to-br from-cyan-900/40 to-blue-900/40 backdrop-blur-xl border border-blue-500/20 rounded-3xl p-6 relative overflow-hidden group">
+        <div className="bg-white/40 border border-[#1A1A18]/10 rounded-[28px] p-6 lg:p-10 relative">
+            <h2 className="text-[22px] font-bold text-[#1A1A18] mb-8">Hydration Log</h2>
 
-            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/10 rounded-full blur-3xl -mr-10 -mt-10 pointer-events-none"></div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
 
-            <div className="flex items-start justify-between mb-6 relative z-10">
-                <div>
-                    <h3 className="text-lg font-bold text-blue-100 flex items-center gap-2">
-                        <span className="text-xl">💧</span> Hydration
-                    </h3>
-                    <p className="text-xs text-blue-300/80 mt-1">Daily Water Goal</p>
-                </div>
-
-                <div className="flex gap-2">
-                    <button
-                        onClick={() => {
-                            setIsAddingCustom(!isAddingCustom);
-                            setIsEditingGoal(false);
-                        }}
-                        className={`p-2 rounded-xl transition-colors ${isAddingCustom ? 'bg-blue-500/30 text-white' : 'bg-blue-500/10 text-blue-300 hover:bg-blue-500/20'}`}
-                        title="Add Custom Amount"
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                {/* Circular Progress */}
+                <div className="flex items-center justify-center md:justify-start">
+                    <div className="relative w-36 h-36">
+                        <svg className="w-full h-full transform -rotate-90">
+                            <circle
+                                cx="72" cy="72" r="64"
+                                fill="none"
+                                stroke="#F1ECE4"
+                                strokeWidth="12"
+                            />
+                            <circle
+                                cx="72" cy="72" r="64"
+                                fill="none"
+                                stroke="#A195F9"
+                                strokeWidth="12"
+                                strokeDasharray={`${2 * Math.PI * 64}`}
+                                strokeDashoffset={`${2 * Math.PI * 64 * (1 - progress / 100)}`}
+                                strokeLinecap="round"
+                                className="transition-all duration-1000 ease-out"
+                            />
                         </svg>
-                    </button>
-                    <button
-                        onClick={() => {
-                            setIsEditingGoal(!isEditingGoal);
-                            setIsAddingCustom(false);
-                        }}
-                        className={`p-2 rounded-xl transition-colors ${isEditingGoal ? 'bg-blue-500/30 text-white' : 'bg-blue-500/10 text-blue-300 hover:bg-blue-500/20'}`}
-                        title="Edit Goal"
-                    >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                    </button>
+                        <div className="absolute inset-0 flex items-center justify-center">
+                            <span className="text-[24px] font-bold text-[#1A1A18]">{Math.round(progress)}%</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Vertical Stats */}
+                <div className="flex flex-col justify-center gap-6">
+                    <div>
+                        <p className="text-[13px] text-[#1A1A18]/60 mb-1">Logged</p>
+                        <p className="text-[22px] font-bold text-[#1A1A18] leading-none">{data.amountMl}ml</p>
+                    </div>
+                    <div>
+                        <p className="text-[13px] text-[#1A1A18]/60 mb-1">Goal</p>
+                        <p className="text-[22px] font-bold text-[#1A1A18] leading-none">{data.goalMl}ml</p>
+                    </div>
+                    <div>
+                        <p className="text-[13px] text-[#1A1A18]/60 mb-1">Remaining</p>
+                        <p className="text-[22px] font-bold text-[#1A1A18] leading-none">{remaining}ml</p>
+                    </div>
+                </div>
+
+                {/* Small Bar Chart */}
+                <div className="flex flex-col justify-center items-center md:items-end w-full">
+                    <div className="w-full max-w-[200px]">
+                        <p className="text-[13px] text-[#1A1A18]/60 mb-4 text-left">Last 7 Days</p>
+                        <div className="flex items-end justify-between h-24 gap-1.5 w-full">
+                            {last7Days.map((val, i) => (
+                                <div key={i} className="flex-1 bg-[#A195F9] rounded-t-sm transition-all hover:bg-[#A195F9]/80" style={{ height: `${val}%` }}></div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div className="flex items-end gap-1 mb-2">
-                <span className="text-4xl font-black text-white">{data.amountMl}</span>
-                <span className="text-sm font-medium text-blue-300 mb-2">/ {data.goalMl} ml</span>
+            {/* Divider */}
+            <hr className="border-[#1A1A18]/20 my-6" />
+
+            {/* Timeline & Actions */}
+            <div className="flex flex-col gap-6">
+                <div className="flex items-center gap-6 text-[13px] text-[#1A1A18]/70 font-medium overflow-x-auto pb-2 custom-scrollbar">
+                    <span className="whitespace-nowrap">09:15 · 300ml</span>
+                    <span className="whitespace-nowrap">12:30 · 250ml</span>
+                    <span className="whitespace-nowrap">15:45 · 200ml</span>
+                    <span className="whitespace-nowrap">18:00 · 450ml</span>
+                </div>
+
+                {isEditingGoal ? (
+                    <div className="flex items-center gap-3">
+                        <input
+                            type="number"
+                            value={newGoal}
+                            onChange={(e) => setNewGoal(e.target.value)}
+                            className="border border-[#1A1A18]/20 rounded-lg px-3 py-1.5 text-[14px] w-24 outline-none focus:border-[#CADB00]"
+                            autoFocus
+                        />
+                        <button onClick={updateGoal} className="text-[#CADB00] font-bold text-[14px]">Save</button>
+                        <button onClick={() => setIsEditingGoal(false)} className="text-[#1A1A18]/50 font-medium text-[14px]">Cancel</button>
+                    </div>
+                ) : (
+                    <button
+                        onClick={() => setIsEditingGoal(true)}
+                        className="text-[14px] font-semibold text-[#1A1A18] hover:text-[#CADB00] w-fit text-left transition-colors"
+                    >
+                        Set Goal
+                    </button>
+                )}
             </div>
-
-
-            <div className="w-full h-3 bg-slate-900/50 rounded-full overflow-hidden mb-6 border border-blue-500/10">
-                <div
-                    className="h-full bg-gradient-to-r from-blue-500 to-cyan-400 rounded-full transition-all duration-700 ease-out relative"
-                    style={{ width: `${progress}%` }}
-                >
-                    <div className="absolute inset-0 bg-white/20 animate-[shimmer_2s_infinite]"></div>
-                </div>
-            </div>
-
-
-            {isEditingGoal ? (
-                <div className="flex gap-2 animate-fade-in">
-                    <input
-                        type="number"
-                        value={newGoal}
-                        onChange={(e) => setNewGoal(e.target.value)}
-                        placeholder="Daily Goal (ml)"
-                        className="flex-1 bg-slate-900/80 border border-blue-500/30 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-400"
-                    />
-                    <button
-                        onClick={updateGoal}
-                        className="px-4 py-2 bg-blue-500 text-white rounded-xl text-xs font-bold hover:bg-blue-600 transition-colors"
-                    >
-                        Save
-                    </button>
-                </div>
-            ) : isAddingCustom ? (
-                <div className="flex gap-2 animate-fade-in">
-                    <input
-                        type="number"
-                        value={customAmount}
-                        onChange={(e) => setCustomAmount(e.target.value)}
-                        placeholder="Amount (ml)"
-                        autoFocus
-                        className="flex-1 bg-slate-900/80 border border-blue-500/30 rounded-xl px-3 py-2 text-white text-sm focus:outline-none focus:border-blue-400"
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter' && customAmount) logWater(parseInt(customAmount));
-                        }}
-                    />
-                    <button
-                        onClick={() => customAmount && logWater(parseInt(customAmount))}
-                        disabled={adding || !customAmount}
-                        className="px-4 py-2 bg-cyan-500 text-white rounded-xl text-xs font-bold hover:bg-cyan-600 transition-colors disabled:opacity-50"
-                    >
-                        Add
-                    </button>
-                </div>
-            ) : (
-                <div className="grid grid-cols-2 gap-3">
-                    <button
-                        onClick={() => logWater(250)}
-                        disabled={adding}
-                        className="flex items-center justify-center gap-2 py-3 rounded-xl bg-blue-500/20 border border-blue-500/30 text-blue-100 hover:bg-blue-500/30 active:scale-95 transition-all text-sm font-semibold group/btn"
-                    >
-                        <span className="text-lg group-hover/btn:scale-110 transition-transform">🥛</span>
-                        +250ml
-                    </button>
-                    <button
-                        onClick={() => logWater(500)}
-                        disabled={adding}
-                        className="flex items-center justify-center gap-2 py-3 rounded-xl bg-cyan-500/20 border border-cyan-500/30 text-cyan-100 hover:bg-cyan-500/30 active:scale-95 transition-all text-sm font-semibold group/btn"
-                    >
-                        <span className="text-lg group-hover/btn:scale-110 transition-transform">🍶</span>
-                        +500ml
-                    </button>
-                </div>
-            )}
         </div>
     );
 }
-

@@ -42,7 +42,7 @@ const WorkoutHistoryPage = () => {
                 w._id === selectedWorkout._id ? { ...w, status: 'completed' } : w
             ));
             setShowCompleteModal(false);
-            setSelectedWorkout(null);
+            setSelectedWorkout(prev => ({ ...prev, status: 'completed' }));
         } catch (err) {
             console.error("Failed to complete workout", err);
             alert("Failed to log workout completion");

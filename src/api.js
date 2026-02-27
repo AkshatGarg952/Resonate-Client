@@ -143,6 +143,10 @@ export async function analyzeFoodImage(file, cuisine) {
   return data;
 }
 
+export async function getFoodHistory() {
+  return getWithCookie("/api/food/history");
+}
+
 export async function createIntervention(body) {
   return postWithCookie("/api/interventions", body);
 }
@@ -153,6 +157,10 @@ export async function getActiveInterventions() {
 
 export async function getAllInterventions() {
   return getWithCookie("/api/interventions");
+}
+
+export async function suggestInterventions(body = {}) {
+  return postWithCookie("/api/interventions/suggest", body);
 }
 
 export async function stopIntervention(id, status = "discontinued", reason = null) {

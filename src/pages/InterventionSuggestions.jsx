@@ -50,31 +50,31 @@ const InterventionSuggestions = () => {
     };
 
     return (
-        <div className="min-h-screen bg-slate-950 text-slate-50 flex flex-col items-center p-6 gradient-bg relative overflow-hidden">
-
-            <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-500/20 rounded-full blur-[100px]" />
-            <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-blue-500/20 rounded-full blur-[100px]" />
-
-            <div className="z-10 w-full max-w-4xl">
-                <header className="mb-12 text-center">
-                    <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-blue-500 bg-clip-text text-transparent mb-4">
+        <div className="min-h-screen p-6 pb-24" style={{ background: "linear-gradient(135deg, #EEF5E0 0%, #EAF0F8 45%, #F3EEF5 100%)" }}>
+            <div className="max-w-4xl mx-auto">
+                <header className="mb-10 text-center">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center" style={{ background: "rgba(202,219,0,0.15)", border: "1px solid rgba(202,219,0,0.30)" }}>
+                        <span className="text-3xl">🧬</span>
+                    </div>
+                    <h1 className="text-4xl font-black mb-3" style={{ color: "#1A1A18" }}>
                         AI Health Interventions
                     </h1>
-                    <p className="text-slate-400 text-lg">
+                    <p className="text-base" style={{ color: "rgba(26,26,24,0.55)" }}>
                         Personalized strategies based on your recent sleep, stress, and activity data.
                     </p>
                 </header>
 
                 {suggestions.length === 0 && !loading && (
-                    <div className="text-center py-20 bg-slate-900/50 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl">
+                    <div className="glass-card rounded-3xl p-12 text-center">
                         <div className="mb-6 text-6xl">🧬</div>
-                        <h2 className="text-2xl font-semibold mb-4">Ready to optimize your health?</h2>
-                        <p className="text-slate-400 mb-8 max-w-md mx-auto">
+                        <h2 className="text-2xl font-bold mb-4" style={{ color: "#1A1A18" }}>Ready to optimize your health?</h2>
+                        <p className="mb-8 max-w-md mx-auto" style={{ color: "rgba(26,26,24,0.55)" }}>
                             Our AI analyzes your recent logs to find areas for improvement.
                         </p>
                         <button
                             onClick={generateSuggestions}
-                            className="px-8 py-4 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 rounded-xl font-bold text-lg shadow-lg hover:shadow-purple-500/25 transition-all text-white"
+                            className="px-8 py-4 rounded-2xl font-bold text-lg active:scale-95 transition-all"
+                            style={{ background: "linear-gradient(135deg, #CADB00 0%, #B8C900 100%)", color: "#1A1A18", boxShadow: "0 4px 20px rgba(202,219,0,0.30)" }}
                         >
                             Generate Suggestions
                         </button>
@@ -83,54 +83,62 @@ const InterventionSuggestions = () => {
 
                 {loading && (
                     <div className="flex flex-col items-center py-20">
-                        <div className="w-16 h-16 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mb-4" />
-                        <p className="text-xl animate-pulse">Analyzing your health data...</p>
-                        <p className="text-sm text-slate-500 mt-2">Checking sleep patterns, stress levels, and nutrition adherence</p>
+                        <div className="w-16 h-16 border-4 border-t-transparent rounded-full animate-spin mb-4" style={{ borderColor: "rgba(202,219,0,0.30)", borderTopColor: "transparent" }}>
+                            <style>{`@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }`}</style>
+                        </div>
+                        <p className="text-xl font-semibold animate-pulse" style={{ color: "#1A1A18" }}>Analyzing your health data...</p>
+                        <p className="text-sm mt-2" style={{ color: "rgba(26,26,24,0.50)" }}>Checking sleep patterns, stress levels, and nutrition adherence</p>
                     </div>
                 )}
 
                 {error && (
-                    <div className="bg-red-500/10 border border-red-500/20 text-red-400 p-6 rounded-xl text-center mb-8">
-                        {error}
-                        <button onClick={generateSuggestions} className="block mx-auto mt-4 text-sm underline hover:text-red-300">Try Again</button>
+                    <div className="glass-card rounded-2xl p-6 text-center mb-8" style={{ borderLeft: "4px solid rgba(239,68,68,0.60)" }}>
+                        <p style={{ color: "#DC2626" }}>{error}</p>
+                        <button onClick={generateSuggestions} className="mt-4 text-sm font-semibold underline" style={{ color: "rgba(26,26,24,0.55)" }}>Try Again</button>
                     </div>
                 )}
 
                 {suggestions.length > 0 && (
-                    <div className="grid gap-6">
-                        <div className="flex justify-between items-center mb-4">
-                            <h3 className="text-xl font-semibold text-white">Recommended for You</h3>
-                            <button onClick={generateSuggestions} className="text-sm text-slate-400 hover:text-white">Regenerate</button>
+                    <div className="grid gap-4">
+                        <div className="flex justify-between items-center mb-2">
+                            <h3 className="text-xl font-bold" style={{ color: "#1A1A18" }}>Recommended for You</h3>
+                            <button onClick={generateSuggestions} className="text-sm font-semibold" style={{ color: "rgba(26,26,24,0.50)" }}>Regenerate</button>
                         </div>
 
                         {suggestions.map((suggestion, idx) => (
-                            <div key={idx} className="bg-slate-900/80 backdrop-blur-md border border-white/10 p-6 rounded-2xl hover:border-purple-500/30 transition-all group">
+                            <div key={idx} className="glass-card p-6 rounded-2xl active:scale-[0.99] transition-all">
                                 <div className="flex justify-between items-start gap-4">
                                     <div className="flex-1">
                                         <div className="flex items-center gap-3 mb-2">
-                                            <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${suggestion.type === 'sleep' ? 'bg-indigo-500/20 text-indigo-300' :
-                                                suggestion.type === 'nutrition' ? 'bg-green-500/20 text-green-300' :
-                                                    suggestion.type === 'stress' ? 'bg-amber-500/20 text-amber-300' :
-                                                        'bg-blue-500/20 text-blue-300'
-                                                }`}>
+                                            <span className="px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider"
+                                                style={{
+                                                    background: suggestion.type === 'sleep' ? 'rgba(99,102,241,0.10)' :
+                                                        suggestion.type === 'nutrition' ? 'rgba(202,219,0,0.12)' :
+                                                            suggestion.type === 'stress' ? 'rgba(245,165,36,0.10)' :
+                                                                'rgba(59,130,246,0.10)',
+                                                    color: suggestion.type === 'sleep' ? '#4338CA' :
+                                                        suggestion.type === 'nutrition' ? '#5A6000' :
+                                                            suggestion.type === 'stress' ? '#B45309' :
+                                                                '#1D4ED8'
+                                                }}>
                                                 {suggestion.type}
                                             </span>
                                             {suggestion.priority === 'high' && (
-                                                <span className="flex items-center text-red-400 text-xs font-bold gap-1">
+                                                <span className="flex items-center text-xs font-bold gap-1" style={{ color: "#DC2626" }}>
                                                     <span className="animate-pulse">●</span> High Priority
                                                 </span>
                                             )}
                                         </div>
-                                        <h3 className="text-xl font-bold text-white mb-2">{suggestion.title}</h3>
-                                        <p className="text-slate-400 leading-relaxed mb-4">{suggestion.description}</p>
+                                        <h3 className="text-xl font-bold mb-2" style={{ color: "#1A1A18" }}>{suggestion.title}</h3>
+                                        <p className="leading-relaxed mb-4" style={{ color: "rgba(26,26,24,0.55)" }}>{suggestion.description}</p>
 
                                         {suggestion.reasoning && (
-                                            <div className="bg-white/5 p-3 rounded-lg text-sm text-slate-300 italic mb-4">
-                                                "Because {suggestion.reasoning}"
+                                            <div className="p-3 rounded-xl text-sm italic mb-4" style={{ background: "rgba(26,26,24,0.04)", color: "rgba(26,26,24,0.55)" }}>
+                                                "{suggestion.reasoning}"
                                             </div>
                                         )}
 
-                                        <div className="flex items-center gap-4 text-sm text-slate-500">
+                                        <div className="flex items-center gap-4 text-sm" style={{ color: "rgba(26,26,24,0.45)" }}>
                                             <span className="flex items-center gap-1">
                                                 ⏱ {suggestion.durationDays || 14} Days
                                             </span>
@@ -142,7 +150,8 @@ const InterventionSuggestions = () => {
 
                                     <button
                                         onClick={() => handleAccept(suggestion)}
-                                        className="px-6 py-3 bg-white/10 hover:bg-green-600 hover:text-white text-slate-300 rounded-xl font-semibold transition-all flex-shrink-0"
+                                        className="px-5 py-3 rounded-xl font-semibold transition-all flex-shrink-0 active:scale-95"
+                                        style={{ background: "rgba(202,219,0,0.12)", color: "#5A6000", border: "1px solid rgba(202,219,0,0.25)" }}
                                     >
                                         Accept Plan
                                     </button>
@@ -153,11 +162,11 @@ const InterventionSuggestions = () => {
                 )}
 
                 {contextUsed && suggestions.length > 0 && (
-                    <div className="mt-12 p-6 bg-slate-950/50 rounded-2xl border border-white/5">
-                        <h4 className="text-xs font-bold text-slate-500 uppercase tracking-widest mb-4">AI Context Used</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs text-slate-400 font-mono">
+                    <div className="mt-10 p-6 glass-card rounded-2xl">
+                        <h4 className="text-xs font-bold uppercase tracking-widest mb-4" style={{ color: "rgba(26,26,24,0.35)" }}>AI Context Used</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono" style={{ color: "rgba(26,26,24,0.55)" }}>
                             <div>
-                                <strong className="text-slate-300 block mb-1">Recent Events:</strong>
+                                <strong className="block mb-1" style={{ color: "#1A1A18" }}>Recent Events:</strong>
                                 <ul className="list-disc pl-4 space-y-1">
                                     {contextUsed.recent_events?.slice(0, 5).map((e, i) => (
                                         <li key={i}>{e}</li>
@@ -165,7 +174,7 @@ const InterventionSuggestions = () => {
                                 </ul>
                             </div>
                             <div>
-                                <strong className="text-slate-300 block mb-1">Key Facts:</strong>
+                                <strong className="block mb-1" style={{ color: "#1A1A18" }}>Key Facts:</strong>
                                 <ul className="list-disc pl-4 space-y-1">
                                     {contextUsed.key_facts?.map((e, i) => (
                                         <li key={i}>{e}</li>

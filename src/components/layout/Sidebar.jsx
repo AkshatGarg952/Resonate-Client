@@ -5,7 +5,8 @@ import { auth } from "../../firebase";
 import { AuthContext } from "../../App";
 import {
     LayoutDashboard, Activity, Utensils, FlaskConical,
-    Beaker, Brain, Sparkles, Settings, LogOut, Bell
+    Beaker, Brain, Sparkles, Settings, LogOut,
+    Dumbbell, History,
 } from "lucide-react";
 
 const NAV_ITEMS = [
@@ -16,6 +17,11 @@ const NAV_ITEMS = [
     { path: "/interventions", icon: Beaker, label: "Experiments" },
     { path: "/memories", icon: Brain, label: "Memories" },
     { path: "/insights", icon: Sparkles, label: "Insights" },
+];
+
+const WORKOUT_ITEMS = [
+    { path: "/workout-generator", icon: Dumbbell, label: "Generate Workout" },
+    { path: "/workouts", icon: History, label: "Workout History" },
 ];
 
 export default function Sidebar() {
@@ -39,6 +45,41 @@ export default function Sidebar() {
         "User";
     const avatarChar = firstName[0]?.toUpperCase() || "U";
 
+    const renderNavLink = ({ path, icon: Icon, label }) => {
+        const active = isActive(path);
+        return (
+            <li key={path}>
+                <Link
+                    to={path}
+                    className="flex items-center gap-3 py-2.5 rounded-r-xl transition-all duration-150"
+                    style={{
+                        paddingLeft: active ? 29 : 16,
+                        paddingRight: 16,
+                        borderLeft: active ? "3px solid #CADB00" : "3px solid transparent",
+                        background: active ? "rgba(202,219,0,0.12)" : "transparent",
+                        color: active ? "#5A6000" : "rgba(26,26,24,0.45)",
+                        textDecoration: "none",
+                    }}
+                    onMouseEnter={(e) => {
+                        if (!active) {
+                            e.currentTarget.style.color = "rgba(26,26,24,0.80)";
+                            e.currentTarget.style.background = "rgba(26,26,24,0.05)";
+                        }
+                    }}
+                    onMouseLeave={(e) => {
+                        if (!active) {
+                            e.currentTarget.style.color = "rgba(26,26,24,0.45)";
+                            e.currentTarget.style.background = "transparent";
+                        }
+                    }}
+                >
+                    <Icon size={18} strokeWidth={1.7} style={{ flexShrink: 0 }} />
+                    <span style={{ fontSize: 14, fontWeight: 500 }}>{label}</span>
+                </Link>
+            </li>
+        );
+    };
+
     return (
         <aside
             className="sidebar-glass fixed left-0 top-0 h-screen w-60 z-50 flex flex-col"
@@ -49,7 +90,6 @@ export default function Sidebar() {
                 className="flex items-center px-5"
                 style={{ height: 64, borderBottom: "1px solid rgba(26,26,24,0.08)" }}
             >
-                {/* Logo mark */}
                 <div
                     className="flex items-center justify-center flex-shrink-0 rounded-full"
                     style={{ width: 28, height: 28, background: "#CADB00" }}
@@ -58,7 +98,6 @@ export default function Sidebar() {
                         <path d="M7 2v10M2 7h10" stroke="#1A1A18" strokeWidth="1.5" strokeLinecap="round" />
                     </svg>
                 </div>
-                {/* Brand name */}
                 <span
                     style={{
                         marginLeft: 10,
@@ -72,69 +111,28 @@ export default function Sidebar() {
                 </span>
             </div>
 
-            {/* ── Nav Items ── */}
+            {/* ── Nav ── */}
             <nav className="flex-1 overflow-y-auto py-4 custom-scrollbar">
-                {/* Section label */}
+                {/* MAIN section */}
                 <div className="overline-label px-5 py-2">MAIN</div>
-
                 <ul className="px-3 space-y-0.5">
-                    {NAV_ITEMS.map(({ path, icon: Icon, label }) => {
-                        const active = isActive(path);
-                        return (
-                            <li key={path}>
-                                <Link
-                                    to={path}
-                                    className="flex items-center gap-3 py-2.5 rounded-r-xl transition-all duration-150"
-                                    style={{
-                                        paddingLeft: active ? 29 : 16,
-                                        paddingRight: 16,
-                                        borderLeft: active
-                                            ? "3px solid #CADB00"
-                                            : "3px solid transparent",
-                                        background: active ? "rgba(202,219,0,0.12)" : "transparent",
-                                        color: active ? "#5A6000" : "rgba(26,26,24,0.45)",
-                                        textDecoration: "none",
-                                    }}
-                                    onMouseEnter={(e) => {
-                                        if (!active) {
-                                            e.currentTarget.style.color = "rgba(26,26,24,0.80)";
-                                            e.currentTarget.style.background = "rgba(26,26,24,0.05)";
-                                        }
-                                    }}
-                                    onMouseLeave={(e) => {
-                                        if (!active) {
-                                            e.currentTarget.style.color = "rgba(26,26,24,0.45)";
-                                            e.currentTarget.style.background = "transparent";
-                                        }
-                                    }}
-                                >
-                                    <Icon
-                                        size={18}
-                                        strokeWidth={1.7}
-                                        style={{ flexShrink: 0 }}
-                                    />
-                                    <span style={{ fontSize: 14, fontWeight: 500 }}>{label}</span>
-                                </Link>
-                            </li>
-                        );
-                    })}
+                    {NAV_ITEMS.map(renderNavLink)}
                 </ul>
 
                 {/* Divider */}
-                <div
-                    className="my-4 mx-5"
-                    style={{ borderTop: "1px solid rgba(26,26,24,0.08)" }}
-                />
+                <div className="my-4 mx-5" style={{ borderTop: "1px solid rgba(26,26,24,0.08)" }} />
+
+                {/* WORKOUTS section */}
+                <div className="overline-label px-5 py-2">WORKOUTS</div>
+                <ul className="px-3 space-y-0.5">
+                    {WORKOUT_ITEMS.map(renderNavLink)}
+                </ul>
             </nav>
 
             {/* ── Bottom: User + Logout ── */}
-            <div
-                className="p-5"
-                style={{ borderTop: "1px solid rgba(26,26,24,0.08)" }}
-            >
+            <div className="p-5" style={{ borderTop: "1px solid rgba(26,26,24,0.08)" }}>
                 {/* User row */}
                 <div className="flex items-center gap-2.5 mb-3">
-                    {/* Avatar */}
                     <div
                         className="rounded-full flex items-center justify-center flex-shrink-0"
                         style={{
@@ -150,36 +148,21 @@ export default function Sidebar() {
                     </div>
 
                     <div className="flex-1 min-w-0">
-                        <p
-                            style={{
-                                fontSize: 12,
-                                fontWeight: 500,
-                                color: "#1A1A18",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                            }}
-                        >
+                        <p style={{
+                            fontSize: 12, fontWeight: 500, color: "#1A1A18",
+                            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                        }}>
                             {firstName}
                         </p>
-                        <p
-                            style={{
-                                fontSize: 11,
-                                color: "rgba(26,26,24,0.45)",
-                                whiteSpace: "nowrap",
-                                overflow: "hidden",
-                                textOverflow: "ellipsis",
-                            }}
-                        >
+                        <p style={{
+                            fontSize: 11, color: "rgba(26,26,24,0.45)",
+                            whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis",
+                        }}>
                             {user?.email}
                         </p>
                     </div>
 
-                    <Settings
-                        size={16}
-                        strokeWidth={1.7}
-                        style={{ color: "rgba(26,26,24,0.40)", flexShrink: 0 }}
-                    />
+                    <Settings size={16} strokeWidth={1.7} style={{ color: "rgba(26,26,24,0.40)", flexShrink: 0 }} />
                 </div>
 
                 {/* Logout */}

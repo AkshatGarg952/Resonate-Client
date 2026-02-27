@@ -87,13 +87,13 @@ const AdminMemoryDashboard = () => {
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 p-6 pb-24">
+        <div className="min-h-screen p-6 pb-24" style={{ background: "linear-gradient(135deg, #EEF5E0 0%, #EAF0F8 45%, #F3EEF5 100%)" }}>
             <div className="max-w-7xl mx-auto">
                 <header className="mb-8 ml-2">
-                    <h1 className="text-4xl font-black mb-2">
-                        <span className="bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">Memory Layer Admin</span>
+                    <h1 className="text-4xl font-black mb-2" style={{ color: "#1A1A18" }}>
+                        Memory Layer Admin
                     </h1>
-                    <p className="text-slate-400 font-medium">Manage user memories and view system insights</p>
+                    <p className="font-medium" style={{ color: "rgba(26,26,24,0.55)" }}>Manage user memories and view system insights</p>
                 </header>
 
                 {/* Connectivity Status */}
@@ -127,7 +127,7 @@ const AdminMemoryDashboard = () => {
 
                     {/* User Inspector */}
                     <div className="lg:col-span-2 glass-card rounded-3xl p-6 sm:p-8">
-                        <h2 className="text-2xl font-bold mb-6 text-slate-50 flex items-center gap-3">
+                        <h2 className="text-2xl font-bold mb-6 flex items-center gap-3" style={{ color: "#1A1A18" }}>
                             <span>🔍</span> User Memory Inspector
                         </h2>
 
@@ -135,14 +135,16 @@ const AdminMemoryDashboard = () => {
                             <input
                                 type="text"
                                 placeholder="Enter Firebase UID, Email, or Mongo User ID"
-                                className="flex-1 glass-card border-slate-700 bg-slate-900/50 text-slate-200 placeholder-slate-500 rounded-xl px-4 py-3 focus:outline-none focus:border-indigo-500/50 focus:ring-1 focus:ring-indigo-500/50 transition-all"
+                                className="flex-1 glass-card rounded-xl px-4 py-3 focus:outline-none transition-all"
+                                style={{ color: "#1A1A18", border: "1px solid rgba(26,26,24,0.15)" }}
                                 value={userIdInput}
                                 onChange={(e) => setUserIdInput(e.target.value)}
                             />
                             <button
                                 type="submit"
                                 disabled={loading}
-                                className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-bold px-8 py-3 rounded-xl hover:shadow-lg hover:shadow-indigo-500/20 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                className="font-bold px-8 py-3 rounded-xl active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                                style={{ background: "linear-gradient(135deg, #CADB00 0%, #B8C900 100%)", color: "#1A1A18" }}
                             >
                                 {loading ? 'Fetching...' : 'Inspect'}
                             </button>
@@ -247,8 +249,8 @@ const AdminMemoryDashboard = () => {
                                     <div key={idx} className="p-4 bg-slate-900/60 rounded-xl border border-slate-800 hover:border-slate-600 transition-colors">
                                         <div className="flex justify-between items-start mb-2">
                                             <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${insight.type === 'warning' ? 'bg-red-500/10 text-red-400 border border-red-500/20' :
-                                                    insight.type === 'positive' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
-                                                        'bg-blue-500/10 text-blue-400 border border-blue-500/20'
+                                                insight.type === 'positive' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' :
+                                                    'bg-blue-500/10 text-blue-400 border border-blue-500/20'
                                                 }`}>
                                                 {insight.type}
                                             </span>

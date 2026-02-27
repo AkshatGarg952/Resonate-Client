@@ -88,42 +88,36 @@ export default function GetACoachPage() {
 
   if (success) {
     return (
-      <div className="flex flex-col justify-center items-center min-h-screen px-5 py-8 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-
-
-        <div className="fixed top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
-
+      <div className="flex flex-col justify-center items-center min-h-screen px-5 py-8" style={{ background: "linear-gradient(135deg, #EEF5E0 0%, #EAF0F8 45%, #F3EEF5 100%)" }}>
 
         <div className="w-full max-w-md relative animate-fadeIn">
-          <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-8 shadow-2xl text-center">
+          <div className="glass-card rounded-3xl p-8 shadow-2xl text-center">
 
-
-            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-gradient-to-br from-primary/20 to-emerald-500/20 
-                          flex items-center justify-center backdrop-blur-sm border border-primary/20 animate-bounce">
-              <svg className="w-10 h-10 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full flex items-center justify-center animate-bounce"
+              style={{ background: "rgba(202,219,0,0.15)", border: "2px solid rgba(202,219,0,0.30)" }}>
+              <svg className="w-10 h-10" style={{ color: "#5A6000" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
               </svg>
             </div>
 
-            <h1 className="text-3xl font-black text-slate-50 mb-3">
+            <h1 className="text-3xl font-black mb-3" style={{ color: "#1A1A18" }}>
               Request Submitted! 🎉
             </h1>
 
-            <p className="text-slate-400 mb-6 leading-relaxed">
+            <p className="mb-6 leading-relaxed" style={{ color: "rgba(26,26,24,0.55)" }}>
               Thank you for your interest! Our coaching team will reach out to you within 24 hours.
             </p>
 
-            <div className="bg-primary/5 border border-primary/20 rounded-2xl p-4 mb-6">
-              <p className="text-sm text-slate-300 leading-relaxed">
-                📞 We'll call you on <span className="font-semibold text-primary">{form.countryCode} {form.phone}</span>
+            <div className="rounded-2xl p-4 mb-6" style={{ background: "rgba(202,219,0,0.08)", border: "1px solid rgba(202,219,0,0.22)" }}>
+              <p className="text-sm leading-relaxed" style={{ color: "rgba(26,26,24,0.65)" }}>
+                📞 We'll call you on <span className="font-semibold" style={{ color: "#5A6000" }}>{form.countryCode} {form.phone}</span>
               </p>
             </div>
 
             <button
               onClick={() => navigate("/dashboard")}
-              className="w-full py-3.5 px-6 rounded-2xl bg-gradient-to-r from-primary to-emerald-500 
-                       text-slate-950 font-bold shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30
-                       active:scale-[0.98] transition-all duration-200"
+              className="w-full py-3.5 px-6 rounded-2xl font-bold active:scale-[0.98] transition-all duration-200"
+              style={{ background: "linear-gradient(135deg, #CADB00 0%, #B8C900 100%)", color: "#1A1A18", boxShadow: "0 4px 20px rgba(202,219,0,0.30)" }}
             >
               Back to Dashboard
             </button>
@@ -134,19 +128,14 @@ export default function GetACoachPage() {
   }
 
   return (
-    <div className="flex flex-col justify-center items-center min-h-screen px-5 py-8 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950">
-
-
-      <div className="fixed top-20 left-1/2 -translate-x-1/2 w-96 h-96 bg-primary/5 rounded-full blur-3xl pointer-events-none animate-pulse"></div>
-
+    <div className="flex flex-col justify-center items-center min-h-screen px-5 py-8" style={{ background: "linear-gradient(135deg, #EEF5E0 0%, #EAF0F8 45%, #F3EEF5 100%)" }}>
 
       <button
         onClick={() => navigate(-1)}
-        className="absolute top-6 left-5 w-10 h-10 rounded-full bg-slate-800/50 backdrop-blur-sm
-                   border border-slate-700/50 flex items-center justify-center
-                   hover:bg-slate-800 active:scale-95 transition-all duration-200 z-10"
+        className="absolute top-6 left-5 w-10 h-10 rounded-full flex items-center justify-center active:scale-95 transition-all duration-200 z-10"
+        style={{ background: "rgba(255,255,255,0.80)", border: "1px solid rgba(26,26,24,0.12)" }}
       >
-        <svg className="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-5 h-5" style={{ color: "rgba(26,26,24,0.55)" }} fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
         </svg>
       </button>
@@ -158,44 +147,44 @@ export default function GetACoachPage() {
       >
 
         <div className="text-center mb-8">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-primary/20 to-emerald-500/20 
-                        flex items-center justify-center backdrop-blur-sm border border-primary/20 animate-pulse">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-2xl flex items-center justify-center animate-pulse"
+            style={{ background: "rgba(202,219,0,0.12)", border: "1px solid rgba(202,219,0,0.25)" }}>
             <span className="text-3xl">🏋️</span>
           </div>
-          <h1 className="text-3xl font-black text-slate-50 mb-2">
+          <h1 className="text-3xl font-black mb-2" style={{ color: "#1A1A18" }}>
             Get Your Personal Coach
           </h1>
-          <p className="text-sm text-slate-400 leading-relaxed">
+          <p className="text-sm leading-relaxed" style={{ color: "rgba(26,26,24,0.55)" }}>
             Connect with expert fitness coaches to achieve your goals faster
           </p>
         </div>
 
 
-        <div className="bg-slate-900/60 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6 shadow-2xl">
+        <div className="glass-card rounded-3xl p-6 shadow-2xl">
 
 
-          <div className="bg-gradient-to-r from-primary/5 to-emerald-500/5 border border-primary/20 rounded-2xl p-4 mb-6">
-            <h3 className="text-sm font-bold text-primary mb-3 flex items-center gap-2">
+          <div className="rounded-2xl p-4 mb-6" style={{ background: "rgba(202,219,0,0.08)", border: "1px solid rgba(202,219,0,0.22)" }}>
+            <h3 className="text-sm font-bold mb-3 flex items-center gap-2" style={{ color: "#5A6000" }}>
               <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
               What You'll Get:
             </h3>
-            <ul className="space-y-2 text-xs text-slate-300">
+            <ul className="space-y-2 text-xs" style={{ color: "rgba(26,26,24,0.65)" }}>
               <li className="flex items-center gap-2">
-                <span className="text-primary">✓</span>
+                <span style={{ color: "#CADB00" }}>✓</span>
                 Personalized workout plans tailored to your goals
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-primary">✓</span>
+                <span style={{ color: "#CADB00" }}>✓</span>
                 One-on-one coaching sessions with certified trainers
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-primary">✓</span>
+                <span style={{ color: "#CADB00" }}>✓</span>
                 Nutrition guidance and meal planning support
               </li>
               <li className="flex items-center gap-2">
-                <span className="text-primary">✓</span>
+                <span style={{ color: "#CADB00" }}>✓</span>
                 Progress tracking and regular check-ins
               </li>
             </ul>
@@ -205,7 +194,7 @@ export default function GetACoachPage() {
 
 
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-slate-300">
+              <label className="block text-sm font-semibold mb-2" style={{ color: "rgba(26,26,24,0.65)" }}>
                 Full Name *
               </label>
               <div className="relative">
@@ -243,14 +232,13 @@ export default function GetACoachPage() {
 
 
             <div className="space-y-2">
-              <label className="block text-sm font-semibold text-slate-300">
+              <label className="block text-sm font-semibold mb-2" style={{ color: "rgba(26,26,24,0.65)" }}>
                 Phone Number *
               </label>
               <div className="flex gap-3">
                 <select
-                  className="w-24 rounded-2xl bg-slate-950/50 border-2 border-slate-700/50 px-3 py-3.5 text-base text-slate-50
-                           hover:border-slate-600 focus:border-primary focus:outline-none focus:shadow-lg focus:shadow-primary/10
-                           transition-all duration-200"
+                  className="w-24 rounded-2xl px-3 py-3.5 text-base transition-all duration-200 focus:outline-none"
+                  style={{ background: "rgba(255,255,255,0.70)", border: "2px solid rgba(26,26,24,0.10)", color: "#1A1A18" }}
                   value={form.countryCode}
                   onChange={(e) => updateField("countryCode", e.target.value)}
                 >
@@ -264,8 +252,8 @@ export default function GetACoachPage() {
                 <div className="relative flex-1">
                   <div className="absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none">
                     <svg
-                      className={`w-5 h-5 transition-colors duration-200 ${focusedField === 'phone' ? 'text-primary' : 'text-slate-500'
-                        }`}
+                      className="w-5 h-5 transition-colors duration-200"
+                      style={{ color: focusedField === 'phone' ? '#CADB00' : 'rgba(26,26,24,0.30)' }}
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -276,13 +264,13 @@ export default function GetACoachPage() {
                   </div>
                   <input
                     type="tel"
-                    className={`w-full rounded-2xl bg-slate-950/50 border-2 pl-12 pr-4 py-3.5 text-base text-slate-50
-                              placeholder:text-slate-600 transition-all duration-200
-                              focus:outline-none focus:bg-slate-950
-                              ${focusedField === 'phone'
-                        ? 'border-primary shadow-lg shadow-primary/10'
-                        : 'border-slate-700/50 hover:border-slate-600'
-                      }`}
+                    className="w-full rounded-2xl pl-12 pr-4 py-3.5 text-base transition-all duration-200 focus:outline-none"
+                    style={{
+                      background: "rgba(255,255,255,0.70)",
+                      border: `2px solid ${focusedField === 'phone' ? '#CADB00' : 'rgba(26,26,24,0.10)'}`,
+                      color: "#1A1A18",
+                      boxShadow: focusedField === 'phone' ? '0 0 0 3px rgba(202,219,0,0.12)' : 'none'
+                    }}
                     value={form.phone}
                     onChange={(e) => updateField("phone", e.target.value.replace(/\D/g, ""))}
                     onFocus={() => setFocusedField('phone')}
@@ -294,7 +282,7 @@ export default function GetACoachPage() {
                   />
                 </div>
               </div>
-              <p className="text-xs text-slate-500 flex items-center gap-1.5">
+              <p className="text-xs flex items-center gap-1.5" style={{ color: "rgba(26,26,24,0.45)" }}>
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -359,11 +347,8 @@ export default function GetACoachPage() {
             <button
               type="submit"
               disabled={loading}
-              className="relative w-full mt-2 rounded-2xl bg-gradient-to-r from-primary to-emerald-500 
-                       text-slate-950 font-bold py-4 text-base overflow-hidden
-                       shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30
-                       disabled:opacity-60 disabled:cursor-not-allowed
-                       active:scale-[0.98] transition-all duration-200 group"
+              className="relative w-full mt-2 rounded-2xl font-bold py-4 text-base overflow-hidden disabled:opacity-60 disabled:cursor-not-allowed active:scale-[0.98] transition-all duration-200 group"
+              style={{ background: "linear-gradient(135deg, #CADB00 0%, #B8C900 100%)", color: "#1A1A18", boxShadow: "0 4px 20px rgba(202,219,0,0.30)" }}
             >
               {!loading && (
                 <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent 
@@ -392,11 +377,11 @@ export default function GetACoachPage() {
           </form>
 
 
-          <div className="flex items-center gap-2 mt-6 pt-6 border-t border-slate-800">
-            <svg className="w-4 h-4 text-emerald-500 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+          <div className="flex items-center gap-2 mt-6 pt-6" style={{ borderTop: "1px solid rgba(26,26,24,0.08)" }}>
+            <svg className="w-4 h-4 flex-shrink-0" style={{ color: "#CADB00" }} fill="currentColor" viewBox="0 0 20 20">
               <path fillRule="evenodd" d="M2.166 4.999A11.954 11.954 0 0010 1.944 11.954 11.954 0 0017.834 5c.11.65.166 1.32.166 2.001 0 5.225-3.34 9.67-8 11.317C5.34 16.67 2 12.225 2 7c0-.682.057-1.35.166-2.001zm11.541 3.708a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
             </svg>
-            <p className="text-xs text-slate-500 leading-relaxed">
+            <p className="text-xs leading-relaxed" style={{ color: "rgba(26,26,24,0.45)" }}>
               Your information is secure and will only be used to connect you with our coaching team.
             </p>
           </div>
@@ -404,9 +389,9 @@ export default function GetACoachPage() {
 
 
         <div className="mt-6 text-center">
-          <p className="text-sm text-slate-500">
+          <p className="text-sm" style={{ color: "rgba(26,26,24,0.50)" }}>
             Questions? Email us at{" "}
-            <a href="mailto:coach@resonate.fitness" className="text-primary hover:text-emerald-400 transition-colors">
+            <a href="mailto:coach@resonate.fitness" className="font-semibold transition-colors" style={{ color: "#5A6000" }}>
               coach@resonate.fitness
             </a>
           </p>

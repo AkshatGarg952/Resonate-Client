@@ -1,13 +1,27 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { suggestInterventions } from "../api";
 
 export default function InsightsPage() {
-    const insights = [
-        { title: "HRV Trending Up", text: "Your heart rate variability has improved 12% over the past 30 days — a strong recovery signal." },
-        { title: "Sleep Consistency", text: "You've maintained 7+ hours of sleep 5 out of 7 nights this week. Keep it up!" },
-        { title: "Protein Adherence", text: "You hit your protein target on 6 out of 7 days this week. Excellent macro compliance." },
-        { title: "Cardio Load Balance", text: "Your training load is well-balanced between aerobic and anaerobic zones this week." },
-    ];
+    const [insights, setInsights] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchInsights = async () => {
+            try {
+                const data = await suggestInterventions();
+                setInsights(data.suggestions || []);
+            } catch (err) {
+                console.error("Failed to fetch insights:", err);
+                setError("Failed to load insights. Please try again later.");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchInsights();
+    }, []);
 
     return (
         <div>
@@ -21,31 +35,67 @@ export default function InsightsPage() {
                 </p>
             </div>
 
-            {/* Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                {insights.map((ins, i) => (
-                    <div
-                        key={i}
-                        className="glass-card rounded-[20px] p-6 hover:shadow-lg transition-all"
+            {/* Content */}
+            {loading ? (
+                <div className="flex justify-center items-center p-10">
+                    <p style={{ color: "rgba(26,26,24,0.55)", fontSize: 14 }}>Loading insights...</p>
+                </div>
+            ) : error ? (
+                <div className="flex justify-center flex-col items-center p-10">
+                    <p className="text-red-500 mb-4" style={{ fontSize: 14 }}>{error}</p>
+                    <button
+                        onClick={() => window.location.reload()}
+                        className="px-4 py-2 bg-[#CADB00] rounded-full text-sm font-semibold hover:bg-[#b5c400] transition-colors"
+                        style={{ color: "#1A1A18" }}
                     >
-                        <div className="flex items-center gap-2 mb-3">
-                            <div
-                                style={{
-                                    width: 8, height: 8, borderRadius: "50%",
-                                    background: "#CADB00", flexShrink: 0
-                                }}
-                            />
-                            <span className="overline-label">Insight</span>
+                        Retry
+                    </button>
+                </div>
+            ) : insights.length === 0 ? (
+                <div className="glass-card rounded-[20px] p-8 text-center mt-5">
+                    <p style={{ color: "rgba(26,26,24,0.55)", fontSize: 15 }}>No new insights available at the moment. Keep logging your data!</p>
+                </div>
+            ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    {insights.map((ins, i) => (
+                        <div
+                            key={i}
+                            className="glass-card rounded-[20px] p-6 hover:shadow-lg transition-all"
+                        >
+                            <div className="flex items-center justify-between mb-3">
+                                <div className="flex items-center gap-2">
+                                    <div
+                                        style={{
+                                            width: 8, height: 8, borderRadius: "50%",
+                                            background: "#CADB00", flexShrink: 0
+                                        }}
+                                    />
+                                    <span className="overline-label">Insight</span>
+                                </div>
+                                {ins.type && (
+                                    <span style={{
+                                        fontSize: 10,
+                                        fontWeight: 600,
+                                        textTransform: "uppercase",
+                                        background: "rgba(202,219,0,0.15)",
+                                        color: "#5A6000",
+                                        padding: "4px 8px",
+                                        borderRadius: 12
+                                    }}>
+                                        {ins.type}
+                                    </span>
+                                )}
+                            </div>
+                            <h3 style={{ fontSize: 15, fontWeight: 600, color: "#1A1A18", marginBottom: 8 }}>
+                                {ins.title}
+                            </h3>
+                            <p style={{ fontSize: 13, lineHeight: 1.6, color: "rgba(26,26,24,0.60)" }}>
+                                {ins.description || ins.text}
+                            </p>
                         </div>
-                        <h3 style={{ fontSize: 15, fontWeight: 600, color: "#1A1A18", marginBottom: 8 }}>
-                            {ins.title}
-                        </h3>
-                        <p style={{ fontSize: 13, lineHeight: 1.6, color: "rgba(26,26,24,0.60)" }}>
-                            {ins.text}
-                        </p>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
 
             {/* Coming soon notice */}
             <div

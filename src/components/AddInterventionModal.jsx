@@ -80,17 +80,17 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm">
-            <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+            <div className="bg-white border border-gray-200 rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
 
                 {/* Header */}
-                <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-800/30">
-                    <h3 className="text-lg font-bold text-white">
+                <div className="px-6 py-4 border-b border-gray-100 flex items-center justify-between bg-gray-50/50">
+                    <h3 className="text-lg font-bold text-[#1A1A18]">
                         {initialData ? 'Edit Intervention' : 'Add New Intervention'}
                     </h3>
                     <button
                         onClick={onClose}
-                        className="text-slate-400 hover:text-white transition-colors"
+                        className="text-gray-400 hover:text-[#1A1A18] transition-colors"
                     >
                         <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -101,21 +101,21 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                 {/* Form */}
                 <form onSubmit={handleSubmit} className="p-6 space-y-4 overflow-y-auto custom-scrollbar">
                     {error && (
-                        <div className="p-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+                        <div className="p-3 bg-red-50 border border-red-200 rounded-xl text-red-600 text-sm">
                             {error}
                         </div>
                     )}
 
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                             Type
                         </label>
                         <select
                             name="type"
                             value={formData.type}
                             onChange={handleChange}
-                            className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                                     focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none appearance-none"
+                            className="w-full bg-gray-50 border border-gray-200 text-[#1A1A18] rounded-xl px-4 py-2.5 
+                                     focus:ring-2 focus:ring-[#CADB00]/50 focus:border-[#CADB00] transition-all outline-none appearance-none"
                         >
                             <option value="supplement">💊 Supplement</option>
                             <option value="diet">🥗 Diet / Nutrition</option>
@@ -126,7 +126,7 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                             Recommendation
                         </label>
                         <input
@@ -136,22 +136,22 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                             required
                             value={formData.recommendation}
                             onChange={handleChange}
-                            className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                                     focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
+                            className="w-full bg-gray-50 border border-gray-200 text-[#1A1A18] rounded-xl px-4 py-2.5 
+                                     focus:ring-2 focus:ring-[#CADB00]/50 focus:border-[#CADB00] transition-all outline-none"
                         />
                     </div>
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                                 Status
                             </label>
                             <select
                                 name="status"
                                 value={formData.status}
                                 onChange={handleChange}
-                                className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                                         focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none appearance-none"
+                                className="w-full bg-gray-50 border border-gray-200 text-[#1A1A18] rounded-xl px-4 py-2.5 
+                                         focus:ring-2 focus:ring-[#CADB00]/50 focus:border-[#CADB00] transition-all outline-none appearance-none"
                             >
                                 <option value="active">🟢 Active (Ongoing)</option>
                                 <option value="completed">✅ Completed</option>
@@ -161,7 +161,7 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                         </div>
 
                         <div>
-                            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                                 Start Date
                             </label>
                             <input
@@ -170,15 +170,15 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                                 required
                                 value={formData.startDate}
                                 onChange={handleChange}
-                                className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                                         focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
+                                className="w-full bg-gray-50 border border-gray-200 text-[#1A1A18] rounded-xl px-4 py-2.5 
+                                         focus:ring-2 focus:ring-[#CADB00]/50 focus:border-[#CADB00] transition-all outline-none"
                             />
                         </div>
                     </div>
 
                     {formData.status !== 'active' && (
                         <div>
-                            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                                 End Date
                             </label>
                             <input
@@ -187,15 +187,15 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                                 required={formData.status !== 'active'}
                                 value={formData.endDate}
                                 onChange={handleChange}
-                                className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                                         focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
+                                className="w-full bg-gray-50 border border-gray-200 text-[#1A1A18] rounded-xl px-4 py-2.5 
+                                         focus:ring-2 focus:ring-[#CADB00]/50 focus:border-[#CADB00] transition-all outline-none"
                             />
                         </div>
                     )}
 
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                                 Duration (Days)
                             </label>
                             <input
@@ -206,13 +206,13 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                                 onChange={handleChange}
                                 required
                                 min="1"
-                                className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                                         focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
+                                className="w-full bg-gray-50 border border-gray-200 text-[#1A1A18] rounded-xl px-4 py-2.5 
+                                         focus:ring-2 focus:ring-[#CADB00]/50 focus:border-[#CADB00] transition-all outline-none"
                             />
                         </div>
 
                         <div>
-                            <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                                 Target Value (%)
                             </label>
                             <input
@@ -224,22 +224,22 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                                 required
                                 min="0"
                                 max="100"
-                                className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                                         focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none"
+                                className="w-full bg-gray-50 border border-gray-200 text-[#1A1A18] rounded-xl px-4 py-2.5 
+                                         focus:ring-2 focus:ring-[#CADB00]/50 focus:border-[#CADB00] transition-all outline-none"
                             />
                         </div>
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                             Target Metric
                         </label>
                         <select
                             name="targetMetric"
                             value={formData.targetMetric}
                             onChange={handleChange}
-                            className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                                     focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none appearance-none"
+                            className="w-full bg-gray-50 border border-gray-200 text-[#1A1A18] rounded-xl px-4 py-2.5 
+                                     focus:ring-2 focus:ring-[#CADB00]/50 focus:border-[#CADB00] transition-all outline-none appearance-none"
                         >
                             <option value="adherence_rate">Adherence Rate</option>
                             <option value="completion_rate">Completion Rate</option>
@@ -250,7 +250,7 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1.5">
+                        <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1.5">
                             Rationale
                         </label>
                         <textarea
@@ -260,8 +260,8 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                             value={formData.rationale}
                             onChange={handleChange}
                             required
-                            className="w-full bg-slate-950 border border-slate-800 text-slate-200 rounded-xl px-4 py-2.5 
-                                     focus:ring-2 focus:ring-primary/50 focus:border-primary/50 transition-all outline-none resize-none"
+                            className="w-full bg-gray-50 border border-gray-200 text-[#1A1A18] rounded-xl px-4 py-2.5 
+                                     focus:ring-2 focus:ring-[#CADB00]/50 focus:border-[#CADB00] transition-all outline-none resize-none"
                         ></textarea>
                     </div>
 
@@ -269,16 +269,16 @@ export default function AddInterventionModal({ isOpen, onClose, onInterventionAd
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex-1 px-4 py-2.5 rounded-xl border border-slate-700 text-slate-300 font-medium 
-                                     hover:bg-slate-800 transition-colors"
+                            className="flex-1 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-gray-700 font-medium 
+                                     hover:bg-gray-50 transition-colors"
                         >
                             Cancel
                         </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="flex-1 px-4 py-2.5 rounded-xl bg-primary text-slate-950 font-bold 
-                                     hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="flex-1 px-4 py-2.5 rounded-xl bg-[#CADB00] text-[#1A1A18] font-bold 
+                                     hover:bg-[#b5c400] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {loading ? 'Saving...' : (initialData ? 'Update Intervention' : 'Start Intervention')}
                         </button>
